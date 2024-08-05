@@ -1,0 +1,18 @@
+{
+  "cwd": "/Users/mac/Desktop/Desktop/framework",
+  "type": [
+    "web"
+  ],
+  "name": "DriveLife",
+  "framework": "core",
+  "template": "tabs",
+  "bundler": false,
+  "cssPreProcessor": false,
+  "theming": {
+    "customColor": true,
+    "color": "#ae9159",
+    "darkMode": false,
+    "iconFonts": true
+  },
+  "customBuild": false
+}
