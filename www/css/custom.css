@@ -279,6 +279,7 @@ body {
 .comment-content-container {
 	display: block;
 	float: left;
+	width: 84%;
 }
 
 .comments-list .comment-username {
@@ -325,4 +326,16 @@ body {
 
 .text-red{
 	color: red;
+}
+
+.comment-username{
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.comment-username .date{
+	font-size: 10px;
+	font-weight: 400;
 }

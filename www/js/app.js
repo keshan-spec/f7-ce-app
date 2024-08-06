@@ -82,6 +82,29 @@ ptrContent.addEventListener('ptr:refresh', function (e) {
   app.ptr.done()
 })
 
+/* Based on this http://jsfiddle.net/brettwp/J4djY/*/
+function detectDoubleTapClosure(callback) {
+  let lastTap = 0
+  let timeout
+
+  return function detectDoubleTap(event) {
+    
+    const curTime = new Date().getTime()
+    const tapLen = curTime - lastTap
+    if (tapLen < 500 && tapLen > 0) {
+      event.preventDefault()
+
+      // pass the event target to the callback
+      callback(event.target)
+    } else {
+      timeout = setTimeout(() => {
+        clearTimeout(timeout)
+      }, 500)
+    }
+
+    lastTap = curTime
+  }
+}
 // Infinite Scroll Event
 const infiniteScrollContent = document.querySelector('.infinite-scroll-content')
 infiniteScrollContent.addEventListener('infinite', function () {
@@ -176,6 +199,20 @@ function displayPosts(posts) {
       togglePostLike(postId)
     })
   })
+
+  // on double tap like post
+  // $('.media-post').on('doubleTap', function () {
+  //   console.log('Double tap');
+  //   const postId = this.getAttribute('data-post-id')
+  //   togglePostLike(postId)
+  // })
+
+  $('.media-post-content img, .media-post-content video').on('touchstart', detectDoubleTapClosure((e) => { 
+    const parent = e.closest('.media-post')
+    const postId = parent.getAttribute('data-post-id')
+
+    togglePostLike(postId)
+   }), { passive: false })
 }
 
 function togglePostLike(postId) {
@@ -230,10 +267,17 @@ function displayComments(comments, postId) {
             </span>
             <div class="comment-replies-container">
               ${comment.replies.map(reply => `
-                <div class="comment" data-comment-id="${reply.id}" data-is-liked="${reply.liked}" data-owner-id="${reply.user_id}">
+                <div class="comment" 
+                  data-comment-id="${reply.id}" 
+                  data-is-liked="${reply.liked}" 
+                  data-owner-id="${reply.user_id}"
+                  data-owner-name="${reply.display_name}">
                   <div class="comment-profile-img" style="background-image:url('${reply.profile_image}');"></div>
                   <div class="comment-content-container">
-                    <div class="comment-username">${reply.display_name}</div>
+                    <div class="comment-username">
+                    <span>${reply.display_name}</span>
+                    <span class="date">${formatPostDate(reply.comment_date)}</span>
+                    </div>
                     <div class="comment-content">${reply.comment}</div>
                     <div class="comment-actions">
                       <div class="comment-like">
@@ -262,7 +306,10 @@ function displayComments(comments, postId) {
         data-owner-name="${comment.display_name}">
         <div class="comment-profile-img" style="background-image:url('${comment.profile_image}');"></div>
         <div class="comment-content-container">
-          <div class="comment-username">${comment.display_name}</div>
+          <div class="comment-username">
+          <span>${comment.display_name}</span>
+          <span class="date">${formatPostDate(comment.comment_date)}</span>
+          </div>
           <div class="comment-content">${comment.comment}</div>
           <div class="comment-actions">
             <div class="comment-like">
