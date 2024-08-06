@@ -368,6 +368,8 @@ $('#comment-form').on('submit', async function (e) {
   if (response) {
     app.dialog.alert('Comment added successfully')
     this.reset()
+    this.removeAttribute('data-comment-id')
+    this.querySelector('.replying-to').innerHTML = ''
     const comments = await fetchComments(postId)
     displayComments(comments, postId)
   } else {
