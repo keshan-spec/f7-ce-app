@@ -322,3 +322,7 @@ body {
 .comment-replies-container.show {
 	display: block;
 }
+
+.text-red{
+	color: red;
+}
