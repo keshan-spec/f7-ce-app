@@ -1,12 +1,9 @@
 //------------------------------------------ CORE ------------------------------------------//
+import store from './store.js'
+import { fetchComments } from './api/posts.js'
 
 var $ = Dom7
-
-
-let currentPage = 1
-const limit = 10
-const API_URL = 'https://wordpress-889362-4267074.cloudwaysapps.com/uk'
-let totalPages = 40 // Initialize with a large value, update on first fetch
+var currentPage = 1
 
 var app = new Framework7({
   name: 'DriveLife',
@@ -16,7 +13,7 @@ var app = new Framework7({
   el: '#app', // App root element
   on: {
     init: function () {
-      fetchPosts(currentPage)
+      store.dispatch('getPosts', currentPage)
     },
   },
   // App store
@@ -24,7 +21,6 @@ var app = new Framework7({
   // App routes
   routes: routes,
 })
-
 
 //------------------------------------------ CUSTOM ------------------------------------------//
 // Action Sheet with Grid Layout
@@ -61,52 +57,40 @@ document.getElementById('open-action-sheet').addEventListener('click', function 
   actionSheet.open()
 })
 
-//HOME (DISCOVER)
 // Init slider
-var swiper = app.swiper.create('.swiper-container', {
+app.swiper.create('.swiper-container', {
   speed: 400,
   spaceBetween: 0,
   observer: true,
   pagination: '.swiper-pagination'
-
 })
+
+var postsStore = store.getters.posts
+var totalPages = 0;
+
+postsStore.onUpdated((data)=> {
+  totalPages = data.total_pages
+  displayPosts(data.data)
+})
+
+// Infinite Scroll Event
+const infiniteScrollContent = document.querySelector('.infinite-scroll-content')
+infiniteScrollContent.addEventListener('infinite', function () {
+  if (currentPage >= totalPages) {
+    app.infiniteScroll.destroy(infiniteScrollContent)
+    return
+  }
+
+  currentPage++
+  store.dispatch('getPosts', currentPage)
+})
+
 
 //Comments Popup
 var CommentsPopup = app.popup.create({
   el: '.comments-popup',
   swipeToClose: 'to-bottom'
 });
-
-
-async function fetchPosts(page) {
-  const response = await fetch(`${API_URL}/wp-json/app/v1/get-posts?page=${page}&limit=10`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ user_id: 1 }),
-  })
-
-  const data = await response.json();
-  totalPages = data.total_pages
-  displayPosts(data.data)
-}
-
-async function fetchComments(postId) {
-  document.getElementById('comments-list').innerHTML = '<div class="preloader"></div>'
-
-  const response = await fetch(`${API_URL}/wp-json/app/v1/get-post-comments`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ user_id: 1, post_id: postId }),
-  })
-
-  const data = await response.json()
-
-  displayComments(data)
-}
 
 function displayPosts(posts) {
   const postsContainer = document.getElementById('tab-latest')
@@ -199,7 +183,7 @@ function displayComments(comments) {
                     <div class="comment-content">${reply.comment}</div>
                     <div class="comment-actions">
                       <div class="comment-like">
-                        <i class="icon f7-icons">${reply.liked ? 'heart_fill' : 'heart'}</i> <span>${reply.likes_count}</span>
+                        <i class="icon f7-icons ${reply.liked && 'text-red'}">${reply.liked ? 'heart_fill' : 'heart'}</i> <span>${reply.likes_count}</span>
                       </div>
                       <div class="comment-reply">
                         <i class="icon f7-icons">chat_bubble</i> <span>Reply</span>
@@ -221,7 +205,7 @@ function displayComments(comments) {
           <div class="comment-content">${comment.comment}</div>
           <div class="comment-actions">
             <div class="comment-like">
-              <i class="icon f7-icons">${comment.liked ? 'heart_fill' : 'heart'}</i> <span>${comment.likes_count}</span>
+              <i class="icon f7-icons ${comment.liked && 'text-red'}">${comment.liked ? 'heart_fill' : 'heart'}</i> <span>${comment.likes_count}</span>
             </div>
             <div class="comment-reply">
               <i class="icon f7-icons">chat_bubble</i> <span>Reply</span>
@@ -271,22 +255,11 @@ function formatPostDate(date) {
   return 'Just now'
 }
 
-// Infinite Scroll Event
-const infiniteScrollContent = document.querySelector('.infinite-scroll-content')
-infiniteScrollContent.addEventListener('infinite', function () {
-  if (currentPage >= totalPages) {
-    app.infiniteScroll.destroy(infiniteScrollContent)
-    return
-  }
-
-  currentPage++
-  fetchPosts(currentPage)
-})
-
 // on .popup-open click
-$(document).on('click', '.popup-open', function () {
+$(document).on('click', '.popup-open', async function  () {
   const postId = this.getAttribute('data-post-id')
-  fetchComments(postId)
+  const comments = await fetchComments(postId)
+  displayComments(comments)
   CommentsPopup.open()
 })
 

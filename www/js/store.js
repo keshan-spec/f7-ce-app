@@ -1,25 +1,26 @@
-
-
+import { fetchPosts } from './api/posts.js'
 var createStore = Framework7.createStore;
+
 const store = createStore({
   state: {
-    products: [
-      {
-        id: '1',
-        title: 'Apple iPhone 8',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nisi tempora similique reiciendis, error nesciunt vero, blanditiis pariatur dolor, minima sed sapiente rerum, dolorem corrupti hic modi praesentium unde saepe perspiciatis.'
-      }
-    ]
+    posts: {
+      data: [],
+      total_pages: 0,
+      page: 1,
+      limit: 10,
+    },
   },
   getters: {
-    products({ state }) {
-      return state.products;
-    }
+    posts({ state }) {
+      return state.posts;
+    },
   },
   actions: {
-    addProduct({ state }, product) {
-      state.products = [...state.products, product];
+    async getPosts({ state }, page) {
+      const posts = await fetchPosts(page);
+      state.posts = posts;
     },
   },
 })
 
+export default store;
