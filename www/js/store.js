@@ -20,6 +20,21 @@ const store = createStore({
       const posts = await fetchPosts(page);
       state.posts = posts;
     },
+    async likePost({ state }, postId) {
+      // Update state for optimistic UI
+      state.posts.data = state.posts.data.map((post) => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            liked: !post.liked,
+            likes: post.liked ? post.likes - 1 : post.likes + 1,
+          };
+        }
+        return post;
+      });
+      // Call API to like post
+      // Update post in state
+    }
   },
 })
 

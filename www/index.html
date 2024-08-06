@@ -279,14 +279,19 @@
               <div class="preloader"></div>
             </div>
     
-            <div class="toolbar messagebar">
-              <div class="toolbar-inner">
-                <div class="messagebar-area">
-                  <textarea class="resizable" placeholder="Message"></textarea>
+            <form id="comment-form">
+              <!-- replying to -->
+               <span class="replying-to"></span>
+              <div class="toolbar messagebar">
+                <div class="toolbar-inner">
+                  <div class="messagebar-area">
+                    <textarea class="resizable" name="comment" placeholder="Message"></textarea>
+                  </div>
+                  <button type="submit" class="link icon-only demo-send-message-link"><i class="icon f7-icons">arrow_up_circle_fill</i></button>
+                  <!-- <a class="link icon-only demo-send-message-link"><i class="icon f7-icons">arrow_up_circle_fill</i></a> -->
                 </div>
-                <a class="link icon-only demo-send-message-link"><i class="icon f7-icons">arrow_up_circle_fill</i></a>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
@@ -300,7 +305,6 @@
   <script src="js/routes.js?v=1.1"></script>
   <!-- App store -->
   <script src="js/store.js" type="module"></script>
-  <script src="js/api/posts.js" type="module"></script>
   <!-- App scripts -->
   <script src="js/app.js" type="module"></script>
 </body>
