@@ -20,17 +20,14 @@ var app = new Framework7({
       await store.dispatch('checkAuth')
 
       const isAuthenticated = store.getters.isAuthenticated.value
+
       if (!isAuthenticated) {
         this.views.main.router.navigate('/auth/')
-        console.log('User is not authenticated', toolbarEl)
         toolbarEl.style.display = 'none'
       }
     },
     pageInit: function (page) {
-      console.log('Page initialized', page)
-
       if (page.name === 'profile') {
-        console.log('Profile page initialized')
         userStore.onUpdated((data) => {
           displayProfile(data)
         })
