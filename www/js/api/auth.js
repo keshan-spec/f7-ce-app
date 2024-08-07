@@ -3,23 +3,28 @@ import store from "../store.js"
 
 export const getSessionUser = async () => {
     // get session from somewhere    
-    // return {
-    //     id: 1
-    // }
+    if (store.state.user) {
+        return store.state.user
+    }
 
-    return store.state.user
+    // check in local storage
+    const session = window.localStorage.getItem('token')
+    if (session) {
+        return session
+    }
+
     return null
 }
 
-export const getUserDetails = async (id) => {
+export const getUserDetails = async (token) => {
     try {
         let url = `${API_URL}/wp-json/app/v1/get-user-profile`
         let response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify({ user_id: id }),
         })
 
         const data = await response.json()
@@ -43,7 +48,7 @@ export const verifyUser = async (credentials) => {
         })
 
         if (response.ok) {
-            return JSON.parse(await response.json())
+            return await response.json()
         }
     } catch (error) {
         console.error(error)

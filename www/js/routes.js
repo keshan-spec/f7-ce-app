@@ -1,5 +1,4 @@
-
-var routes = [
+const routes = [
   {
     path: '/',
     url: './index.html',
@@ -27,3 +26,5 @@ var routes = [
     componentUrl: './pages/404.html',
   },
 ]
+
+export default routes

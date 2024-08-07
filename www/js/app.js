@@ -1,8 +1,12 @@
 //------------------------------------------ CORE ------------------------------------------//
 import { verifyUser } from './api/auth.js'
 import store from './store.js'
+import routes from './routes.js'
+
+import { displayProfile } from './profile.js'
 
 var $ = Dom7
+var userStore = store.getters.user
 
 var app = new Framework7({
   name: 'DriveLife',
@@ -13,11 +17,17 @@ var app = new Framework7({
   on: {
     init: async function () {
       await store.dispatch('checkAuth')
+
       const isAuthenticated = store.getters.isAuthenticated.value
-      if (isAuthenticated) {
-        store.dispatch('getPosts')
-      } else {
+      if (!isAuthenticated) {
         loginScreen.open()
+      }
+    },
+    pageInit: function (page) {
+      if (page.name === 'profile') {
+        userStore.onUpdated((data) => {
+          displayProfile(data)
+        })
       }
     },
   },
@@ -25,10 +35,7 @@ var app = new Framework7({
   routes: routes,
 })
 
-var userStore = store.getters.user
-
 userStore.onUpdated((data) => {
-  console.log('User updated:', data)
   store.dispatch('getPosts')
 })
 
@@ -105,9 +112,8 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
     }
 
     if (response.success) {
-      const user = response.user
       app.dialog.alert('Login successful')
-      await store.dispatch('login', { id: user.id })
+      await store.dispatch('login', { token: response.token })
       loginScreen.close()
       return
     }

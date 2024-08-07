@@ -1,5 +1,6 @@
-import { getSessionUser, getUserDetails, verifyUser } from './api/auth.js'
+import { getSessionUser, getUserDetails } from './api/auth.js'
 import { fetchPosts } from './api/posts.js'
+
 var createStore = Framework7.createStore
 
 const store = createStore({
@@ -24,27 +25,31 @@ const store = createStore({
     },
   },
   actions: {
-    async login({ state }, { id }) {
+    async login({ state }, { token }) {
       try {
-        const userDetails = await getUserDetails(id)
-
+        const userDetails = await getUserDetails(token)
         if (!userDetails) {
+          window.localStorage.removeItem('token')
           throw new Error('User not found')
         }
 
         state.user = userDetails.user
+        window.localStorage.setItem('token', token)
       } catch (error) {
         console.error('Login failed', error)
       }
     },
     logout({ state }) {
       state.user = null
+      window.localStorage.removeItem('token')
     },
-    async checkAuth({ state }) {
-      const user = await getSessionUser()
+    async checkAuth(context) {
+      const token = await getSessionUser()
 
-      if (user) {
-        state.user = user
+      if (token) {
+        await context.dispatch('login', { token: token })
+      } else {
+        window.localStorage.removeItem('token')
       }
     },
     async getPosts({ state }, page = 1) {
