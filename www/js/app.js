@@ -22,9 +22,13 @@ var app = new Framework7({
       const isAuthenticated = store.getters.isAuthenticated.value
 
       if (!isAuthenticated) {
-        this.views.main.router.navigate('/auth/')
         toolbarEl.style.display = 'none'
+        this.views.main.router.navigate('/auth/')
       }
+
+      setTimeout(() => {
+        $('.init-loader').hide()
+      }, 200)
     },
     pageInit: function (page) {
       if (page.name === 'profile') {
