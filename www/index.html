@@ -35,11 +35,9 @@
 
 <body>
   <div id="app">
-
     <!-- Views/Tabs container -->
-    <div class="views tabs safe-areas">
-      <!-- Tabbar for switching views-tabs -->
-      <div class="toolbar toolbar-bottom tabbar-icons">
+    <div class="views tabs safe-areas app-landing-page">
+      <div class="toolbar toolbar-bottom tabbar-icons footer">
         <div class="toolbar-inner">
           <a href="#view-home" class="tab-link tab-link-active">
             <i class="icon f7-icons">house</i>
@@ -64,20 +62,14 @@
         </div>
       </div>
 
-
       <!-- Left Menu panel -->
       <div class="panel panel-left panel-push">
         Panel Content
       </div>
 
-
-
       <!-- VIEW PANEL - Home -->
       <div id="view-home" class="view view-main view-init tab tab-active">
-
         <div class="page" data-name="home">
-
-          <!-- Top Navbar -->
           <div class="navbar">
             <div class="navbar-bg"></div>
             <div class="navbar-inner">
@@ -101,142 +93,26 @@
 
           </div>
 
-          <!-- Social Tabs -->
           <div class="social-tabs toolbar toolbar-bottom tabbar">
             <div class="toolbar-inner">
               <a href="#tab-latest" class="tab-link tab-link-active">Latest</a>
               <a href="#tab-following" class="tab-link">Following</a>
             </div>
           </div>
-          <!-- * Social Tabs -->
 
-
-          <!-- Page content -->
           <div class="page-content ptr-content ptr-watch-scrollable social-content infinite-scroll-content"
             data-infinite-distance="50" data-ptr-distance="55">
 
-            <!-- Pull to refresh preloader-->
             <div class="ptr-preloader">
               <div class="preloader"></div>
               <div class="ptr-arrow"></div>
             </div>
 
-
-            <!-- Tab Panels -->
             <div class="tabs">
               <div class="tab tab-active" id="tab-latest">
               </div>
 
-
               <div class="tab" id="tab-following">
-                <!-- Media Post -->
-                <div class="media-post">
-                  <div class="media-post-content">
-
-                    <div class="media-post-header">
-                      <div class="media-post-avatar" style="background-image: url('assets/img/avatar1.jpg');"></div>
-                      <div class="media-post-user">m88xrk</div>
-                      <div class="media-post-date">01/01/2025</div>
-                    </div>
-
-                    <!-- Media Post -->
-                    <div class="media-post-content">
-                      <div class="media-post-content-img">
-                        <img src="assets/img/example001.jpg">
-                      </div>
-                    </div>
-
-                    <div class="media-post-actions">
-
-                      <div class="media-post-like">
-                        <i class="icon f7-icons">heart</i>
-                      </div>
-
-                      <div class="media-post-comment popup-open" data-popup=".comments-popup">
-                        <i class="icon f7-icons">chat_bubble</i>
-                      </div>
-
-                      <div class="media-post-share">
-                        <i class="icon f7-icons">paperplane</i>
-                      </div>
-
-                      <div class="media-post-edit">
-                        <i class="icon f7-icons">gear_alt</i>
-                      </div>
-
-                    </div>
-
-                    <div class="media-post-likecount">14 likes</div>
-
-                    <div class="media-post-description"><strong>m88xrk</strong> • Lorem ipsum dolor sit amet,
-                      consectetur adipiscing elit, do eiusmod
-                      <span class="media-post-readmore">... more</span>
-                    </div>
-
-                    <div class="media-post-commentcount popup-open" data-popup=".comments-popup">View 2 comments</div>
-                  </div>
-                </div>
-
-
-                <!-- Media Post -->
-                <div class="media-post">
-                  <div class="media-post-content">
-
-                    <div class="media-post-header">
-                      <div class="media-post-avatar" style="background-image: url('assets/img/avatar1.jpg');"></div>
-                      <div class="media-post-user">m88xrk</div>
-                      <div class="media-post-date">01/01/2025</div>
-                    </div>
-
-                    <!-- Media Content -->
-                    <div class="media-post-content">
-
-                      <div class="swiper-container">
-                        <div class="swiper-wrapper">
-                          <div class="swiper-slide">
-                            <video autoplay loop muted playsinline class="video-background">
-                              <source src="assets/video/video02.mp4" type="video/mp4" />
-                            </video>
-                          </div>
-                          <div class="swiper-slide"> <video autoplay loop muted playsinline class="video-background">
-                              <source src="assets/video/video02.mp4" type="video/mp4" />
-                            </video></div>
-                        </div>
-                        <div class="swiper-pagination"></div>
-                      </div>
-
-                    </div>
-
-                    <div class="media-post-actions">
-
-                      <div class="media-post-like">
-                        <i class="icon f7-icons">heart</i>
-                      </div>
-
-                      <div class="media-post-comment popup-open" data-popup=".comments-popup">
-                        <i class="icon f7-icons">chat_bubble</i>
-                      </div>
-
-                      <div class="media-post-share">
-                        <i class="icon f7-icons">paperplane</i>
-                      </div>
-
-                      <div class="media-post-edit">
-                        <i class="icon f7-icons">gear_alt</i>
-                      </div>
-
-                    </div>
-
-                    <div class="media-post-likecount">14 likes</div>
-
-                    <div class="media-post-description"><strong>m88xrk</strong> • Lorem ipsum dolor sit amet,
-                      consectetur adipiscing elit, do eiusmod
-                      <span class="media-post-readmore">... more</span>
-                    </div>
-
-                    <div class="media-post-commentcount popup-open" data-popup=".comments-popup">View 2 comments</div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -257,6 +133,9 @@
 
       <!-- VIEW PANEL -- Store -->
       <div id="view-profile" class="view view-init tab" data-name="profile" data-url="/profile/">
+      </div>
+
+      <div id="view-auth" class="view view-init tab" data-name="auth" data-url="/auth/">
       </div>
     </div>
 

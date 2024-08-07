@@ -9,50 +9,50 @@ var currentPage = 1
 
 // Init slider
 app.swiper.create('.swiper-container', {
-    speed: 400,
-    spaceBetween: 0,
-    observer: true,
-    pagination: '.swiper-pagination'
+  speed: 400,
+  spaceBetween: 0,
+  observer: true,
+  pagination: '.swiper-pagination'
 })
 
 var postsStore = store.getters.posts
 var totalPages = 0
 
 postsStore.onUpdated((data) => {
-    totalPages = data.total_pages
-    displayPosts(data.data)
+  totalPages = data.total_pages
+  displayPosts(data.data)
 })
 
 // Pull to refresh content
 const ptrContent = document.querySelector('.ptr-content')
 ptrContent.addEventListener('ptr:refresh', function (e) {
-    currentPage = 1
-    store.dispatch('getPosts', currentPage)
-    app.ptr.done()
+  currentPage = 1
+  store.dispatch('getPosts', currentPage)
+  app.ptr.done()
 })
 
 /* Based on this http://jsfiddle.net/brettwp/J4djY/*/
 function detectDoubleTapClosure(callback) {
-    let lastTap = 0
-    let timeout
+  let lastTap = 0
+  let timeout
 
-    return function detectDoubleTap(event) {
+  return function detectDoubleTap(event) {
 
-        const curTime = new Date().getTime()
-        const tapLen = curTime - lastTap
-        if (tapLen < 500 && tapLen > 0) {
-            event.preventDefault()
+    const curTime = new Date().getTime()
+    const tapLen = curTime - lastTap
+    if (tapLen < 500 && tapLen > 0) {
+      event.preventDefault()
 
-            // pass the event target to the callback
-            callback(event.target)
-        } else {
-            timeout = setTimeout(() => {
-                clearTimeout(timeout)
-            }, 500)
-        }
-
-        lastTap = curTime
+      // pass the event target to the callback
+      callback(event.target)
+    } else {
+      timeout = setTimeout(() => {
+        clearTimeout(timeout)
+      }, 500)
     }
+
+    lastTap = curTime
+  }
 }
 
 // Infinite Scroll Event
@@ -60,34 +60,34 @@ var isFetchingPosts = false
 
 const infiniteScrollContent = document.querySelector('.infinite-scroll-content')
 infiniteScrollContent.addEventListener('infinite', async function () {
-    console.log(currentPage, totalPages)
+  console.log(currentPage, totalPages)
 
 
-    if (currentPage >= totalPages) {
-        app.infiniteScroll.destroy(infiniteScrollContent)
-        return
-    }
+  if (currentPage >= totalPages) {
+    app.infiniteScroll.destroy(infiniteScrollContent)
+    return
+  }
 
-    if (isFetchingPosts) return
+  if (isFetchingPosts) return
 
-    isFetchingPosts = true
-    currentPage++
-    await store.dispatch('getPosts', currentPage)
-    isFetchingPosts = false
+  isFetchingPosts = true
+  currentPage++
+  await store.dispatch('getPosts', currentPage)
+  isFetchingPosts = false
 })
 
 //Comments Popup
 var CommentsPopup = app.popup.create({
-    el: '.comments-popup',
-    swipeToClose: 'to-bottom'
+  el: '.comments-popup',
+  swipeToClose: 'to-bottom'
 })
 
 function displayPosts(posts) {
-    const postsContainer = document.getElementById('tab-latest')
-    postsContainer.innerHTML = '' // Clear any existing posts
+  const postsContainer = document.getElementById('tab-latest')
+  postsContainer.innerHTML = '' // Clear any existing posts
 
-    posts.forEach(post => {
-        const post_actions = `
+  posts.forEach(post => {
+    const post_actions = `
      <div class="media-post-actions">
         <div class="media-post-like" data-post-id="${post.id}">
           <i class="icon f7-icons ${post.is_liked ? 'text-red' : ''}">${post.is_liked ? 'heart_fill' : 'heart'}</i>
@@ -104,8 +104,8 @@ function displayPosts(posts) {
       </div>
     `
 
-        const date = formatPostDate(post.post_date)
-        const postItem = `
+    const date = formatPostDate(post.post_date)
+    const postItem = `
           <div class="media-post" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
             <div class="media-post-content">
               <div class="media-post-header">
@@ -140,79 +140,79 @@ function displayPosts(posts) {
             </div>
           </div>
         `
-        postsContainer.insertAdjacentHTML('beforeend', postItem)
+    postsContainer.insertAdjacentHTML('beforeend', postItem)
+  })
+
+  // Initialize swiper for the dynamically added content
+  app.swiper.create('.swiper-container', {
+    pagination: {
+      el: '.swiper-pagination',
+    },
+  })
+
+  // Add click event listener for liking a post
+  const likeButtons = document.querySelectorAll('.media-post-like')
+  likeButtons.forEach(button => {
+    button.addEventListener('click', (event) => {
+      const postId = event.currentTarget.getAttribute('data-post-id')
+      togglePostLike(postId)
     })
+  })
 
-    // Initialize swiper for the dynamically added content
-    app.swiper.create('.swiper-container', {
-        pagination: {
-            el: '.swiper-pagination',
-        },
-    })
+  $('.media-post-content img, .media-post-content video').on('touchstart', detectDoubleTapClosure((e) => {
+    const parent = e.closest('.media-post')
+    const postId = parent.getAttribute('data-post-id')
 
-    // Add click event listener for liking a post
-    const likeButtons = document.querySelectorAll('.media-post-like')
-    likeButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            const postId = event.currentTarget.getAttribute('data-post-id')
-            togglePostLike(postId)
-        })
-    })
-
-    $('.media-post-content img, .media-post-content video').on('touchstart', detectDoubleTapClosure((e) => {
-        const parent = e.closest('.media-post')
-        const postId = parent.getAttribute('data-post-id')
-
-        togglePostLike(postId)
-    }), { passive: false })
+    togglePostLike(postId)
+  }), { passive: false })
 }
 
 function togglePostLike(postId) {
-    // Find the post element and its like icon
-    const postElement = document.querySelector(`.media-post[data-post-id="${postId}"]`)
-    const likeIcon = postElement.querySelector('.media-post-like i')
-    const isLiked = postElement.getAttribute('data-is-liked') === 'true'
-    const likeCountElem = postElement.querySelector('.media-post-likecount')
-    let likeCount = parseInt(likeCountElem.getAttribute('data-like-count'))
+  // Find the post element and its like icon
+  const postElement = document.querySelector(`.media-post[data-post-id="${postId}"]`)
+  const likeIcon = postElement.querySelector('.media-post-like i')
+  const isLiked = postElement.getAttribute('data-is-liked') === 'true'
+  const likeCountElem = postElement.querySelector('.media-post-likecount')
+  let likeCount = parseInt(likeCountElem.getAttribute('data-like-count'))
 
-    // Toggle the like state
-    if (isLiked) {
-        likeIcon.classList.remove('text-red')
-        likeIcon.innerText = 'heart'
-        likeCount--
-        postElement.setAttribute('data-is-liked', 'false')
-    } else {
-        likeIcon.classList.add('text-red')
-        likeIcon.innerText = 'heart_fill'
-        likeCount++
-        postElement.setAttribute('data-is-liked', 'true')
-    }
+  // Toggle the like state
+  if (isLiked) {
+    likeIcon.classList.remove('text-red')
+    likeIcon.innerText = 'heart'
+    likeCount--
+    postElement.setAttribute('data-is-liked', 'false')
+  } else {
+    likeIcon.classList.add('text-red')
+    likeIcon.innerText = 'heart_fill'
+    likeCount++
+    postElement.setAttribute('data-is-liked', 'true')
+  }
 
-    // Update like count
-    likeCountElem.innerText = `${likeCount} likes`
-    likeCountElem.setAttribute('data-like-count', likeCount)
+  // Update like count
+  likeCountElem.innerText = `${likeCount} likes`
+  likeCountElem.setAttribute('data-like-count', likeCount)
 
-    // Optionally, make an API call to update the like status on the server
-    // fetch(`/api/posts/${postId}/like`, { method: 'POST' });
-    maybeLikePost(postId)
+  // Optionally, make an API call to update the like status on the server
+  // fetch(`/api/posts/${postId}/like`, { method: 'POST' });
+  maybeLikePost(postId)
 }
 
 function displayComments(comments, postId) {
-    const commentsContainer = document.getElementById('comments-list')
-    // reset the comments container
-    commentsContainer.innerHTML = ''
-    const commentForm = document.getElementById('comment-form')
+  const commentsContainer = document.getElementById('comments-list')
+  // reset the comments container
+  commentsContainer.innerHTML = ''
+  const commentForm = document.getElementById('comment-form')
 
-    if (!comments.length) {
-        commentsContainer.innerHTML = '<div class="no-comments">No comments found</div>'
-        commentForm.setAttribute('data-post-id', '')
-        return
-    }
+  if (!comments.length) {
+    commentsContainer.innerHTML = '<div class="no-comments">No comments found</div>'
+    commentForm.setAttribute('data-post-id', '')
+    return
+  }
 
-    commentForm.setAttribute('data-post-id', postId)
+  commentForm.setAttribute('data-post-id', postId)
 
-    comments.forEach(comment => {
-        const replyItems = comment.replies.length > 0 ? `
+  comments.forEach(comment => {
+    const replyItems = comment.replies.length > 0 ? `
       <div class="comment-replies">
             <span class="comment-replies-toggle" data-replies-count="${comment.replies.length}">
             Show ${comment.replies.length} replies
@@ -250,7 +250,7 @@ function displayComments(comments, postId) {
       </div>
     ` : ''
 
-        const commentItem = `
+    const commentItem = `
       <div class="comment" 
         data-comment-id="${comment.id}" 
         data-is-liked="${comment.liked}" 
@@ -279,120 +279,120 @@ function displayComments(comments, postId) {
         <div class="clearfix"></div>
       </div>
     `
-        commentsContainer.insertAdjacentHTML('beforeend', commentItem)
-    })
+    commentsContainer.insertAdjacentHTML('beforeend', commentItem)
+  })
 
-    // Add click event listener for liking a comment
-    const likeButtons = document.querySelectorAll('.comment-like')
-    likeButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            const commentId = event.currentTarget.closest('.comment').getAttribute('data-comment-id')
-            const ownerId = event.currentTarget.closest('.comment').getAttribute('data-owner-id')
-            toggleCommentLike(commentId, ownerId)
-        })
+  // Add click event listener for liking a comment
+  const likeButtons = document.querySelectorAll('.comment-like')
+  likeButtons.forEach(button => {
+    button.addEventListener('click', (event) => {
+      const commentId = event.currentTarget.closest('.comment').getAttribute('data-comment-id')
+      const ownerId = event.currentTarget.closest('.comment').getAttribute('data-owner-id')
+      toggleCommentLike(commentId, ownerId)
     })
+  })
 }
 
 function toggleCommentLike(commentId, ownerId) {
-    // Find the comment element and its like icon
-    const commentElement = document.querySelector(`.comment[data-comment-id="${commentId}"]`)
-    const likeIcon = commentElement.querySelector('.comment-like i')
-    const isLiked = commentElement.getAttribute('data-is-liked') === 'true'
-    const likeCountElem = commentElement.querySelector('.comment-likes-count')
-    let likeCount = parseInt(likeCountElem.getAttribute('data-likes-count'))
+  // Find the comment element and its like icon
+  const commentElement = document.querySelector(`.comment[data-comment-id="${commentId}"]`)
+  const likeIcon = commentElement.querySelector('.comment-like i')
+  const isLiked = commentElement.getAttribute('data-is-liked') === 'true'
+  const likeCountElem = commentElement.querySelector('.comment-likes-count')
+  let likeCount = parseInt(likeCountElem.getAttribute('data-likes-count'))
 
-    // Toggle the like state
-    if (isLiked) {
-        likeIcon.classList.remove('text-red')
-        likeIcon.innerText = 'heart'
-        likeCount--
-        commentElement.setAttribute('data-is-liked', 'false')
-    } else {
-        likeIcon.classList.add('text-red')
-        likeIcon.innerText = 'heart_fill'
-        likeCount++
-        commentElement.setAttribute('data-is-liked', 'true')
-    }
+  // Toggle the like state
+  if (isLiked) {
+    likeIcon.classList.remove('text-red')
+    likeIcon.innerText = 'heart'
+    likeCount--
+    commentElement.setAttribute('data-is-liked', 'false')
+  } else {
+    likeIcon.classList.add('text-red')
+    likeIcon.innerText = 'heart_fill'
+    likeCount++
+    commentElement.setAttribute('data-is-liked', 'true')
+  }
 
-    // Update like count
-    likeCountElem.innerText = likeCount
-    likeCountElem.setAttribute('data-likes-count', likeCount)
+  // Update like count
+  likeCountElem.innerText = likeCount
+  likeCountElem.setAttribute('data-likes-count', likeCount)
 
-    maybeLikeComment(commentId, ownerId)
+  maybeLikeComment(commentId, ownerId)
 }
 
 // on .popup-open click
 $(document).on('click', '.popup-open', async function () {
-    document.getElementById('comments-list').innerHTML = '<div class="preloader"></div>'
-    document.getElementById('comment-form').reset()
+  document.getElementById('comments-list').innerHTML = '<div class="preloader"></div>'
+  document.getElementById('comment-form').reset()
 
-    // update the post id in the comment form
-    document.getElementById('comment-form').setAttribute('data-post-id', '')
-    document.getElementById('comment-form').removeAttribute('data-comment-id')
+  // update the post id in the comment form
+  document.getElementById('comment-form').setAttribute('data-post-id', '')
+  document.getElementById('comment-form').removeAttribute('data-comment-id')
 
-    document.getElementById('comment-form').querySelector('.replying-to').innerHTML = ''
+  document.getElementById('comment-form').querySelector('.replying-to').innerHTML = ''
 
 
-    const postId = this.getAttribute('data-post-id')
-    const comments = await fetchComments(postId)
+  const postId = this.getAttribute('data-post-id')
+  const comments = await fetchComments(postId)
 
-    displayComments(comments, postId)
-    CommentsPopup.open()
+  displayComments(comments, postId)
+  CommentsPopup.open()
 })
 
 // on .comment-replies-toggle click
 $(document).on('click', '.comment-replies-toggle', function () {
-    const commentRepliesContainer = this.nextElementSibling
-    commentRepliesContainer.classList.toggle('show')
-    const repliesCount = this.getAttribute('data-replies-count')
+  const commentRepliesContainer = this.nextElementSibling
+  commentRepliesContainer.classList.toggle('show')
+  const repliesCount = this.getAttribute('data-replies-count')
 
-    this.innerText = this.innerText === `Show ${repliesCount} replies` ? `Hide ${repliesCount} replies` : `Show ${repliesCount} replies`
+  this.innerText = this.innerText === `Show ${repliesCount} replies` ? `Hide ${repliesCount} replies` : `Show ${repliesCount} replies`
 })
 
 // on comment form submit
 $('#comment-form').on('submit', async function (e) {
-    e.preventDefault()
+  e.preventDefault()
 
-    const postId = this.getAttribute('data-post-id')
-    const commentId = this.getAttribute('data-comment-id')
-    const comment = this.comment.value
+  const postId = this.getAttribute('data-post-id')
+  const commentId = this.getAttribute('data-comment-id')
+  const comment = this.comment.value
 
-    if (!comment) {
-        app.dialog.alert('Please enter a comment')
-        return
-    }
+  if (!comment) {
+    app.dialog.alert('Please enter a comment')
+    return
+  }
 
-    const response = await addComment(postId, comment, commentId)
+  const response = await addComment(postId, comment, commentId)
 
-    if (response) {
-        app.dialog.alert('Comment added successfully')
-        this.reset()
-        this.removeAttribute('data-comment-id')
-        this.querySelector('.replying-to').innerHTML = ''
-        const comments = await fetchComments(postId)
-        displayComments(comments, postId)
-    } else {
-        app.dialog.alert('Failed to add comment')
-    }
+  if (response) {
+    app.dialog.alert('Comment added successfully')
+    this.reset()
+    this.removeAttribute('data-comment-id')
+    this.querySelector('.replying-to').innerHTML = ''
+    const comments = await fetchComments(postId)
+    displayComments(comments, postId)
+  } else {
+    app.dialog.alert('Failed to add comment')
+  }
 })
 
 //.comment-reply click
 $(document).on('click', '.comment-reply', function () {
-    // get the comment id, and comment owner id
-    const commentId = this.closest('.comment').getAttribute('data-comment-id')
-    const ownerId = this.closest('.comment').getAttribute('data-owner-id')
-    const ownerName = this.closest('.comment').getAttribute('data-owner-name')
+  // get the comment id, and comment owner id
+  const commentId = this.closest('.comment').getAttribute('data-comment-id')
+  const ownerId = this.closest('.comment').getAttribute('data-owner-id')
+  const ownerName = this.closest('.comment').getAttribute('data-owner-name')
 
-    console.log('Replying to comment', commentId, 'by', ownerId, ownerName)
+  console.log('Replying to comment', commentId, 'by', ownerId, ownerName)
 
-    // add something above the comment form to show the user they are replying to a comment
-    // add the comment id to the form
-    document.getElementById('comment-form').setAttribute('data-comment-id', commentId)
-    document.getElementById('comment-form').comment.focus()
+  // add something above the comment form to show the user they are replying to a comment
+  // add the comment id to the form
+  document.getElementById('comment-form').setAttribute('data-comment-id', commentId)
+  document.getElementById('comment-form').comment.focus()
 
-    // add the owner name to the form
-    //  <span class="replying-to">Replying to <strong>m88xrk</strong></span>
-    const replyingTo = document.getElementById('comment-form').querySelector('.replying-to')
-    replyingTo.innerHTML = `Replying to <strong>${ownerName}</strong>`
-    document.getElementById('comment-form').prepend(replyingTo)
+  // add the owner name to the form
+  //  <span class="replying-to">Replying to <strong>m88xrk</strong></span>
+  const replyingTo = document.getElementById('comment-form').querySelector('.replying-to')
+  replyingTo.innerHTML = `Replying to <strong>${ownerName}</strong>`
+  document.getElementById('comment-form').prepend(replyingTo)
 })

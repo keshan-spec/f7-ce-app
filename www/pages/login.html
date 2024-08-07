@@ -1,34 +1,58 @@
 <template>
-    <div class="page no-navbar no-toolbar no-swipeback login-screen-page" data-name="login">
-        <div class="page-content login-screen-content">
-            <div class="login-screen-title">DriveLife</div>
-            <form>
-                <div class="list">
-                    <ul>
-                        <li class="item-content item-input">
-                            <div class="item-inner">
-                                <div class="item-title item-label">Username</div>
-                                <div class="item-input">
-                                    <input type="text" name="username" placeholder="Your username" />
-                                </div>
-                            </div>
-                        </li>
-                        <li class="item-content item-input">
-                            <div class="item-inner">
-                                <div class="item-title item-label">Password</div>
-                                <div class="item-input">
-                                    <input type="password" name="password" placeholder="Your password" />
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-                <div class="list">
-                    <ul>
-                        <li><a href="#" class="list-button">Sign In</a></li>
-                    </ul>
-                </div>
-            </form>
+  <div class="page" data-name="login">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a class="link back">
+            <i class="icon icon-back"></i>
+          </a>
         </div>
+        <div class="right">
+          <a href="/signup-step1/" class="link">
+            Sign Up
+          </a>
+        </div>
+      </div>
     </div>
+    <div class="page-content login-screen-content">
+      <div class="login-form">
+        <div class="section">
+          <h1>Login</h1>
+          <h4>Log into your DriveLife Account</h4>
+        </div>
+
+        <form>
+          <div class="list list-strong-ios list-dividers-ios inset-ios">
+            <ul>
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-label">Email</div>
+                  <div class="item-input-wrap">
+                    <input type="email" name="username" placeholder="Enter email address" required />
+                    <span class="input-clear-button"></span>
+                  </div>
+                </div>
+              </li>
+              <li class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-label">Password</div>
+                  <div class="item-input-wrap">
+                    <input type="password" name="password" placeholder="Enter password" required />
+                    <span class="input-clear-button"></span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="block">
+            <p class="text-center"><a href="/forgot-password/">Forgot Password?</a></p>
+          </div>
+
+          <div class="login-buttons">
+            <button type="submit" class="button button-large button-fill  margin-bottom">Next</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </template>

@@ -7,6 +7,7 @@ import { displayProfile } from './profile.js'
 
 var $ = Dom7
 var userStore = store.getters.user
+var toolbarEl = $('.footer')[0]
 
 var app = new Framework7({
   name: 'DriveLife',
@@ -20,11 +21,16 @@ var app = new Framework7({
 
       const isAuthenticated = store.getters.isAuthenticated.value
       if (!isAuthenticated) {
-        loginScreen.open()
+        this.views.main.router.navigate('/auth/')
+        console.log('User is not authenticated', toolbarEl)
+        toolbarEl.style.display = 'none'
       }
     },
     pageInit: function (page) {
+      console.log('Page initialized', page)
+
       if (page.name === 'profile') {
+        console.log('Profile page initialized')
         userStore.onUpdated((data) => {
           displayProfile(data)
         })
@@ -73,14 +79,14 @@ document.getElementById('open-action-sheet').addEventListener('click', function 
   actionSheet.open()
 })
 
-var loginScreen = app.loginScreen.create({
-  content: '.login-screen',
-  on: {
-    opened: function () {
-      console.log('Login Screen opened')
-    }
-  }
-})
+// var loginScreen = app.loginScreen.create({
+//   content: '.login-screen',
+//   on: {
+//     opened: function () {
+//       console.log('Login Screen opened')
+//     }
+//   }
+// })
 
 // Handle login form submission
 $(document).on('submit', '.login-screen-content form', async function (e) {
@@ -114,7 +120,9 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
     if (response.success) {
       app.dialog.alert('Login successful')
       await store.dispatch('login', { token: response.token })
-      loginScreen.close()
+      // loginScreen.close()
+      app.views.main.router.navigate('/')
+      toolbarEl.style.display = 'block'
       return
     }
 

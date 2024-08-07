@@ -28,13 +28,14 @@ const store = createStore({
     async login({ state }, { token }) {
       try {
         const userDetails = await getUserDetails(token)
-        if (!userDetails) {
+
+        if (!userDetails || !userDetails.success) {
           window.localStorage.removeItem('token')
           throw new Error('User not found')
         }
 
-        state.user = userDetails.user
         window.localStorage.setItem('token', token)
+        state.user = userDetails.user
       } catch (error) {
         console.error('Login failed', error)
       }
@@ -54,7 +55,18 @@ const store = createStore({
     },
     async getPosts({ state }, page = 1) {
       const posts = await fetchPosts(page)
-      state.posts = posts
+
+      const data = {
+        data: [
+          ...state.posts.data,
+          ...posts.data,
+        ],
+        total_pages: posts.total_pages,
+        page: page,
+        limit: posts.limit,
+      }
+
+      state.posts = data
     },
   },
 })
