@@ -16,10 +16,14 @@ var routes = [
     path: '/profile/',
     componentUrl: './pages/profile.html',
   },
-  
+  {
+    path: '/login/',
+    componentUrl: './pages/login.html',
+  },
+
   // Default route (404 page). MUST BE THE LAST
   {
     path: '(.*)',
     componentUrl: './pages/404.html',
   },
-];
+]

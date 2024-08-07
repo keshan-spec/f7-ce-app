@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "npm run serve",
-    "serve": "http-server ./www/ -o -c 1 -a localhost -p 8080",
+    "serve": "http-server ./www/ -o -c 1 -a localhost -p 3000",
     "postinstall": "cpy --flat ./node_modules/framework7-icons/fonts/*.* ./www/fonts/ && cpy --flat ./node_modules/material-icons/iconfont/*.* ./www/fonts/ && cpy --flat ./node_modules/framework7/*.js ./www/framework7 && cpy --flat ./node_modules/framework7/*.css ./www/framework7 && cpy --flat ./node_modules/framework7/*.map ./www/framework7"
   },
   "browserslist": [

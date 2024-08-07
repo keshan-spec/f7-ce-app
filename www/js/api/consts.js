@@ -1,0 +1,1 @@
+export const API_URL = 'https://wordpress-889362-4267074.cloudwaysapps.com/uk'

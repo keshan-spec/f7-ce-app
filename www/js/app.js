@@ -1,29 +1,37 @@
 //------------------------------------------ CORE ------------------------------------------//
+import { verifyUser } from './api/auth.js'
 import store from './store.js'
-import {formatPostDate} from './utils.js'
-import { fetchComments, maybeLikePost, maybeLikeComment, addComment } from './api/posts.js'
 
 var $ = Dom7
-var currentPage = 1
 
 var app = new Framework7({
   name: 'DriveLife',
   theme: 'ios',
   //theme: 'auto',
-  cache: false,
+  cache: true,
   el: '#app', // App root element
   on: {
-    init: function () {
-      store.dispatch('getPosts', currentPage)
+    init: async function () {
+      await store.dispatch('checkAuth')
+      const isAuthenticated = store.getters.isAuthenticated.value
+      if (isAuthenticated) {
+        store.dispatch('getPosts')
+      } else {
+        loginScreen.open()
+      }
     },
   },
-  // App store
   store: store,
-  // App routes
   routes: routes,
 })
 
-//------------------------------------------ CUSTOM ------------------------------------------//
+var userStore = store.getters.user
+
+userStore.onUpdated((data) => {
+  console.log('User updated:', data)
+  store.dispatch('getPosts')
+})
+
 // Action Sheet with Grid Layout
 var actionSheet = app.actions.create({
   grid: true,
@@ -58,389 +66,56 @@ document.getElementById('open-action-sheet').addEventListener('click', function 
   actionSheet.open()
 })
 
-// Init slider
-app.swiper.create('.swiper-container', {
-  speed: 400,
-  spaceBetween: 0,
-  observer: true,
-  pagination: '.swiper-pagination'
-})
-
-var postsStore = store.getters.posts
-var totalPages = 0;
-
-postsStore.onUpdated((data)=> {
-  totalPages = data.total_pages
-  displayPosts(data.data)
-})
-
-// Pull to refresh content
-const ptrContent = document.querySelector('.ptr-content')
-ptrContent.addEventListener('ptr:refresh', function (e) {
-  currentPage = 1
-  store.dispatch('getPosts', currentPage)
-  app.ptr.done()
-})
-
-/* Based on this http://jsfiddle.net/brettwp/J4djY/*/
-function detectDoubleTapClosure(callback) {
-  let lastTap = 0
-  let timeout
-
-  return function detectDoubleTap(event) {
-    
-    const curTime = new Date().getTime()
-    const tapLen = curTime - lastTap
-    if (tapLen < 500 && tapLen > 0) {
-      event.preventDefault()
-
-      // pass the event target to the callback
-      callback(event.target)
-    } else {
-      timeout = setTimeout(() => {
-        clearTimeout(timeout)
-      }, 500)
+var loginScreen = app.loginScreen.create({
+  content: '.login-screen',
+  on: {
+    opened: function () {
+      console.log('Login Screen opened')
     }
-
-    lastTap = curTime
   }
-}
-// Infinite Scroll Event
-const infiniteScrollContent = document.querySelector('.infinite-scroll-content')
-infiniteScrollContent.addEventListener('infinite', function () {
-  if (currentPage >= totalPages) {
-    app.infiniteScroll.destroy(infiniteScrollContent)
-    return
-  }
-
-  currentPage++
-  store.dispatch('getPosts', currentPage)
 })
 
-//Comments Popup
-var CommentsPopup = app.popup.create({
-  el: '.comments-popup',
-  swipeToClose: 'to-bottom'
-});
-
-function displayPosts(posts) {
-  const postsContainer = document.getElementById('tab-latest')
-  postsContainer.innerHTML = '' // Clear any existing posts
-
-  posts.forEach(post => {
-    const post_actions = `
-     <div class="media-post-actions">
-        <div class="media-post-like" data-post-id="${post.id}">
-          <i class="icon f7-icons ${post.is_liked ? 'text-red' : ''}">${post.is_liked ? 'heart_fill' : 'heart'}</i>
-        </div>
-        <div class="media-post-comment popup-open" data-popup=".comments-popup" data-post-id="${post.id}">
-          <i class="icon f7-icons">chat_bubble</i>
-        </div>
-        <div class="media-post-share">
-          <i class="icon f7-icons">paperplane</i>
-        </div>
-        <div class="media-post-edit">
-          <i class="icon f7-icons">gear_alt</i>
-        </div>
-      </div>
-    `
-
-    const date = formatPostDate(post.post_date)
-    const postItem = `
-          <div class="media-post" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
-            <div class="media-post-content">
-              <div class="media-post-header">
-                <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/avatar1.jpg'}');"></div>
-                <div class="media-post-user">${post.username}</div>
-                <div class="media-post-date">${date}</div>
-              </div>
-              <div class="media-post-content">
-                <div class="swiper-container">
-                  <div class="swiper-wrapper">
-                    ${post.media.map(mediaItem => `
-                      <div class="swiper-slide">
-                        ${mediaItem.media_type === 'video' ? `
-                          <video autoplay loop muted playsinline class="video-background">
-                            <source src ="${mediaItem.media_url}" type ="${mediaItem.media_mime_type}" />
-                          </video>
-                        ` : `
-                          <img src="${mediaItem.media_url}" alt="${mediaItem.media_alt}" />
-                        `}
-                      </div>
-                    `).join('')}
-                  </div>
-                  <div class="swiper-pagination"></div>
-                </div>
-              </div>
-              ${post_actions}
-              <div class="media-post-likecount" data-like-count="${post.likes_count}">${post.likes_count} likes</div>
-              <div class="media-post-description"><strong>${post.username}</strong> • ${post.caption}
-                <span class="media-post-readmore">... more</span>
-              </div>
-              ${post.comments_count > 0 ? `<div class="media-post-commentcount popup-open" data-popup=".comments-popup" data-post-id="${post.id}">View ${post.comments_count} comments</div>` : ''}
-            </div>
-          </div>
-        `
-    postsContainer.insertAdjacentHTML('beforeend', postItem)
-  })
-
-  // Initialize swiper for the dynamically added content
-  app.swiper.create('.swiper-container', {
-    pagination: {
-      el: '.swiper-pagination',
-    },
-  })
-
-  // Add click event listener for liking a post
-  const likeButtons = document.querySelectorAll('.media-post-like')
-  likeButtons.forEach(button => {
-    button.addEventListener('click', (event) => {
-      const postId = event.currentTarget.getAttribute('data-post-id')
-      togglePostLike(postId)
-    })
-  })
-
-  // on double tap like post
-  // $('.media-post').on('doubleTap', function () {
-  //   console.log('Double tap');
-  //   const postId = this.getAttribute('data-post-id')
-  //   togglePostLike(postId)
-  // })
-
-  $('.media-post-content img, .media-post-content video').on('touchstart', detectDoubleTapClosure((e) => { 
-    const parent = e.closest('.media-post')
-    const postId = parent.getAttribute('data-post-id')
-
-    togglePostLike(postId)
-   }), { passive: false })
-}
-
-function togglePostLike(postId) {
-  // Find the post element and its like icon
-  const postElement = document.querySelector(`.media-post[data-post-id="${postId}"]`)
-  const likeIcon = postElement.querySelector('.media-post-like i')
-  const isLiked = postElement.getAttribute('data-is-liked') === 'true'
-  const likeCountElem = postElement.querySelector('.media-post-likecount')
-  let likeCount = parseInt(likeCountElem.getAttribute('data-like-count'))
-
-  // Toggle the like state
-  if (isLiked) {
-    likeIcon.classList.remove('text-red')
-    likeIcon.innerText = 'heart'
-    likeCount--
-    postElement.setAttribute('data-is-liked', 'false')
-  } else {
-    likeIcon.classList.add('text-red')
-    likeIcon.innerText = 'heart_fill'
-    likeCount++
-    postElement.setAttribute('data-is-liked', 'true')
-  }
-
-  // Update like count
-  likeCountElem.innerText = `${likeCount} likes`
-  likeCountElem.setAttribute('data-like-count', likeCount)
-
-  // Optionally, make an API call to update the like status on the server
-  // fetch(`/api/posts/${postId}/like`, { method: 'POST' });
-  maybeLikePost(postId)
-}
-
-function displayComments(comments, postId) {
-  const commentsContainer = document.getElementById('comments-list')
-  // reset the comments container
-  commentsContainer.innerHTML = ''
-  const commentForm = document.getElementById('comment-form')
-
-  if (!comments.length) {
-    commentsContainer.innerHTML = '<div class="no-comments">No comments found</div>'
-    commentForm.setAttribute('data-post-id', '')
-    return
-  }
-
-  commentForm.setAttribute('data-post-id', postId)
-
-  comments.forEach(comment => {
-    const replyItems = comment.replies.length > 0 ? `
-      <div class="comment-replies">
-            <span class="comment-replies-toggle" data-replies-count="${comment.replies.length}">
-            Show ${comment.replies.length} replies
-            </span>
-            <div class="comment-replies-container">
-              ${comment.replies.map(reply => `
-                <div class="comment" 
-                  data-comment-id="${reply.id}" 
-                  data-is-liked="${reply.liked}" 
-                  data-owner-id="${reply.user_id}"
-                  data-owner-name="${reply.display_name}">
-                  <div class="comment-profile-img" style="background-image:url('${reply.profile_image}');"></div>
-                  <div class="comment-content-container">
-                    <div class="comment-username">
-                    <span>${reply.display_name}</span>
-                    <span class="date">${formatPostDate(reply.comment_date)}</span>
-                    </div>
-                    <div class="comment-content">${reply.comment}</div>
-                    <div class="comment-actions">
-                      <div class="comment-like">
-                        <i class="icon f7-icons ${reply.liked && 'text-red'}">${reply.liked ? 'heart_fill' : 'heart'}</i> 
-                        <span class="comment-likes-count" data-likes-count="${reply.likes_count}">
-                        ${reply.likes_count}
-                        </span>
-                      </div>
-                      <div class="comment-reply">
-                        <i class="icon f7-icons">chat_bubble</i> <span>Reply</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="clearfix"></div>
-                </div>
-              `).join('')}
-            </div>
-      </div>
-    ` : ''
-
-    const commentItem = `
-      <div class="comment" 
-        data-comment-id="${comment.id}" 
-        data-is-liked="${comment.liked}" 
-        data-owner-id="${comment.user_id}"
-        data-owner-name="${comment.display_name}">
-        <div class="comment-profile-img" style="background-image:url('${comment.profile_image}');"></div>
-        <div class="comment-content-container">
-          <div class="comment-username">
-          <span>${comment.display_name}</span>
-          <span class="date">${formatPostDate(comment.comment_date)}</span>
-          </div>
-          <div class="comment-content">${comment.comment}</div>
-          <div class="comment-actions">
-            <div class="comment-like">
-              <i class="icon f7-icons ${comment.liked && 'text-red'}">${comment.liked ? 'heart_fill' : 'heart'}</i> 
-              <span class="comment-likes-count" data-likes-count="${comment.likes_count}">
-                ${comment.likes_count}
-              </span>
-            </div>
-            <div class="comment-reply">
-              <i class="icon f7-icons">chat_bubble</i> <span>Reply</span>
-            </div>
-          </div>
-          ${replyItems}
-        </div>
-        <div class="clearfix"></div>
-      </div>
-    `
-    commentsContainer.insertAdjacentHTML('beforeend', commentItem)
-  })
-
-  // Add click event listener for liking a comment
-  const likeButtons = document.querySelectorAll('.comment-like')
-  likeButtons.forEach(button => {
-    button.addEventListener('click', (event) => {
-      const commentId = event.currentTarget.closest('.comment').getAttribute('data-comment-id')
-      const ownerId = event.currentTarget.closest('.comment').getAttribute('data-owner-id')
-      toggleCommentLike(commentId, ownerId)
-    })
-  })
-}
-
-function toggleCommentLike(commentId, ownerId) {
-  // Find the comment element and its like icon
-  const commentElement = document.querySelector(`.comment[data-comment-id="${commentId}"]`)
-  const likeIcon = commentElement.querySelector('.comment-like i')
-  const isLiked = commentElement.getAttribute('data-is-liked') === 'true'
-  const likeCountElem = commentElement.querySelector('.comment-likes-count')
-  let likeCount = parseInt(likeCountElem.getAttribute('data-likes-count'))
-
-  // Toggle the like state
-  if (isLiked) {
-    likeIcon.classList.remove('text-red')
-    likeIcon.innerText = 'heart'
-    likeCount--
-    commentElement.setAttribute('data-is-liked', 'false')
-  } else {
-    likeIcon.classList.add('text-red')
-    likeIcon.innerText = 'heart_fill'
-    likeCount++
-    commentElement.setAttribute('data-is-liked', 'true')
-  }
-
-  // Update like count
-  likeCountElem.innerText = likeCount
-  likeCountElem.setAttribute('data-likes-count', likeCount)
-
-  maybeLikeComment(commentId, ownerId)
-}
-
-// on .popup-open click
-$(document).on('click', '.popup-open', async function  () {
-  document.getElementById('comments-list').innerHTML = '<div class="preloader"></div>'
-  document.getElementById('comment-form').reset()
-
-  // update the post id in the comment form
-  document.getElementById('comment-form').setAttribute('data-post-id', '')
-  document.getElementById('comment-form').removeAttribute('data-comment-id')
-
-  document.getElementById('comment-form').querySelector('.replying-to').innerHTML = ''
-
-
-  const postId = this.getAttribute('data-post-id')
-  const comments = await fetchComments(postId)
-
-  displayComments(comments, postId)
-  CommentsPopup.open()
-})
-
-// on .comment-replies-toggle click
-$(document).on('click', '.comment-replies-toggle', function () {
-  const commentRepliesContainer = this.nextElementSibling
-  commentRepliesContainer.classList.toggle('show')
-  const repliesCount = this.getAttribute('data-replies-count')
-
-  this.innerText = this.innerText === `Show ${repliesCount} replies` ? `Hide ${repliesCount} replies` : `Show ${repliesCount} replies`
-})
-
-// on comment form submit
-$('#comment-form').on('submit', async function (e) {
+// Handle login form submission
+$(document).on('submit', '.login-screen-content form', async function (e) {
   e.preventDefault()
 
-  const postId = this.getAttribute('data-post-id')
-  const commentId = this.getAttribute('data-comment-id')
-  const comment = this.comment.value
+  var username = $(this).find('input[name="username"]').val()
+  var password = $(this).find('input[name="password"]').val()
 
-  if (!comment) {
-    app.dialog.alert('Please enter a comment')
+  if (!username) {
+    app.dialog.alert('Username is required')
     return
   }
 
-  const response = await addComment(postId, comment, commentId)
+  if (!password) {
+    app.dialog.alert('Password is required')
+    return
+  }
 
-  if (response) {
-    app.dialog.alert('Comment added successfully')
-    this.reset()
-    this.removeAttribute('data-comment-id')
-    this.querySelector('.replying-to').innerHTML = ''
-    const comments = await fetchComments(postId)
-    displayComments(comments, postId)
-  } else {
-    app.dialog.alert('Failed to add comment')
+  try {
+    const response = await verifyUser({
+      email: username,
+      password
+    })
+
+
+    if (!response || response.error) {
+      app.dialog.alert(response.error || 'Login failed, please try again')
+      return
+    }
+
+    if (response.success) {
+      const user = response.user
+      app.dialog.alert('Login successful')
+      await store.dispatch('login', { id: user.id })
+      loginScreen.close()
+      return
+    }
+
+
+  } catch (error) {
+    app.dialog.alert('Login failed, please try again')
   }
 })
 
-//.comment-reply click
-$(document).on('click', '.comment-reply', function () {
-  // get the comment id, and comment owner id
-  const commentId = this.closest('.comment').getAttribute('data-comment-id')
-  const ownerId = this.closest('.comment').getAttribute('data-owner-id')
-  const ownerName = this.closest('.comment').getAttribute('data-owner-name')
-
-  console.log('Replying to comment', commentId, 'by', ownerId, ownerName);
-
-  // add something above the comment form to show the user they are replying to a comment
-  // add the comment id to the form
-  document.getElementById('comment-form').setAttribute('data-comment-id', commentId)
-  document.getElementById('comment-form').comment.focus()
-
-  // add the owner name to the form
-  //  <span class="replying-to">Replying to <strong>m88xrk</strong></span>
-  const replyingTo = document.getElementById('comment-form').querySelector('.replying-to')
-  replyingTo.innerHTML = `Replying to <strong>${ownerName}</strong>`
-  document.getElementById('comment-form').prepend(replyingTo)
-})
+export default app

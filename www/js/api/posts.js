@@ -1,13 +1,16 @@
-
-const API_URL = 'https://wordpress-889362-4267074.cloudwaysapps.com/uk'
+import { API_URL } from './consts.js'
+import { getSessionUser } from './auth.js'
 
 export async function fetchPosts(page) {
+    const user = await getSessionUser()
+    if (!user) return
+
     const response = await fetch(`${API_URL}/wp-json/app/v1/get-posts?page=${page}&limit=10`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: 1 }),
+        body: JSON.stringify({ user_id: user.id }),
     })
 
     const data = await response.json()
@@ -15,12 +18,15 @@ export async function fetchPosts(page) {
 }
 
 export async function fetchComments(postId) {
+    const user = await getSessionUser()
+    if (!user) return
+
     const response = await fetch(`${API_URL}/wp-json/app/v1/get-post-comments`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: 1, post_id: postId }),
+        body: JSON.stringify({ user_id: user.id, post_id: postId }),
     })
 
     const data = await response.json()
@@ -28,24 +34,31 @@ export async function fetchComments(postId) {
 }
 
 export const maybeLikePost = async (postId) => {
+    const user = await getSessionUser()
+    if (!user) return
+
     const response = await fetch(`${API_URL}/wp-json/app/v1/toggle-like-post`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: 1, post_id: postId }),
+        body: JSON.stringify({ user_id: user.id, post_id: postId }),
     })
     const data = await response.json()
     return data
 }
 
-export const addComment = async (postId, comment, comment_id=null) => {
+export const addComment = async (postId, comment, comment_id = null) => {
+    const user = await getSessionUser()
+    if (!user) return
+
+
     const response = await fetch(`${API_URL}/wp-json/app/v1/add-post-comment`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: 1, post_id: postId, comment, parent_id: comment_id }),
+        body: JSON.stringify({ user_id: user.id, post_id: postId, comment, parent_id: comment_id }),
     })
 
     const data = await response.json()
@@ -53,13 +66,16 @@ export const addComment = async (postId, comment, comment_id=null) => {
 }
 
 export const maybeLikeComment = async (commentId, ownerId) => {
+    const user = await getSessionUser()
+    if (!user) return
+
     try {
         const response = await fetch(`${API_URL}/wp-json/app/v1/toggle-like-comment`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ user_id: 1, comment_id: commentId, owner_id: ownerId }),
+            body: JSON.stringify({ user_id: user.id, comment_id: commentId, owner_id: ownerId }),
         })
         const data = await response.json()
 
