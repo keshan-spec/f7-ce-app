@@ -78,7 +78,7 @@ export const handleSignUp = async (user) => {
 
         return data
     } catch (error) {
-        throw error
+        return error
     }
 }
 
@@ -94,6 +94,40 @@ export const updateUsername = async (user) => {
     const data = await response.json()
     return data
 }
+
+export const updateContentIds = async (content_ids, user_id) => {
+    const response = await fetch(`${API_URL}/wp-json/app/v1/update-selected-content`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            user_id,
+            content_ids
+        }),
+    })
+
+    const data = await response.json()
+    return data
+}
+
+export const updateAboutUserIds = async (content_ids, user_id) => {
+    const response = await fetch(`${API_URL}/wp-json/app/v1/update-about-content`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            user_id,
+            content_ids
+        }),
+    })
+
+    const data = await response.json()
+    return data
+}
+
+
 
 export const updatePassword = async (new_password, old_password) => {
     const user = await getSessionUser()

@@ -202,14 +202,13 @@ function displayComments(comments, postId) {
   // reset the comments container
   commentsContainer.innerHTML = ''
   const commentForm = document.getElementById('comment-form')
+  commentForm.setAttribute('data-post-id', postId)
 
   if (!comments.length) {
     commentsContainer.innerHTML = '<div class="no-comments">No comments found</div>'
     commentForm.setAttribute('data-post-id', '')
     return
   }
-
-  commentForm.setAttribute('data-post-id', postId)
 
   comments.forEach(comment => {
     const replyItems = comment.replies.length > 0 ? `

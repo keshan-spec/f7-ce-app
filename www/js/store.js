@@ -12,10 +12,19 @@ const store = createStore({
       page: 1,
       limit: 10,
     },
+    registerData: {
+      user_id: '',
+      email: '',
+      password: '',
+      username: '',
+    }
   },
   getters: {
     user({ state }) {
       return state.user
+    },
+    getRegisterData({ state }) {
+      return state.registerData
     },
     isAuthenticated({ state }) {
       return !!state.user
@@ -67,6 +76,14 @@ const store = createStore({
       }
 
       state.posts = data
+    },
+    async setRegisterData({ state }, { email, password, username, user_id }) {
+      state.registerData = {
+        email: email,
+        password: password,
+        username: username,
+        user_id: user_id,
+      }
     },
   },
 })

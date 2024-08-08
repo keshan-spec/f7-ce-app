@@ -9,6 +9,9 @@ var routes = [
   {
     path: '/auth/',
     url: './pages/auth.html',
+    options: {
+      animate: false,
+    },
   },
   {
     path: '/signup-step1/',

@@ -52,7 +52,6 @@ export const addComment = async (postId, comment, comment_id = null) => {
     const user = await getSessionUser()
     if (!user) return
 
-
     const response = await fetch(`${API_URL}/wp-json/app/v1/add-post-comment`, {
         method: "POST",
         headers: {
