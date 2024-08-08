@@ -1,3 +1,7 @@
+import store from "./store.js"
+
+var garageStore = store.getters.myGarage
+
 function createProfileContent(user) {
   return `
     <div class="profile-header">
@@ -29,3 +33,44 @@ export function displayProfile(user) {
   const profileContainer = document.getElementById('profile-page') // Make sure you have a container with this ID
   profileContainer.innerHTML = createProfileContent(user)
 }
+
+export function displayGarage(garage) {
+  if (!garage) return
+
+  const garageContainer = document.getElementById('profile-garage') // Make sure you have a container with this ID
+  garageContainer.innerHTML = createGarageContent(garage)
+}
+
+function createGarageContent(garages) {
+  return `
+    <div class="garage-container">
+      <h2>My Garage</h2>
+      ${garages.map(garage => `
+        <div class="garage-car">
+        <img src="${garage.cover_photo}" alt="${garage.make} ${garage.model}" class="garage-car-image" />
+        <div class="garage-car-details">
+          <h3>${garage.make} ${garage.model}</h3>
+          <p><strong>Registration:</strong> ${garage.registration}</p>
+          <p><strong>Variant:</strong> ${garage.variant}</p>
+          <p><strong>Description:</strong> ${garage.short_description}</p>
+          <p><strong>Owned Since:</strong> ${garage.owned_since}</p>
+          ${garage.owned_until ? `<p><strong>Owned Until:</strong> ${garage.owned_until}</p>` : ''}
+          <p><strong>Primary Car:</strong> ${garage.primary_car ? 'Yes' : 'No'}</p>
+          <p><strong>Allow Tagging:</strong> ${garage.allow_tagging === "1" ? 'Yes' : 'No'}</p>
+        </div>
+      </div>
+      `).join('')}
+    </div>
+  `
+}
+
+garageStore.onUpdated((garage) => {
+  console.log('Garage updated', garage)
+  let garageContent = ''
+
+  if (garage) {
+    garageContent = createGarageContent(garage)
+  }
+
+  document.getElementById('garage-display').innerHTML = garageContent
+})

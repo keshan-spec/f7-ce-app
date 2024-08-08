@@ -34,6 +34,7 @@ var app = new Framework7({
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
           displayProfile(data)
+          store.dispatch('getMyGarage')
         })
       }
 
@@ -51,6 +52,7 @@ var app = new Framework7({
 
 userStore.onUpdated((data) => {
   store.dispatch('getPosts')
+  store.dispatch('getFollowingPosts')
 })
 
 // Action Sheet with Grid Layout

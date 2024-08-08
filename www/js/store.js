@@ -1,4 +1,5 @@
 import { getSessionUser, getUserDetails } from './api/auth.js'
+import { getUserGarage } from './api/garage.js'
 import { fetchPosts } from './api/posts.js'
 
 var createStore = Framework7.createStore
@@ -12,12 +13,19 @@ const store = createStore({
       page: 1,
       limit: 10,
     },
+    following_posts: {
+      data: [],
+      total_pages: 0,
+      page: 1,
+      limit: 10,
+    },
     registerData: {
       user_id: '',
       email: '',
       password: '',
       username: '',
-    }
+    },
+    myGarage: [],
   },
   getters: {
     user({ state }) {
@@ -31,6 +39,12 @@ const store = createStore({
     },
     posts({ state }) {
       return state.posts
+    },
+    followingPosts({ state }) {
+      return state.following_posts
+    },
+    myGarage({ state }) {
+      return state.myGarage
     },
   },
   actions: {
@@ -77,6 +91,21 @@ const store = createStore({
 
       state.posts = data
     },
+    async getFollowingPosts({ state }, page = 1) {
+      const posts = await fetchPosts(page, true)
+
+      const data = {
+        data: [
+          ...state.following_posts.data,
+          ...posts.data,
+        ],
+        total_pages: posts.total_pages,
+        page: page,
+        limit: posts.limit,
+      }
+
+      state.following_posts = data
+    },
     async setRegisterData({ state }, { email, password, username, user_id }) {
       state.registerData = {
         email: email,
@@ -84,6 +113,10 @@ const store = createStore({
         username: username,
         user_id: user_id,
       }
+    },
+    async getMyGarage({ state }) {
+      const garage = await getUserGarage(state.user.id)
+      state.myGarage = garage
     },
   },
 })

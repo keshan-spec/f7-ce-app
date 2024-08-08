@@ -529,6 +529,9 @@ body {
 	color: var(--f7-messagebar-link-color, var(--f7-theme-color));
 }
 
+
+/* ME */
+
 .init-loader {
 	position: fixed;
 	top: 0;
@@ -553,4 +556,83 @@ body {
 
 .text-red {
 	color: red;
+}
+
+/* Container for the garage content */
+.garage-container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 20px;
+	background-color: #f9f9f9;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header for the garage section */
+.garage-container h2 {
+	font-size: 24px;
+	color: #333;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+/* Styling the car details container */
+.garage-car {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+/* Styling the car image */
+.garage-car-image {
+	width: 100%;
+	max-width: 400px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+}
+
+/* Car details section */
+.garage-car-details {
+	text-align: left;
+	width: 100%;
+	max-width: 600px;
+	background-color: #fff;
+	padding: 15px;
+	border-radius: 8px;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Car details header (Make and Model) */
+.garage-car-details h3 {
+	font-size: 22px;
+	color: #444;
+	margin-bottom: 15px;
+}
+
+/* Paragraphs for car details */
+.garage-car-details p {
+	font-size: 16px;
+	color: #555;
+	margin: 5px 0;
+}
+
+/* Bold text for labels */
+.garage-car-details p strong {
+	color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.garage-car {
+		flex-direction: column;
+	}
+
+	.garage-car-details {
+		width: 100%;
+		padding: 10px;
+	}
+
+	.garage-car-image {
+		max-width: 100%;
+	}
 }

@@ -16,11 +16,19 @@ app.swiper.create('.swiper-container', {
 })
 
 var postsStore = store.getters.posts
-var totalPages = 0
+var followingPostsStore = store.getters.followingPosts
+
+var totalPostPages = 0
+var totalFPostPages = 0
 
 postsStore.onUpdated((data) => {
-  totalPages = data.total_pages
+  totalPostPages = data.total_pages
   displayPosts(data.data)
+})
+
+followingPostsStore.onUpdated((data) => {
+  totalFPostPages = data.total_pages
+  displayPosts(data.data, true)
 })
 
 // Pull to refresh content
@@ -57,11 +65,18 @@ function detectDoubleTapClosure(callback) {
 
 // Infinite Scroll Event
 var isFetchingPosts = false
+var activeTab = 'latest'
 
-const infiniteScrollContent = document.querySelector('.infinite-scroll-content')
-infiniteScrollContent.addEventListener('infinite', async function () {
-  console.log(currentPage, totalPages)
+// event listener for tab change
+$('.tab-link').on('click', async function (e) {
+  currentPage = 1
+  const type = this.getAttribute('data-type')
+  activeTab = type
+})
 
+document.querySelector('.infinite-scroll-content').addEventListener('infinite', async function () {
+  const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
+  const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
 
   if (currentPage >= totalPages) {
     app.infiniteScroll.destroy(infiniteScrollContent)
@@ -72,7 +87,7 @@ infiniteScrollContent.addEventListener('infinite', async function () {
 
   isFetchingPosts = true
   currentPage++
-  await store.dispatch('getPosts', currentPage)
+  await store.dispatch(storeName, currentPage)
   isFetchingPosts = false
 })
 
@@ -82,8 +97,8 @@ var CommentsPopup = app.popup.create({
   swipeToClose: 'to-bottom'
 })
 
-function displayPosts(posts) {
-  const postsContainer = document.getElementById('tab-latest')
+function displayPosts(posts, following = false) {
+  const postsContainer = document.getElementById(following ? 'tab-following' : 'tab-latest')
   postsContainer.innerHTML = '' // Clear any existing posts
 
   posts.forEach(post => {

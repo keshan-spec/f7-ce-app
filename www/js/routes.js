@@ -7,6 +7,10 @@ var routes = [
     url: './index.html',
   },
   {
+    path: '/notifications/',
+    componentUrl: './pages/notifications.html?' + v,
+  },
+  {
     path: '/auth/',
     url: './pages/auth.html',
     options: {

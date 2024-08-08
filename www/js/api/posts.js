@@ -1,7 +1,7 @@
 import { API_URL } from './consts.js'
 import { getSessionUser } from './auth.js'
 
-export async function fetchPosts(page) {
+export async function fetchPosts(page, following = false) {
     const user = await getSessionUser()
     if (!user) return
 
@@ -10,7 +10,7 @@ export async function fetchPosts(page) {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: user.id }),
+        body: JSON.stringify({ user_id: user.id, following_only: following }),
     })
 
     const data = await response.json()
