@@ -7,7 +7,6 @@ import { displayProfile } from './profile.js'
 
 var $ = Dom7
 var userStore = store.getters.user
-var registerDataStore = store.getters.getRegisterData
 var toolbarEl = $('.footer')[0]
 
 var app = new Framework7({
@@ -92,7 +91,6 @@ document.getElementById('open-action-sheet').addEventListener('click', function 
 $(document).on('submit', '.login-screen-content form', async function (e) {
   e.preventDefault()
 
-
   var username = $(this).find('input[name="username"]').val()
   var password = $(this).find('input[name="password"]').val()
 
@@ -112,10 +110,13 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
   loginButton.innerHTML = '<div class="preloader color-white"></div>'
 
   try {
+    app.preloader.show()
     const response = await verifyUser({
       email: username,
       password
     })
+
+    app.preloader.hide()
 
     if (!response || response.error) {
       app.dialog.alert(response.error || 'Login failed, please try again')
@@ -208,11 +209,15 @@ $(document).on('submit', 'form#sign-up-step1', async function (e) {
   loginButton.innerHTML = '<div class="preloader color-white"></div>'
 
   try {
+    app.preloader.show()
+
     const response = await handleSignUp({
       full_name: `${firstName} ${lastName}`,
       email,
       password
     })
+
+    app.preloader.hide()
 
     if (!response || !response.success) {
       app.dialog.alert(response.message || 'An error occurred, please try again')
@@ -220,7 +225,6 @@ $(document).on('submit', 'form#sign-up-step1', async function (e) {
       return
     }
 
-    console.log(response)
     store.dispatch('setRegisterData', { email, password, user_id: response.user_id, username: response.username })
     app.views.main.router.navigate('/signup-step2/')
   } catch (error) {
@@ -242,13 +246,16 @@ $(document).on('submit', 'form#sign-up-step2', async function (e) {
   }
 
   let registerData = store.getters.getRegisterData.value
-
   try {
     if (registerData.username !== username) {
+      app.preloader.show()
+
       const response = await updateUsername({
         user_id: registerData.user_id,
         username,
       })
+
+      app.preloader.hide()
 
       if (!response || !response.success) {
         switch (response?.code) {
@@ -292,12 +299,14 @@ $(document).on('submit', '#car-selection-form', async function (e) {
   let registerData = store.getters.getRegisterData.value
 
   try {
+    app.preloader.show()
     const response = await updateContentIds(selectedCarTypes, registerData.user_id)
 
     if (!response || !response.success) {
       app.dialog.alert(response.message || 'Oops, Unable to save your selection.')
     }
 
+    app.preloader.hide()
     app.views.main.router.navigate('/signup-step4/')
   } catch (error) {
     console.log(error)
@@ -328,11 +337,14 @@ $(document).on('submit', '#interest-selection-form', async function (e) {
   let registerData = store.getters.getRegisterData.value
 
   try {
+    app.preloader.show()
     const response = await updateAboutUserIds(selectedInterests, registerData.user_id)
 
     if (!response || !response.success) {
       app.dialog.alert(response.message || 'Oops, Unable to save your selection.')
     }
+
+    app.preloader.hide()
 
     app.views.main.router.navigate('/signup-complete/')
   } catch (error) {
@@ -352,10 +364,14 @@ $(document).on('click', '#signup-complete', async function (e) {
   }
 
   try {
+    app.preloader.show()
+
     const response = await verifyUser({
       email: registerData.email,
       password: registerData.password
     })
+
+    app.preloader.hide()
 
     if (!response || response.error) {
       app.dialog.alert(response.error || 'Login failed, please try again')
