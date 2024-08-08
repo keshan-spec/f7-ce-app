@@ -14,6 +14,10 @@ var routes = [
     },
   },
   {
+    path: '/signin/',
+    url: './pages/login.html',
+  },
+  {
     path: '/signup-step1/',
     componentUrl: './pages/signup-step1.html?' + v,
   },

@@ -105,10 +105,6 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
   }
 
 
-  // add a loader to the login button
-  var loginButton = $(this).find('button[type="submit"]')[0]
-  loginButton.innerHTML = '<div class="preloader color-white"></div>'
-
   try {
     app.preloader.show()
     const response = await verifyUser({
@@ -120,14 +116,12 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
 
     if (!response || response.error) {
       app.dialog.alert(response.error || 'Login failed, please try again')
-      loginButton.innerHTML = 'Next'
       return
     }
 
     if (response.success) {
       app.dialog.alert('Login successful')
       await store.dispatch('login', { token: response.token })
-      // loginScreen.close()
       app.views.main.router.navigate('/')
       toolbarEl.style.display = 'block'
       return
