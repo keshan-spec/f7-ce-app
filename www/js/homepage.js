@@ -74,7 +74,8 @@ $('.tab-link').on('click', async function (e) {
   activeTab = type
 })
 
-document.querySelector('.infinite-scroll-content').addEventListener('infinite', async function () {
+const infiniteScrollContent = document.querySelector('.infinite-scroll-content')
+infiniteScrollContent.addEventListener('infinite', async function () {
   const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
   const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
 

@@ -88,3 +88,20 @@ export const maybeLikeComment = async (commentId, ownerId) => {
         throw new Error(e.message)
     }
 }
+
+export const getPostsForUser = async (profileId, page = 1, tagged = false, limit = 10) => {
+    const response = await fetch(`${API_URL}/wp-json/app/v1/get-user-posts`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: profileId, page, limit, tagged }),
+    })
+
+    const data = await response.json()
+    if (response.status !== 200) {
+        return []
+    }
+
+    return data
+}

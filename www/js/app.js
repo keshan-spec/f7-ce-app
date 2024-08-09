@@ -34,7 +34,11 @@ var app = new Framework7({
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
           displayProfile(data)
+
           store.dispatch('getMyGarage')
+          store.dispatch('getFollowingPosts')
+          store.dispatch('getMyPosts')
+          store.dispatch('getMyTags')
         })
       }
 
@@ -52,7 +56,6 @@ var app = new Framework7({
 
 userStore.onUpdated((data) => {
   store.dispatch('getPosts')
-  store.dispatch('getFollowingPosts')
 })
 
 // Action Sheet with Grid Layout
@@ -226,7 +229,6 @@ $(document).on('submit', 'form#sign-up-step1', async function (e) {
   } catch (error) {
     console.log(error)
     app.dialog.alert(error.message || 'An error occurred, please try again')
-    // app.dialog.alert(JSON.stringify(error))
     loginButton.innerHTML = 'Next'
     return
   }

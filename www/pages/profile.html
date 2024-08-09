@@ -2,15 +2,156 @@
   <div class="page" data-name="profile">
     <div class="navbar">
       <div class="navbar-bg"></div>
-      <div class="navbar-inner sliding">
-        <div class="title">Profile</div>
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link icon-only panel-open" data-panel="left">
+            <i class="icon f7-icons">bars</i>
+          </a>
+        </div>
+        <div class="middle">
+          <div class="header-logo"><img src="assets/img/logo-dark.png" /></div>
+        </div>
+        <div class="right">
+          <a href="#" class="link icon-only">
+            <i class="icon f7-icons">qrcode</i>
+          </a>
+          <a href="#" class="link icon-only">
+            <i class="icon f7-icons">bell</i>
+          </a>
+        </div>
+
       </div>
     </div>
-    <div class="page-content">
 
-      <p>Profile</p>
-      <div id="profile-page"></div>
-      <div id="garage-display"></div>
+    <div class="page-content profile-landing-page">
+      <div class="profile-background" style="background-image:url('assets/img/profile-cover-001.jpg?v=1.1');"></div>
+      <div class="profile-head">
+        <div class="profile-image" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div>
+        <h3 class="name profile-username">@m88xrk</h3>
+        <h5 class="subtext profile-name">Mark Starzynski</h5>
+      </div>
+
+      <div class="profile-links">
+        <div class="profile-links-edit d-flex">
+          <a class="profile-link">Edit Profile</a>
+          <a class="profile-link dark-bg" href="garage-edit.php">Edit Garage</a>
+        </div>
+
+        <div class="profile-links-external d-flex">
+          <a href="#" class="profile-link social-link" data-location="https://www.instagram.com" data-external="1"><img
+              src="assets/img/icon-instagram.svg" /> <span>Instagram</span></a>
+          <a href="#" class="profile-link social-link" data-location="https://www.facebook.com" data-external="1"><img
+              src="assets/img/icon-facebook.svg" /> <span>Facebook</span></a>
+          <a href="#" class="profile-link social-link" data-location="https://www.tiktok.com" data-external="1"><img
+              src="assets/img/icon-tiktok.svg" /> <span>Tiktok</span></a>
+          <a href="#" class="profile-link social-link" data-location="https://www.youtube.com" data-external="1"><img
+              src="assets/img/icon-youtube.svg" /> <span>YouTube</span></a>
+          <div href="#" class="profile-link social-link popup-open" data-popup=".links-popup"><img
+              src="assets/img/icon-link.svg?v=1.4" /> <span>More</span></div>
+        </div>
+      </div>
+
+      <div class="profile-lower">
+        <div class="profile-tabs">
+          <a href="#tab-1" class="tab-link tab-link-active">Garage</a>
+          <a href="#tab-2" class="tab-link">Posts</a>
+          <a href="#tab-3" class="tab-link">Tags</a>
+        </div>
+
+        <swiper-container class="tabs">
+          <swiper-slide id="tab-1" class="tab tab-active">
+            <div class="swiper-inner-container">
+              <div class="listview-title garage-sub-title mt-2">Current Vehicles</div>
+
+              <ul class="listview image-listview media transparent flush pt-1 current-vehicles-list">
+                <!-- Content generates here -->
+              </ul>
+
+              <div class="listview-title garage-sub-title mt-2">Past Vehicles</div>
+              <ul class="listview image-listview media transparent flush pt-1 past-vehicles-list">
+                <!-- Content generates here -->
+              </ul>
+
+            </div>
+          </swiper-slide>
+          <swiper-slide id="tab-2" class="tab">
+            <div class="swiper-inner-container">
+              <div class="profile-grid" id="profile-grid-posts">
+              </div>
+            </div>
+          </swiper-slide>
+
+          <swiper-slide id="tab-3" class="tab">
+            <div class="swiper-inner-container">
+
+              <!-- Grid -->
+              <div class="profile-grid" id="profile-grid-tags">
+
+                <!-- Grid item -->
+                <a href="profile-post-view" class="grid-item">
+                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
+                </a>
+
+                <!-- Grid item -->
+                <a href="profile-post-view" class="grid-item">
+                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
+                </a>
+
+                <!-- Grid item -->
+                <a href="profile-post-view" class="grid-item">
+                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
+                </a>
+
+                <!-- Grid item -->
+                <a href="profile-post-view" class="grid-item">
+                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
+                </a>
+
+                <!-- Grid item -->
+                <a href="profile-post-view" class="grid-item">
+                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
+                </a>
+
+                <!-- Grid item -->
+                <a href="profile-post-view" class="grid-item">
+                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
+                </a>
+
+              </div>
+
+            </div>
+          </swiper-slide>
+        </swiper-container>
+      </div>
+    </div>
+
+    <div class="popup links-popup three-quarter-popup">
+      <div class="view">
+        <div class="page">
+          <div class="navbar">
+            <div class="navbar-inner">
+              <div class="title">More Links</div>
+              <div class="right">
+                <!-- Link to close popup -->
+                <a class="link popup-close"><i class="icon f7-icons">xmark</i></a>
+              </div>
+            </div>
+          </div>
+          <div class="page-content">
+
+            <div class="block">
+              <div class="list links-list list-outline-ios list-strong-ios list-dividers-ios">
+                <ul>
+                  <li><a href="#" target="_blank">Link 1</a></li>
+                  <li><a href="#" target="_blank">Link 2</a></li>
+                  <li><a href="#" target="_blank">Link 3</a></li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

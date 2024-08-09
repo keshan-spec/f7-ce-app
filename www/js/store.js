@@ -1,6 +1,6 @@
 import { getSessionUser, getUserDetails } from './api/auth.js'
 import { getUserGarage } from './api/garage.js'
-import { fetchPosts } from './api/posts.js'
+import { fetchPosts, getPostsForUser } from './api/posts.js'
 
 var createStore = Framework7.createStore
 
@@ -26,6 +26,8 @@ const store = createStore({
       username: '',
     },
     myGarage: [],
+    myPosts: [],
+    myTags: [],
   },
   getters: {
     user({ state }) {
@@ -45,6 +47,12 @@ const store = createStore({
     },
     myGarage({ state }) {
       return state.myGarage
+    },
+    myPosts({ state }) {
+      return state.myPosts
+    },
+    myTags({ state }) {
+      return state.myTags
     },
   },
   actions: {
@@ -117,6 +125,14 @@ const store = createStore({
     async getMyGarage({ state }) {
       const garage = await getUserGarage(state.user.id)
       state.myGarage = garage
+    },
+    async getMyPosts({ state }, page = 1) {
+      const posts = await getPostsForUser(state.user.id, page)
+      state.myPosts = posts.data
+    },
+    async getMyTags({ state }, page = 1) {
+      const posts = await getPostsForUser(state.user.id, page, true)
+      state.myTags = posts.data
     },
   },
 })
