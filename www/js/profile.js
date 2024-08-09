@@ -22,26 +22,18 @@ export function displayProfile(user) {
   // Profile Links
   const profileLinks = user.profile_links
   if (profileLinks.instagram) {
-    document.querySelector('.profile-link[data-location="https://www.instagram.com"]').setAttribute('href', `https://www.instagram.com/${profileLinks.instagram}`)
+    document.querySelector('#instagram').setAttribute('href', `https://www.instagram.com/${profileLinks.instagram}`)
   }
   if (profileLinks.facebook) {
-    document.querySelector('.profile-link[data-location="https://www.facebook.com"]').setAttribute('href', `https://www.facebook.com/${profileLinks.facebook}`)
+    document.querySelector('#facebook').setAttribute('href', `https://www.facebook.com/${profileLinks.facebook}`)
   }
   if (profileLinks.tiktok) {
-    document.querySelector('.profile-link[data-location="https://www.tiktok.com"]').setAttribute('href', `https://www.tiktok.com/${profileLinks.tiktok}`)
+    document.querySelector('#tiktok').setAttribute('href', `https://www.tiktok.com/${profileLinks.tiktok}`)
   }
   if (profileLinks.youtube) {
-    document.querySelector('.profile-link[data-location="https://www.youtube.com"]').setAttribute('href', `https://www.youtube.com/${profileLinks.youtube}`)
+    document.querySelector('#youtube').setAttribute('href', `https://www.youtube.com/${profileLinks.youtube}`)
   }
 }
-
-// click event for profile links
-$('.profile-link').on('click', function () {
-  const location = $(this).data('location')
-  const username = $(this).data('username')
-  console.log(location, username)
-
-})
 
 export function displayGarage(garage) {
   if (!garage) return
@@ -97,13 +89,17 @@ myPostsStore.onUpdated((posts) => {
 
     profileGrid.innerHTML = '' // Clear the grid before adding new posts
 
-    // Function to generate the HTML for a post
     function generatePostGridItem(post) {
       return post.media.map(media => {
-        if (media.media_type === "video") {
+        const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
+        if (isVideo) {
           return `
                 <a href="profile-post-view?id=${post.id}" class="grid-item">
-                    <video class="image-square" src="${media.media_url}"></video>
+                  <div class="video-square">
+                    <video>
+                      <source src="${media.media_url}" type="video/mp4" />
+                    </video>
+                  </div>
                 </a>`
         } else {
           return `
@@ -164,7 +160,8 @@ myTagsStore.onUpdated((posts) => {
     // Function to generate the HTML for a post
     function generatePostGridItem(post) {
       return post.media.map(media => {
-        if (media.media_type === "video") {
+        const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
+        if (isVideo) {
           return `
                 <a href="profile-post-view?id=${post.id}" class="grid-item">
                   <div class="video-square">
@@ -218,6 +215,71 @@ myTagsStore.onUpdated((posts) => {
 
     // Call the function to fill the grid
     fillGridWithPosts(posts)
-
   }
 })
+
+
+let allowInfinite = true  // To control whether infinite scroll should be allowed
+
+// Infinite Scroll for Posts Tab
+$('#profile-grid-posts').on('infinite', function () {
+  console.log('Infinite scroll triggered')
+
+  // Exit if loading or all items are loaded
+  if (!allowInfinite) return
+
+  // Set loading state
+  allowInfinite = false
+
+  // Simulate an Ajax request to load more items
+  setTimeout(function () {
+    // Here you would make an actual request to fetch more posts
+    // For this example, we'll simulate appending new content
+    const newPosts = [
+      {
+        "id": "312",
+        "media": [
+          {
+            "media_type": "image",
+            "media_url": "https://example.com/image2.jpg",
+            "media_mime_type": "image/jpg"
+          }
+        ]
+      },
+      // Add more posts as needed...
+    ]
+
+    // Append new posts
+    newPosts.forEach(post => {
+      $$('#profile-grid-posts').append(generatePostGridItem(post))
+    })
+
+    // Reset allowInfinite to true to allow more loading
+    allowInfinite = true
+
+    // If there are no more items to load, you can remove the infinite scroll
+    // $$('tab[id="tab-2"]').off('infinite');
+    // $$('.infinite-scroll-preloader').remove();
+
+  }, 1000)  // Simulated delay for loading
+})
+
+// Function to generate post HTML (same as previous function)
+function generatePostGridItem(post) {
+  return post.media.map(media => {
+    if (media.media_type === "video") {
+      return `
+                <a href="profile-post-view?id=${post.id}" class="grid-item">
+                    <video class="video-square" controls>
+                        <source src="${media.media_url}" type="${media.media_mime_type}">
+                        Your browser does not support the video tag.
+                    </video>
+                </a>`
+    } else {
+      return `
+                <a href="profile-post-view?id=${post.id}" class="grid-item">
+                    <div class="image-square" style="background-image:url('${media.media_url}');"></div>
+                </a>`
+    }
+  }).join('')
+}

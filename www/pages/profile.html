@@ -38,16 +38,17 @@
         </div>
 
         <div class="profile-links-external d-flex">
-          <a href="#" class="profile-link social-link" data-location="https://www.instagram.com" data-external="1"><img
-              src="assets/img/icon-instagram.svg" /> <span>Instagram</span></a>
-          <a href="#" class="profile-link social-link" data-location="https://www.facebook.com" data-external="1"><img
-              src="assets/img/icon-facebook.svg" /> <span>Facebook</span></a>
-          <a href="#" class="profile-link social-link" data-location="https://www.tiktok.com" data-external="1"><img
-              src="assets/img/icon-tiktok.svg" /> <span>Tiktok</span></a>
-          <a href="#" class="profile-link social-link" data-location="https://www.youtube.com" data-external="1"><img
-              src="assets/img/icon-youtube.svg" /> <span>YouTube</span></a>
-          <div href="#" class="profile-link social-link popup-open" data-popup=".links-popup"><img
-              src="assets/img/icon-link.svg?v=1.4" /> <span>More</span></div>
+          <a class="profile-link social-link link external " id="instagram" target="_blank"
+            href="https://www.instagram.com/"><img src="assets/img/icon-instagram.svg" /> <span>Instagram</span></a>
+          <a class="profile-link social-link link external " id="facebook" target="_blank"
+            href="https://www.facebook.com"><img src="assets/img/icon-facebook.svg" /> <span>Facebook</span></a>
+          <a class="profile-link social-link link external " id="tiktok" target="_blank"
+            href="https://www.tiktok.com"><img src="assets/img/icon-tiktok.svg" /> <span>Tiktok</span></a>
+          <a class="profile-link social-link link external " id="youtube" target="_blank"
+            href="https://www.youtube.com"><img src="assets/img/icon-youtube.svg" /> <span>YouTube</span></a>
+          <a class="profile-link social-link popup-open" data-popup=".links-popup"><img
+              src="assets/img/icon-link.svg?v=1.4" />
+            <span>More</span></a>
         </div>
       </div>
 
@@ -76,49 +77,25 @@
           </swiper-slide>
           <swiper-slide id="tab-2" class="tab">
             <div class="swiper-inner-container">
-              <div class="profile-grid" id="profile-grid-posts">
+              <div class="profile-grid infinite-scroll-content" id="profile-grid-posts">
+                <!-- Content generates here -->
+              </div>
+              <!-- Preloader for infinite scroll -->
+              <div class="infinite-scroll-preloader">
+                <div class="preloader"></div>
               </div>
             </div>
           </swiper-slide>
 
           <swiper-slide id="tab-3" class="tab">
             <div class="swiper-inner-container">
-
-              <!-- Grid -->
-              <div class="profile-grid" id="profile-grid-tags">
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
+              <div class="profile-grid infinite-scroll-content" id="profile-grid-tags">
+                <!-- Content generates here -->
               </div>
-
+              <!-- Preloader for infinite scroll -->
+              <div class="infinite-scroll-preloader">
+                <div class="preloader"></div>
+              </div>
             </div>
           </swiper-slide>
         </swiper-container>

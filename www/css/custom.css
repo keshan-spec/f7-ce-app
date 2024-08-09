@@ -785,13 +785,13 @@ body {
 	flex: 1 1 32%;
 	margin: 0 0.5% 1% 0.5%;
 	box-sizing: border-box;
+	min-height: 135px;
 }
 
 .profile-grid .video-square {
 	display: block;
 	overflow: hidden;
 	width: 100%;
-	padding-bottom: 100%;
 	position: relative;
 }
 
