@@ -89,18 +89,18 @@ function generatePostGridItem(post) {
     const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
     if (isVideo) {
       return `
-                <a href="profile-post-view?id=${post.id}" class="grid-item">
-                  <div class="video-square">
-                    <video>
-                      <source src="${media.media_url}" type="video/mp4" />
-                    </video>
-                  </div>
-                </a>`
+        <a href="profile-post-view?id=${post.id}" class="grid-item" data-src="${media.media_url}">
+          <div class="video-square">
+            <video>
+              <source src="${media.media_url}" type="video/mp4" />
+            </video>
+          </div>
+        </a>`
     } else {
       return `
-                <a href="profile-post-view?id=${post.id}" class="grid-item">
-                    <div class="image-square" style="background-image:url('${media.media_url}');"></div>
-                </a>`
+      <a href="profile-post-view?id=${post.id}" class="grid-item" data-src="${media.media_url}">
+          <div class="image-square" style="background-image:url('${media.media_url}');"></div>
+      </a>`
     }
   }).join('')
 }
@@ -209,6 +209,7 @@ myTagsStore.onUpdated((data) => {
   }
 })
 
+
 $(document).on('page:init', '.page[data-name="profile"]', function (e) {
   app.popup.create({
     el: '.links-popup',
@@ -217,6 +218,7 @@ $(document).on('page:init', '.page[data-name="profile"]', function (e) {
 })
 
 $(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
+  // Infinite Scroll
   const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content')
 
   infiniteScrollContent.addEventListener('infinite', async function () {

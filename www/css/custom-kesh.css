@@ -25,3 +25,32 @@
 .text-red {
     color: red;
 }
+
+
+.profile-grid .grid-item {
+    background: #f0f0f0;
+    position: relative;
+}
+
+.profile-grid .grid-item .image-square,
+.profile-grid .grid-item .video-square {
+    z-index: 2;
+}
+
+.profile-grid .grid-item::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 40px;
+    background: url('../assets/loader.gif') center center no-repeat;
+    background-size: contain;
+    transform: translate(-50%, -50%);
+    /* z-index: 1; */
+}
+
+.profile-grid .grid-item.loaded::before {
+    display: none;
+    /* Hide the loader once the image has loaded */
+}
