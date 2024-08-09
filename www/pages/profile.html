@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <div class="page-content profile-landing-page">
+    <div class="page-content profile-landing-page infinite-scroll-content" data-infinite-distance="50">
       <div class="profile-background" style="background-image:url('assets/img/profile-cover-001.jpg?v=1.1');"></div>
       <div class="profile-head">
         <div class="profile-image" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div>
@@ -54,9 +54,9 @@
 
       <div class="profile-lower">
         <div class="profile-tabs">
-          <a href="#tab-1" class="tab-link tab-link-active">Garage</a>
-          <a href="#tab-2" class="tab-link">Posts</a>
-          <a href="#tab-3" class="tab-link">Tags</a>
+          <a href="#tab-1" class="tab-link tab-link-active" id="my-garage">Garage</a>
+          <a href="#tab-2" class="tab-link" id="my-posts">Posts</a>
+          <a href="#tab-3" class="tab-link" id="my-tags">Tags</a>
         </div>
 
         <swiper-container class="tabs">
@@ -75,13 +75,15 @@
 
             </div>
           </swiper-slide>
+
           <swiper-slide id="tab-2" class="tab">
             <div class="swiper-inner-container">
-              <div class="profile-grid infinite-scroll-content" id="profile-grid-posts">
+              <div class="profile-grid" id="profile-grid-posts">
                 <!-- Content generates here -->
               </div>
+
               <!-- Preloader for infinite scroll -->
-              <div class="infinite-scroll-preloader">
+              <div class="infinite-scroll-preloader posts-tab">
                 <div class="preloader"></div>
               </div>
             </div>
@@ -89,11 +91,12 @@
 
           <swiper-slide id="tab-3" class="tab">
             <div class="swiper-inner-container">
-              <div class="profile-grid infinite-scroll-content" id="profile-grid-tags">
+              <div class="profile-grid" id="profile-grid-tags">
                 <!-- Content generates here -->
               </div>
+
               <!-- Preloader for infinite scroll -->
-              <div class="infinite-scroll-preloader">
+              <div class="infinite-scroll-preloader tags-tab">
                 <div class="preloader"></div>
               </div>
             </div>

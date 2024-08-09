@@ -26,8 +26,18 @@ const store = createStore({
       username: '',
     },
     myGarage: [],
-    myPosts: [],
-    myTags: [],
+    myPosts: {
+      data: [],
+      total_pages: 0,
+      page: 1,
+      limit: 10,
+    },
+    myTags: {
+      data: [],
+      total_pages: 0,
+      page: 1,
+      limit: 10,
+    },
   },
   getters: {
     user({ state }) {
@@ -128,11 +138,33 @@ const store = createStore({
     },
     async getMyPosts({ state }, page = 1) {
       const posts = await getPostsForUser(state.user.id, page)
-      state.myPosts = posts.data
+
+      const data = {
+        data: [
+          ...state.myPosts.data,
+          ...posts.data,
+        ],
+        total_pages: posts.total_pages,
+        page: page,
+        limit: posts.limit,
+      }
+
+      state.myPosts = data
     },
     async getMyTags({ state }, page = 1) {
       const posts = await getPostsForUser(state.user.id, page, true)
-      state.myTags = posts.data
+
+      const data = {
+        data: [
+          ...state.myTags.data,
+          ...posts.data,
+        ],
+        total_pages: posts.total_pages,
+        page: page,
+        limit: posts.limit,
+      }
+
+      state.myTags = data
     },
   },
 })

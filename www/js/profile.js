@@ -1,9 +1,17 @@
 import store from "./store.js"
+import app from "./app.js"
 var $ = Dom7
 
 const garageStore = store.getters.myGarage
 const myPostsStore = store.getters.myPosts
 const myTagsStore = store.getters.myTags
+
+var isFetchingPosts = false
+var totalPostPages = 1
+var totalFPostPages = 1
+
+var currentPostPage = 1
+var currentFPostPage = 1
 
 export function displayProfile(user) {
   if (!user) return
@@ -76,204 +84,17 @@ function createGarageContent(garages) {
   })
 }
 
-garageStore.onUpdated((garage) => {
-  if (garage) {
-    createGarageContent(garage)
-  }
-})
-
-myPostsStore.onUpdated((posts) => {
-  if (posts) {
-    // Select the container where the posts will be displayed
-    const profileGrid = document.getElementById('profile-grid-posts')
-
-    profileGrid.innerHTML = '' // Clear the grid before adding new posts
-
-    function generatePostGridItem(post) {
-      return post.media.map(media => {
-        const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
-        if (isVideo) {
-          return `
-                <a href="profile-post-view?id=${post.id}" class="grid-item">
-                  <div class="video-square">
-                    <video>
-                      <source src="${media.media_url}" type="video/mp4" />
-                    </video>
-                  </div>
-                </a>`
-        } else {
-          return `
-                <a href="profile-post-view?id=${post.id}" class="grid-item">
-                    <div class="image-square" style="background-image:url('${media.media_url}');"></div>
-                </a>`
-        }
-      }).join('')
-    }
-
-    // Function to add empty grid items to fill the grid
-    function addEmptyGridItems(count) {
-      let emptyItems = ''
-      for (let i = 0; i < count; i++) {
-        emptyItems += `
-            <div class="grid-item empty-item">
-                <div class="image-square" style="background-color: #f0f0f0;"></div>
-            </div>`
-      }
-      return emptyItems
-    }
-
-    // Calculate the number of posts and decide if we need to add empty items
-    function fillGridWithPosts(posts) {
-      const gridColumns = 3 // Assuming a 3-column grid
-      const gridSize = posts.length
-      const emptySlotsNeeded = (gridColumns - (gridSize % gridColumns)) % gridColumns
-
-      posts.forEach(post => {
-        profileGrid.innerHTML += generatePostGridItem(post)
-      })
-
-      // Add empty slots to fill the grid
-      profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
-
-      // Add the "big image" as the last item, if the grid is filled correctly
-      if (emptySlotsNeeded === 0 && posts.length > 0) {
-        profileGrid.innerHTML += `
-            <a href="profile-post-view?id=${posts[posts.length - 1].id}" class="grid-item large-item">
-                <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
-            </a>`
-      }
-    }
-
-    // Call the function to fill the grid
-    fillGridWithPosts(posts)
-
-  }
-})
-
-myTagsStore.onUpdated((posts) => {
-  if (posts) {
-    // Select the container where the posts will be displayed
-    const profileGrid = document.getElementById('profile-grid-tags')
-
-    profileGrid.innerHTML = '' // Clear the grid before adding new posts
-
-    // Function to generate the HTML for a post
-    function generatePostGridItem(post) {
-      return post.media.map(media => {
-        const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
-        if (isVideo) {
-          return `
-                <a href="profile-post-view?id=${post.id}" class="grid-item">
-                  <div class="video-square">
-                    <video>
-                      <source src="${media.media_url}" type="video/mp4" />
-                    </video>
-                  </div>
-                </a>`
-        } else {
-          return `
-                <a href="profile-post-view?id=${post.id}" class="grid-item">
-                    <div class="image-square" style="background-image:url('${media.media_url}');"></div>
-                </a>`
-        }
-      }).join('')
-    }
-
-    // Function to add empty grid items to fill the grid
-    function addEmptyGridItems(count) {
-      let emptyItems = ''
-      for (let i = 0; i < count; i++) {
-        emptyItems += `
-            <div class="grid-item empty-item">
-                <div class="image-square" style="background-color: #f0f0f0;"></div>
-            </div>`
-      }
-      return emptyItems
-    }
-
-    // Calculate the number of posts and decide if we need to add empty items
-    function fillGridWithPosts(posts) {
-      const gridColumns = 3 // Assuming a 3-column grid
-      const gridSize = posts.length
-      const emptySlotsNeeded = (gridColumns - (gridSize % gridColumns)) % gridColumns
-
-      posts.forEach(post => {
-        profileGrid.innerHTML += generatePostGridItem(post)
-      })
-
-      // Add empty slots to fill the grid
-      profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
-
-      // Add the "big image" as the last item, if the grid is filled correctly
-      if (emptySlotsNeeded === 0 && posts.length > 0) {
-        profileGrid.innerHTML += `
-            <a href="profile-post-view?id=${posts[posts.length - 1].id}" class="grid-item large-item">
-                <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
-            </a>`
-      }
-    }
-
-    // Call the function to fill the grid
-    fillGridWithPosts(posts)
-  }
-})
-
-
-let allowInfinite = true  // To control whether infinite scroll should be allowed
-
-// Infinite Scroll for Posts Tab
-$('#profile-grid-posts').on('infinite', function () {
-  console.log('Infinite scroll triggered')
-
-  // Exit if loading or all items are loaded
-  if (!allowInfinite) return
-
-  // Set loading state
-  allowInfinite = false
-
-  // Simulate an Ajax request to load more items
-  setTimeout(function () {
-    // Here you would make an actual request to fetch more posts
-    // For this example, we'll simulate appending new content
-    const newPosts = [
-      {
-        "id": "312",
-        "media": [
-          {
-            "media_type": "image",
-            "media_url": "https://example.com/image2.jpg",
-            "media_mime_type": "image/jpg"
-          }
-        ]
-      },
-      // Add more posts as needed...
-    ]
-
-    // Append new posts
-    newPosts.forEach(post => {
-      $$('#profile-grid-posts').append(generatePostGridItem(post))
-    })
-
-    // Reset allowInfinite to true to allow more loading
-    allowInfinite = true
-
-    // If there are no more items to load, you can remove the infinite scroll
-    // $$('tab[id="tab-2"]').off('infinite');
-    // $$('.infinite-scroll-preloader').remove();
-
-  }, 1000)  // Simulated delay for loading
-})
-
-// Function to generate post HTML (same as previous function)
 function generatePostGridItem(post) {
   return post.media.map(media => {
-    if (media.media_type === "video") {
+    const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
+    if (isVideo) {
       return `
                 <a href="profile-post-view?id=${post.id}" class="grid-item">
-                    <video class="video-square" controls>
-                        <source src="${media.media_url}" type="${media.media_mime_type}">
-                        Your browser does not support the video tag.
+                  <div class="video-square">
+                    <video>
+                      <source src="${media.media_url}" type="video/mp4" />
                     </video>
+                  </div>
                 </a>`
     } else {
       return `
@@ -283,3 +104,147 @@ function generatePostGridItem(post) {
     }
   }).join('')
 }
+
+// Function to add empty grid items to fill the grid
+function addEmptyGridItems(count) {
+  let emptyItems = ''
+  for (let i = 0; i < count; i++) {
+    emptyItems += `
+            <div class="grid-item empty-item">
+                <div class="image-square" style="background-color: #f0f0f0;"></div>
+            </div>`
+  }
+  return emptyItems
+}
+
+garageStore.onUpdated((garage) => {
+  if (garage) {
+    createGarageContent(garage)
+  }
+})
+
+myPostsStore.onUpdated((data) => {
+  if (data && data.data) {
+    const posts = data.data
+    totalPostPages = data.total_pages
+
+
+    if (data.page === data.total_pages) {
+      // hide preloader
+      $('.infinite-scroll-preloader.posts-tab').hide()
+    }
+
+    // Select the container where the posts will be displayed
+    const profileGrid = document.getElementById('profile-grid-posts')
+
+    profileGrid.innerHTML = '' // Clear the grid before adding new posts
+
+    // Calculate the number of posts and decide if we need to add empty items
+    function fillGridWithPosts(posts) {
+      const gridColumns = 3 // Assuming a 3-column grid
+      const gridSize = posts.length
+      const emptySlotsNeeded = (gridColumns - (gridSize % gridColumns)) % gridColumns
+
+      posts.forEach(post => {
+        profileGrid.innerHTML += generatePostGridItem(post)
+      })
+
+      // Add empty slots to fill the grid
+      profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
+
+      // Add the "big image" as the last item, if the grid is filled correctly
+      if (emptySlotsNeeded === 0 && posts.length > 0) {
+        profileGrid.innerHTML += `
+            <a href="profile-post-view?id=${posts[posts.length - 1].id}" class="grid-item large-item">
+                <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
+            </a>`
+      }
+    }
+
+    // Call the function to fill the grid
+    fillGridWithPosts(posts)
+  }
+})
+
+myTagsStore.onUpdated((data) => {
+  if (data && data.data) {
+    const posts = data.data
+    totalFPostPages = data.total_pages
+
+    if (data.page === data.total_pages) {
+      // hide preloader
+      $('.infinite-scroll-preloader.tags-tab').hide()
+    }
+
+
+    // Select the container where the posts will be displayed
+    const profileGrid = document.getElementById('profile-grid-tags')
+
+    profileGrid.innerHTML = '' // Clear the grid before adding new posts
+
+    // Calculate the number of posts and decide if we need to add empty items
+    function fillGridWithPosts(posts) {
+      const gridColumns = 3 // Assuming a 3-column grid
+      const gridSize = posts.length
+      const emptySlotsNeeded = (gridColumns - (gridSize % gridColumns)) % gridColumns
+
+      posts.forEach(post => {
+        profileGrid.innerHTML += generatePostGridItem(post)
+      })
+
+      // Add empty slots to fill the grid
+      profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
+
+      // Add the "big image" as the last item, if the grid is filled correctly
+      if (emptySlotsNeeded === 0 && posts.length > 0) {
+        profileGrid.innerHTML += `
+            <a href="profile-post-view?id=${posts[posts.length - 1].id}" class="grid-item large-item">
+                <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
+            </a>`
+      }
+    }
+
+    // Call the function to fill the grid
+    fillGridWithPosts(posts)
+  }
+})
+
+$(document).on('page:init', '.page[data-name="profile"]', function (e) {
+  app.popup.create({
+    el: '.links-popup',
+    swipeToClose: 'to-bottom'
+  })
+})
+
+$(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
+  const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content')
+
+  infiniteScrollContent.addEventListener('infinite', async function () {
+    if (isFetchingPosts) return
+
+    const activeTab = document.querySelector('.profile-tabs .tab-link-active')
+    const activeTabId = activeTab.id
+
+    if (!activeTabId || activeTabId === 'my-garage') return
+
+    const getterFunc = activeTabId === 'my-posts' ? 'getMyPosts' : 'getMyTags'
+
+    isFetchingPosts = true
+
+    if (activeTabId === 'my-posts') {
+      currentPostPage++
+
+      if (currentPostPage <= totalPostPages) {
+        await store.dispatch(getterFunc, currentPostPage)
+        isFetchingPosts = false
+      }
+    } else {
+      currentFPostPage++
+
+      if (currentFPostPage <= totalFPostPages) {
+        await store.dispatch(getterFunc, currentFPostPage)
+        isFetchingPosts = false
+      }
+    }
+  })
+})
