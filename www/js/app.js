@@ -225,7 +225,8 @@ $(document).on('submit', 'form#sign-up-step1', async function (e) {
     app.views.main.router.navigate('/signup-step2/')
   } catch (error) {
     console.log(error)
-    app.dialog.alert(error.message || 'An error occurred, please try again')
+    // app.dialog.alert(error.message || 'An error occurred, please try again')
+    app.dialog.alert(JSON.stringify(error))
     loginButton.innerHTML = 'Next'
     return
   }
