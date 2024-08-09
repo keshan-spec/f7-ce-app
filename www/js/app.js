@@ -224,6 +224,7 @@ $(document).on('submit', 'form#sign-up-step1', async function (e) {
     store.dispatch('setRegisterData', { email, password, user_id: response.user_id, username: response.username })
     app.views.main.router.navigate('/signup-step2/')
   } catch (error) {
+    console.log(error)
     app.dialog.alert(error.message || 'An error occurred, please try again')
     loginButton.innerHTML = 'Next'
     return
