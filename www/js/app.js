@@ -215,6 +215,8 @@ $(document).on('submit', 'form#sign-up-step1', async function (e) {
 
     app.preloader.hide()
 
+    app.dialog.alert(JSON.stringify(response))
+
     if (!response || !response.success) {
       app.dialog.alert(response.message || 'An error occurred, please try again')
       loginButton.innerHTML = 'Next'
