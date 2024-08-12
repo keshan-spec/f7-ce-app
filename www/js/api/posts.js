@@ -100,7 +100,7 @@ export const getPostsForUser = async (profileId, page = 1, tagged = false, limit
 
     const data = await response.json()
     if (response.status !== 200) {
-        return []
+        return { data: [], total_pages: 0, page: 1, limit }
     }
 
     return data

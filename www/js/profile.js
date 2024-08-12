@@ -32,11 +32,7 @@ export function displayProfile(user) {
 
   // Profile Image
   const profileImage = document.querySelector('.profile-head .profile-image')
-  if (user.profile_image) {
-    profileImage.style.backgroundImage = `url('${user.profile_image}')`
-  } else {
-    profileImage.style.backgroundImage = `url('assets/img/default-profile.png')` // Fallback image
-  }
+  profileImage.style.backgroundImage = `url('${user.profile_image || 'assets/img/profile-placeholder.jpg'}')`
 
   // Profile Links
   const profileLinks = user.profile_links
@@ -156,7 +152,7 @@ function addEmptyGridItems(count) {
 }
 
 garageStore.onUpdated((garage) => {
-  if (garage) {
+  if (garage && garage.length > 0) {
     createGarageContent(garage)
   }
 })
@@ -167,7 +163,7 @@ myPostsStore.onUpdated((data) => {
     totalPostPages = data.total_pages
 
 
-    if (data.page === data.total_pages) {
+    if ((data.page === data.total_pages) || (data.total_pages == 0)) {
       // hide preloader
       $('.infinite-scroll-preloader.posts-tab').hide()
     }
@@ -187,7 +183,7 @@ myTagsStore.onUpdated((data) => {
     const posts = data.data
     totalFPostPages = data.total_pages
 
-    if (data.page === data.total_pages) {
+    if ((data.page === data.total_pages) || (data.total_pages == 0)) {
       // hide preloader
       $('.infinite-scroll-preloader.tags-tab').hide()
     }
@@ -295,7 +291,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', as
     return
   }
 
-  $('.init-loader').show()
+  // $('.init-loader').show()
 
   const garage = await getGargeById(garageId)
   if (!garage) {
@@ -362,7 +358,7 @@ function updateProfilePage(data) {
   // Update the profile image
   const profileImageElement = document.querySelector('.vehicle-profile-image')
   if (profileImageElement) {
-    profileImageElement.style.backgroundImage = `url('${data.owner.profile_image}')`
+    profileImageElement.style.backgroundImage = `url('${data.owner.profile_image || 'assets/img/profile-placeholder.jpg'}')`
     profileImageElement.setAttribute('href', `/profile/${data.owner_id}`)
   }
 

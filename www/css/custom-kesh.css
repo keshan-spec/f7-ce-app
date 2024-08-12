@@ -58,3 +58,37 @@
 .swiper-inner-container {
     min-height: 100px;
 }
+
+/* Style for the toggle password button */
+/* .toggle-password {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background: red;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    padding: 5px;
+    color: #888;
+    width: 10px;
+    height: 10px;
+}
+
+.toggle-password::after {
+    content: "eye_fill";
+    font-family: 'framework7-core-icons';
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'liga';
+    font-size: calc(var(--f7-input-clear-button-size) /(14 / 10));
+    line-height: 1.4;
+} */

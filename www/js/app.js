@@ -165,7 +165,8 @@ $(document).on('click', '#unlink-profile', async function () {
   }
 })
 
-document.querySelector('.open-qr-modal').addEventListener('click', function () {
+$(document).on('click', '.open-qr-modal', function () {
+  console.log('Opening QR Modal')
   openModal()
 
   html5QrCode = new Html5Qrcode("reader")
@@ -254,8 +255,6 @@ var EditPostPopup = app.popup.create({
   swipeToClose: 'to-bottom'
 })
 
-
-
 $(document).on('page:init', '.page[data-name="profile"]', function (e) {
   var LinksPopup = app.popup.create({
     el: '.links-popup',
@@ -312,6 +311,17 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
   }
 })
 
+$(document).on('click', '.toggle-password', function () {
+  var input = $(this).prev('input')
+  if (input.attr('type') === 'password') {
+    input.attr('type', 'text')
+    $(this).html('<i class="fa fa-eye-slash"></i>')
+  } else {
+    input.attr('type', 'password')
+    $(this).html('<i class="fa fa-eye"></i>')
+  }
+})
+
 // Register forms
 // Step 1
 $(document).on('submit', 'form#sign-up-step1', async function (e) {
@@ -351,6 +361,36 @@ $(document).on('submit', 'form#sign-up-step1', async function (e) {
 
   if (!password) {
     app.dialog.alert('Password is required')
+    return
+  }
+
+  // // regex to check if password contains at least one number, one lowercase and one uppercase letter, and at least 8 characters
+  // var passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
+  // if (!passwordPattern.test(password)) {
+  //   app.dialog.alert('Password must contain at least one number, one lowercase and one uppercase letter, and at least 8 characters')
+  //   return
+  // }
+  // Check if password has at least 8 characters
+  if (password.length < 8) {
+    app.dialog.alert('Password must be at least 8 characters long.')
+    return
+  }
+
+  // Check if password contains at least one lowercase letter
+  if (!/[a-z]/.test(password)) {
+    app.dialog.alert('Password must contain at least one lowercase letter.')
+    return
+  }
+
+  // Check if password contains at least one uppercase letter
+  if (!/[A-Z]/.test(password)) {
+    app.dialog.alert('Password must contain at least one uppercase letter.')
+    return
+  }
+
+  // Check if password contains at least one number
+  if (!/\d/.test(password)) {
+    app.dialog.alert('Password must contain at least one number.')
     return
   }
 

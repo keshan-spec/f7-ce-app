@@ -138,7 +138,7 @@ function displayPosts(posts, following = false) {
           <div class="media-post" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
             <div class="media-post-content">
               <div class="media-post-header">
-                <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/avatar1.jpg'}');"></div>
+                <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
                 <div class="media-post-user">${post.username}</div>
                 <div class="media-post-date">${date}</div>
               </div>
@@ -251,11 +251,11 @@ function displayComments(comments, postId) {
                   data-comment-id="${reply.id}" 
                   data-is-liked="${reply.liked}" 
                   data-owner-id="${reply.user_id}"
-                  data-owner-name="${reply.display_name}">
-                  <div class="comment-profile-img" style="background-image:url('${reply.profile_image}');"></div>
+                  data-owner-name="${reply.user_login}">
+                  <div class="comment-profile-img" style="background-image:url('${reply.profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
                   <div class="comment-content-container">
                     <div class="comment-username">
-                    <span>${reply.display_name}</span>
+                    <span>${reply.user_login}</span>
                     <span class="date">${formatPostDate(reply.comment_date)}</span>
                     </div>
                     <div class="comment-content">${reply.comment}</div>
@@ -283,11 +283,11 @@ function displayComments(comments, postId) {
         data-comment-id="${comment.id}" 
         data-is-liked="${comment.liked}" 
         data-owner-id="${comment.user_id}"
-        data-owner-name="${comment.display_name}">
-        <div class="comment-profile-img" style="background-image:url('${comment.profile_image}');"></div>
+        data-owner-name="${comment.user_login}">
+        <div class="comment-profile-img" style="background-image:url('${comment.profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
         <div class="comment-content-container">
           <div class="comment-username">
-          <span>${comment.display_name}</span>
+          <span>${comment.user_login}</span>
           <span class="date">${formatPostDate(comment.comment_date)}</span>
           </div>
           <div class="comment-content">${comment.comment}</div>
@@ -370,6 +370,12 @@ $(document).on('click', '.popup-open', async function () {
 
   displayComments(comments, postId)
   // CommentsPopup.open()
+})
+
+// .media-post-share
+$(document).on('click', '.media-post-share', function () {
+  // set the post id as a data attribute 
+  $('.share-popup').attr('data-post-id', $(this).closest('.media-post').attr('data-post-id'))
 })
 
 // on .comment-replies-toggle click

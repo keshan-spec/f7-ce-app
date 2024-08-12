@@ -12,13 +12,13 @@ export const getUserGarage = async (profileId) => {
 
         const data = await response.json()
         if (response.status !== 200) {
-            throw new Error('Failed to fetch users posts')
+            return []
         }
 
         return data
     } catch (error) {
         console.error(error)
-        return null
+        return []
     }
 }
 
