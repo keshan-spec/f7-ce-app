@@ -96,7 +96,7 @@ function generatePostGridItem(post) {
     const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
     if (isVideo) {
       return `
-        <a href="profile-post-view?id=${post.id}" class="grid-item" data-src="${media.media_url}">
+        <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}">
           <div class="video-square">
             <video>
               <source src="${media.media_url}" type="video/mp4" />
@@ -105,7 +105,7 @@ function generatePostGridItem(post) {
         </a>`
     } else {
       return `
-      <a href="profile-post-view?id=${post.id}" class="grid-item" data-src="${media.media_url}">
+      <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}">
           <div class="image-square" style="background-image:url('${media.media_url}');"></div>
       </a>`
     }
@@ -133,7 +133,7 @@ function fillGridWithPosts(posts, profileGridID) {
   // Add the "big image" as the last item, if the grid is filled correctly
   if (emptySlotsNeeded === 0 && posts.length > 0) {
     profileGrid.innerHTML += `
-            <a href="profile-post-view?id=${posts[posts.length - 1].id}" class="grid-item large-item">
+            <a href="/post-view/${posts[posts.length - 1].id}" class="grid-item large-item">
                 <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
             </a>`
   }
@@ -384,3 +384,9 @@ function updateProfilePage(data) {
   // Additional updates (like posts, tags, etc.) can be handled here
   // Assuming you would dynamically update the posts or tags based on the data provided
 }
+
+$(document).on('page:init', '.page[data-name="post-view"]', async function (e) {
+  var postId = e.detail.route.params.id
+  console.log(postId)
+  $('#post_id').innerHTML = postId
+})
