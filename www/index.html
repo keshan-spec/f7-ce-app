@@ -86,7 +86,7 @@
                 <div class="header-logo"><img src="assets/img/logo-dark.png"></div>
               </div>
               <div class="right">
-                <a href="#" class="link icon-only">
+                <a href="#" class="link icon-only open-qr-modal">
                   <i class="icon f7-icons">qrcode</i>
                 </a>
                 <a href="/notifications/" class="link icon-only">
@@ -247,14 +247,17 @@
 
   <!-- Framework7 library -->
   <script src="framework7/framework7-bundle.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
   <!-- App routes -->
   <script src="js/routes.js" type="module"></script>
   <!-- App store -->
   <script src="js/store.js" type="module"></script>
+
+  <script src="js/qr-scanner.js" type="module"></script>
+
   <!-- App scripts -->
   <script src="js/app.js" type="module"></script>
-
 
   <!-- Page modules -->
   <script src="js/homepage.js" type="module"></script>

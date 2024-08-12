@@ -5,6 +5,7 @@ import routes from './routes.js'
 
 import { displayProfile } from './profile.js'
 import { sendRNMessage } from './api/consts.js'
+import { onScanFailure, onScanSuccess } from './qr-scanner.js'
 
 var $ = Dom7
 var userStore = store.getters.user
@@ -53,6 +54,31 @@ var app = new Framework7({
   },
   store: store,
   routes: routes,
+})
+
+const myModal = app.dialog.create({
+  title: 'Custom HTML Modal',
+  content: `
+    <div class="custom-modal-content">
+      <div id="reader" width="600px"></div>
+    </div>
+  `,
+  buttons: [
+    {
+      text: 'Close',
+      onClick: function () {
+        console.log('Close clicked')
+      }
+    }
+  ]
+})
+
+document.querySelector('.open-qr-modal').addEventListener('click', function () {
+  myModal.open()
+
+  let html5QrcodeScanner = new Html5QrcodeScanner("reader",
+    { fps: 10, qrbox: { width: 250, height: 250 } })
+  html5QrcodeScanner.render(onScanSuccess, onScanFailure)
 })
 
 userStore.onUpdated((data) => {
