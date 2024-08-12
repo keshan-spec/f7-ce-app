@@ -15,6 +15,15 @@ var totalFPostPages = 1
 var currentPostPage = 1
 var currentFPostPage = 1
 
+
+// Garage posts
+var totalGaragePostPages = 1
+var currentGaragePostPage = 1
+
+// Garage tags
+var totalGarageTagPages = 1
+var currentGarageTagPage = 1
+
 export function displayProfile(user) {
   if (!user) return
   // Profile Head
@@ -107,6 +116,33 @@ function generatePostGridItem(post) {
   }).join('')
 }
 
+// Calculate the number of posts and decide if we need to add empty items
+function fillGridWithPosts(posts, profileGridID) {
+  // Select the container where the posts will be displayed
+  const profileGrid = document.getElementById(profileGridID)
+
+  profileGrid.innerHTML = '' // Clear the grid before adding new posts
+
+  const gridColumns = 3 // Assuming a 3-column grid
+  const gridSize = posts.length
+  const emptySlotsNeeded = (gridColumns - (gridSize % gridColumns)) % gridColumns
+
+  posts.forEach(post => {
+    profileGrid.innerHTML += generatePostGridItem(post)
+  })
+
+  // Add empty slots to fill the grid
+  profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
+
+  // Add the "big image" as the last item, if the grid is filled correctly
+  if (emptySlotsNeeded === 0 && posts.length > 0) {
+    profileGrid.innerHTML += `
+            <a href="profile-post-view?id=${posts[posts.length - 1].id}" class="grid-item large-item">
+                <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
+            </a>`
+  }
+}
+
 // Function to add empty grid items to fill the grid
 function addEmptyGridItems(count) {
   let emptyItems = ''
@@ -141,30 +177,8 @@ myPostsStore.onUpdated((data) => {
 
     profileGrid.innerHTML = '' // Clear the grid before adding new posts
 
-    // Calculate the number of posts and decide if we need to add empty items
-    function fillGridWithPosts(posts) {
-      const gridColumns = 3 // Assuming a 3-column grid
-      const gridSize = posts.length
-      const emptySlotsNeeded = (gridColumns - (gridSize % gridColumns)) % gridColumns
-
-      posts.forEach(post => {
-        profileGrid.innerHTML += generatePostGridItem(post)
-      })
-
-      // Add empty slots to fill the grid
-      profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
-
-      // Add the "big image" as the last item, if the grid is filled correctly
-      if (emptySlotsNeeded === 0 && posts.length > 0) {
-        profileGrid.innerHTML += `
-            <a href="profile-post-view?id=${posts[posts.length - 1].id}" class="grid-item large-item">
-                <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
-            </a>`
-      }
-    }
-
     // Call the function to fill the grid
-    fillGridWithPosts(posts)
+    fillGridWithPosts(posts, 'profile-grid-posts')
   }
 })
 
@@ -178,36 +192,8 @@ myTagsStore.onUpdated((data) => {
       $('.infinite-scroll-preloader.tags-tab').hide()
     }
 
-
-    // Select the container where the posts will be displayed
-    const profileGrid = document.getElementById('profile-grid-tags')
-
-    profileGrid.innerHTML = '' // Clear the grid before adding new posts
-
-    // Calculate the number of posts and decide if we need to add empty items
-    function fillGridWithPosts(posts) {
-      const gridColumns = 3 // Assuming a 3-column grid
-      const gridSize = posts.length
-      const emptySlotsNeeded = (gridColumns - (gridSize % gridColumns)) % gridColumns
-
-      posts.forEach(post => {
-        profileGrid.innerHTML += generatePostGridItem(post)
-      })
-
-      // Add empty slots to fill the grid
-      profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
-
-      // Add the "big image" as the last item, if the grid is filled correctly
-      if (emptySlotsNeeded === 0 && posts.length > 0) {
-        profileGrid.innerHTML += `
-            <a href="profile-post-view?id=${posts[posts.length - 1].id}" class="grid-item large-item">
-                <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
-            </a>`
-      }
-    }
-
     // Call the function to fill the grid
-    fillGridWithPosts(posts)
+    fillGridWithPosts(posts, 'profile-grid-tags')
   }
 })
 
@@ -270,7 +256,41 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', as
     console.error('Error fetching cached data:', error)
   }
 
+  // Infinite Scroll
+  const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content')
+
+  infiniteScrollContent.addEventListener('infinite', async function () {
+    if (isFetchingPosts) return
+
+    const activeTab = document.querySelector('.profile-tabs .tab-link-active')
+    const activeTabId = activeTab.id
+
+    if (!activeTabId) return
+
+    const getterFunc = activeTabId === 'garage-posts' ? 'setGarageViewPosts' : 'setGarageViewTags'
+
+    isFetchingPosts = true
+
+    if (activeTabId === 'garage-posts') {
+      currentGaragePostPage++
+
+      if (currentGaragePostPage <= totalGaragePostPages) {
+        await store.dispatch(getterFunc, garageId, currentGaragePostPage)
+        isFetchingPosts = false
+      }
+    } else {
+      currentGarageTagPage++
+
+      if (currentGarageTagPage <= totalGarageTagPages) {
+        await store.dispatch(getterFunc, garageId, currentGarageTagPage)
+        isFetchingPosts = false
+      }
+    }
+  })
+
   if (cachedData) {
+    store.dispatch('setGarageViewPosts', garageId, 1)
+    store.dispatch('setGarageViewTags', garageId, 1)
     updateProfilePage(cachedData)
     return
   }
@@ -294,6 +314,41 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', as
   // Call the function to update the page
   updateProfilePage(garage)
   $('.init-loader').hide()
+  store.dispatch('setGarageViewPosts', garageId, 1)
+  store.dispatch('setGarageViewTags', garageId, 1)
+})
+
+store.getters.getGarageViewPosts.onUpdated((data) => {
+  if (data && data.data) {
+    const posts = data.data
+
+    totalGaragePostPages = data.total_pages
+
+    // if there is only one page of posts or no posts
+    if ((data.page == data.total_pages) || (data.total_pages == 0)) {
+      // hide preloader
+      $('.infinite-scroll-preloader.garage-posts-tab').hide()
+    }
+
+    // Call the function to fill the grid
+    fillGridWithPosts(posts, 'garage-posts-tab')
+  }
+})
+
+store.getters.getGarageViewTags.onUpdated((data) => {
+  if (data && data.data) {
+    const posts = data.data
+    totalGarageTagPages = data.total_pages
+
+    // if there is only one page of posts or no posts
+    if ((data.page == data.total_pages) || (data.total_pages == 0)) {
+      // hide preloader
+      $('.infinite-scroll-preloader.garage-tags-tab').hide()
+    }
+
+    // Call the function to fill the grid
+    fillGridWithPosts(posts, 'garage-tags-tab')
+  }
 })
 
 // Function to update the HTML with the data
@@ -308,6 +363,7 @@ function updateProfilePage(data) {
   const profileImageElement = document.querySelector('.vehicle-profile-image')
   if (profileImageElement) {
     profileImageElement.style.backgroundImage = `url('${data.owner.profile_image}')`
+    profileImageElement.setAttribute('href', `/profile/${data.owner_id}`)
   }
 
   // Update the vehicle make and model

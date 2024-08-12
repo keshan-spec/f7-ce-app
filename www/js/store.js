@@ -1,5 +1,5 @@
 import { getSessionUser, getUserDetails } from './api/auth.js'
-import { getUserGarage } from './api/garage.js'
+import { getPostsForGarage, getUserGarage } from './api/garage.js'
 import { fetchPosts, getPostsForUser } from './api/posts.js'
 
 var createStore = Framework7.createStore
@@ -38,11 +38,29 @@ const store = createStore({
       page: 1,
       limit: 10,
     },
+    garageViewPosts: {
+      data: [],
+      total_pages: 0,
+      page: 1,
+      limit: 10,
+    },
+    garageViewTags: {
+      data: [],
+      total_pages: 0,
+      page: 1,
+      limit: 10,
+    },
     paths: {} // Object to store unique paths and their data
   },
   getters: {
     getPathData({ state }) {
       return state.paths
+    },
+    getGarageViewPosts({ state }) {
+      return state.garageViewPosts
+    },
+    getGarageViewTags({ state }) {
+      return state.garageViewTags
     },
     user({ state }) {
       return state.user
@@ -124,6 +142,48 @@ const store = createStore({
       }
 
       state.posts = data
+    },
+    async setGarageViewPosts({ state }, garage_id, page = 1) {
+      const posts = await getPostsForGarage(garage_id, page)
+
+      let prevData = state.garageViewPosts.data
+
+      if (page === 1) {
+        prevData = []
+      }
+
+      const data = {
+        data: [
+          ...prevData,
+          ...posts.data,
+        ],
+        total_pages: posts.total_pages,
+        page: page,
+        limit: posts.limit,
+      }
+
+      state.garageViewPosts = data
+    },
+    async setGarageViewTags({ state }, garage_id, page = 1) {
+      const posts = await getPostsForGarage(garage_id, page, true)
+
+      let prevData = state.garageViewTags.data
+
+      if (page === 1) {
+        prevData = []
+      }
+
+      const data = {
+        data: [
+          ...prevData,
+          ...posts.data,
+        ],
+        total_pages: posts.total_pages,
+        page: page,
+        limit: posts.limit,
+      }
+
+      state.garageViewTags = data
     },
     async getFollowingPosts({ state }, page = 1) {
       const posts = await fetchPosts(page, true)

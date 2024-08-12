@@ -1,9 +1,10 @@
 //------------------------------------------ CORE ------------------------------------------//
-import { handleSignUp, updateAboutUserIds, updateContentIds, updateUsername, verifyUser } from './api/auth.js'
+import { getSessionUser, handleSignUp, updateAboutUserIds, updateContentIds, updateUsername, verifyUser } from './api/auth.js'
 import store from './store.js'
 import routes from './routes.js'
 
 import { displayProfile } from './profile.js'
+import { sendRNMessage } from './api/consts.js'
 
 var $ = Dom7
 var userStore = store.getters.user
@@ -67,7 +68,14 @@ var actionSheet = app.actions.create({
         text: '<div class="actions-grid-item">Add Post</div>',
         icon: '<img src="assets/img/actionsheet-img1.jpg" width="48" style="max-width: 100%; border-radius: 8px"/>',
         onClick: function () {
-          app.dialog.alert('Button 1 clicked')
+          const user = getSessionUser()
+          if (user) {
+            sendRNMessage({
+              type: "createPost",
+              user_id: user.id,
+              page: 'create-post',
+            })
+          }
         }
       },
       {

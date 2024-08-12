@@ -54,3 +54,7 @@
     display: none;
     /* Hide the loader once the image has loaded */
 }
+
+.swiper-inner-container {
+    min-height: 100px;
+}

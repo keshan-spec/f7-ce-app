@@ -351,6 +351,12 @@ function toggleCommentLike(commentId, ownerId) {
 
 // on .popup-open click
 $(document).on('click', '.popup-open', async function () {
+  const postId = this.getAttribute('data-post-id')
+
+  if (!postId) {
+    return
+  }
+
   document.getElementById('comments-list').innerHTML = '<div class="preloader"></div>'
   document.getElementById('comment-form').reset()
 
@@ -360,12 +366,10 @@ $(document).on('click', '.popup-open', async function () {
 
   document.getElementById('comment-form').querySelector('.replying-to').innerHTML = ''
 
-
-  const postId = this.getAttribute('data-post-id')
   const comments = await fetchComments(postId)
 
   displayComments(comments, postId)
-  CommentsPopup.open()
+  // CommentsPopup.open()
 })
 
 // on .comment-replies-toggle click

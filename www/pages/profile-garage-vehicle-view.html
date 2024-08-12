@@ -23,10 +23,10 @@
       </div>
     </div>
 
-    <div class="page-content profile-landing-page">
+    <div class="page-content profile-landing-page infinite-scroll-content" data-infinite-distance="50">
       <div class="vehicle-profile-background" style="background-image:url('assets/img/profile-cover-001.jpg');">
-        <div class="vehicle-profile-image" data-location="profile.php"
-          style="background-image:url('assets/img/profile-001.jpg');"></div>
+        <a class="vehicle-profile-image" href="/profile/"
+          style="background-image:url('assets/img/profile-001.jpg');"></a>
       </div>
 
       <div class="profile-garage-intro text-center">
@@ -41,128 +41,36 @@
         </div>
       </div>
 
-
       <div class="profile-lower">
-
-        <div class="profile-tabs">
-          <a href="#tab-1" class="tab-link tab-link-active">Posts</a>
-          <a href="#tab-2" class="tab-link">Tags</a>
+        <div class="profile-tabs garage-view">
+          <a href="#tab-1" class="tab-link tab-link-active" id="garage-posts">Posts</a>
+          <a href="#tab-2" class="tab-link" id="garage-tags">Tags</a>
         </div>
 
         <swiper-container class="tabs">
-
           <swiper-slide id="tab-1" class="tab">
             <div class="swiper-inner-container">
-
-              <!-- Grid -->
-              <div class="profile-grid">
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
+              <div class="profile-grid" id="garage-posts-tab">
               </div>
 
+              <!-- Preloader for infinite scroll -->
+              <div class="infinite-scroll-preloader garage-posts-tab">
+                <div class="preloader"></div>
+              </div>
             </div>
           </swiper-slide>
           <swiper-slide id="tab-2" class="tab">
             <div class="swiper-inner-container">
-
-              <!-- Grid -->
-              <div class="profile-grid">
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="video-square">
-                    <video>
-                      <source src="assets/video/video02.mp4" type="video/mp4" />
-                    </video>
-                  </div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
-                <!-- Grid item -->
-                <a href="profile-post-view" class="grid-item">
-                  <div class="image-square" style="background-image:url('assets/img/placeholder1.jpg');"></div>
-                </a>
-
+              <div class="profile-grid" id="garage-tags-tab">
               </div>
 
+              <!-- Preloader for infinite scroll -->
+              <div class="infinite-scroll-preloader garage-tags-tab">
+                <div class="preloader"></div>
+              </div>
             </div>
           </swiper-slide>
         </swiper-container>
-
-
       </div>
     </div>
   </div>
