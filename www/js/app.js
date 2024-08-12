@@ -67,8 +67,8 @@ var actionSheet = app.actions.create({
       {
         text: '<div class="actions-grid-item">Add Post</div>',
         icon: '<img src="assets/img/actionsheet-img1.jpg" width="48" style="max-width: 100%; border-radius: 8px"/>',
-        onClick: function () {
-          const user = getSessionUser()
+        onClick: async function () {
+          const user = await getSessionUser()
           if (user) {
             sendRNMessage({
               type: "createPost",
