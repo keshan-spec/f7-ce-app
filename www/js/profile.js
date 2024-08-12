@@ -1,10 +1,12 @@
 import store from "./store.js"
 import app from "./app.js"
+import { getGargeById } from "./api/garage.js"
 var $ = Dom7
 
 const garageStore = store.getters.myGarage
 const myPostsStore = store.getters.myPosts
 const myTagsStore = store.getters.myTags
+const pathStore = store.getters.getPathData
 
 var isFetchingPosts = false
 var totalPostPages = 1
@@ -209,7 +211,6 @@ myTagsStore.onUpdated((data) => {
   }
 })
 
-
 $(document).on('page:init', '.page[data-name="profile"]', function (e) {
   app.popup.create({
     el: '.links-popup',
@@ -251,10 +252,83 @@ $(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
   })
 })
 
-$(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', function (e) {
+$(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', async function (e) {
   var garageId = e.detail.route.params.id
 
-  if (!garageId) return
+  if (!garageId) {
+    app.dialog.alert('Garage not found')
+    app.views.main.router.back()
+    return
+  }
 
-  const garage = garageStore.getGarageById(garageId)
+  let cachedData = null
+  try {
+    if (pathStore && pathStore.value[`/garage/${garageId}`]) {
+      cachedData = pathStore.value[`/garage/${garageId}`]
+    }
+  } catch (error) {
+    console.error('Error fetching cached data:', error)
+  }
+
+  if (cachedData) {
+    updateProfilePage(cachedData)
+    return
+  }
+
+  $('.init-loader').show()
+
+  const garage = await getGargeById(garageId)
+  if (!garage) {
+    $('.init-loader').hide()
+    app.dialog.alert('Garage not found')
+    app.views.main.router.back()
+    return
+  }
+
+  // Assuming `path` is a dynamic path like '/garage/2'
+  store.dispatch('setPathData', {
+    path: `/garage/${garageId}`,
+    data: garage,
+  })
+
+  // Call the function to update the page
+  updateProfilePage(garage)
+  $('.init-loader').hide()
 })
+
+// Function to update the HTML with the data
+function updateProfilePage(data) {
+  // Update the cover photo
+  const coverPhotoElement = document.querySelector('.vehicle-profile-background')
+  if (coverPhotoElement) {
+    coverPhotoElement.style.backgroundImage = `url('${data.cover_photo}')`
+  }
+
+  // Update the profile image
+  const profileImageElement = document.querySelector('.vehicle-profile-image')
+  if (profileImageElement) {
+    profileImageElement.style.backgroundImage = `url('${data.owner.profile_image}')`
+  }
+
+  // Update the vehicle make and model
+  const vehicleTitleElement = document.querySelector('.profile-garage-intro h1')
+  if (vehicleTitleElement) {
+    vehicleTitleElement.textContent = `${data.make} ${data.model}`
+  }
+
+  // Update the ownership information
+  const ownershipInfoElement = document.querySelector('.garage-owned-information')
+  if (ownershipInfoElement) {
+    const ownedUntilText = data.owned_until ? ` - ${data.owned_until}` : ' - Present'
+    ownershipInfoElement.textContent = `Owned from ${data.owned_since}${ownedUntilText}`
+  }
+
+  // Update the vehicle description
+  const vehicleDescriptionElement = document.querySelector('.garage-vehicle-description')
+  if (vehicleDescriptionElement) {
+    vehicleDescriptionElement.textContent = data.short_description
+  }
+
+  // Additional updates (like posts, tags, etc.) can be handled here
+  // Assuming you would dynamically update the posts or tags based on the data provided
+}

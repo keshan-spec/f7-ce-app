@@ -7,13 +7,13 @@ import { fetchComments, maybeLikePost, maybeLikeComment, addComment } from './ap
 var $ = Dom7
 var currentPage = 1
 
-// Init slider
-app.swiper.create('.swiper-container', {
-  speed: 400,
-  spaceBetween: 0,
-  observer: true,
-  pagination: '.swiper-pagination'
-})
+// // Init slider
+// app.swiper.create('.swiper-container', {
+//   speed: 400,
+//   spaceBetween: 0,
+//   observer: true,
+//   pagination: '.swiper-pagination'
+// })
 
 var postsStore = store.getters.posts
 var followingPostsStore = store.getters.followingPosts
@@ -92,23 +92,23 @@ infiniteScrollContent.addEventListener('infinite', async function () {
   isFetchingPosts = false
 })
 
-//Comments Popup
-var CommentsPopup = app.popup.create({
-  el: '.comments-popup',
-  swipeToClose: 'to-bottom'
-})
+// //Comments Popup
+// var CommentsPopup = app.popup.create({
+//   el: '.comments-popup',
+//   swipeToClose: 'to-bottom'
+// })
 
-//Share Popup
-var SharePopup = app.popup.create({
-  el: '.share-popup',
-  swipeToClose: 'to-bottom'
-})
+// //Share Popup
+// var SharePopup = app.popup.create({
+//   el: '.share-popup',
+//   swipeToClose: 'to-bottom'
+// })
 
-//Share Popup
-var EditPostPopup = app.popup.create({
-  el: '.edit-post-popup',
-  swipeToClose: 'to-bottom'
-})
+// //Share Popup
+// var EditPostPopup = app.popup.create({
+//   el: '.edit-post-popup',
+//   swipeToClose: 'to-bottom'
+// })
 
 
 function displayPosts(posts, following = false) {

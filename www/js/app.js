@@ -88,6 +88,47 @@ var actionSheet = app.actions.create({
   ]
 })
 
+// Init slider
+var swiper = new Swiper('.swiper-container', {
+  pagination: {
+    el: '.swiper-pagination',
+    clickable: true,
+  },
+  // other parameters
+})
+
+//Comments Popup
+var CommentsPopup = app.popup.create({
+  el: '.comments-popup',
+  swipeToClose: 'to-bottom'
+})
+
+//Share Popup
+var SharePopup = app.popup.create({
+  el: '.share-popup',
+  swipeToClose: 'to-bottom'
+})
+
+//Share Popup
+var EditPostPopup = app.popup.create({
+  el: '.edit-post-popup',
+  swipeToClose: 'to-bottom'
+})
+
+
+
+$(document).on('page:init', '.page[data-name="profile"]', function (e) {
+
+  var LinksPopup = app.popup.create({
+    el: '.links-popup',
+    swipeToClose: 'to-bottom'
+  })
+
+})
+
+
+
+
 document.getElementById('open-action-sheet').addEventListener('click', function () {
   actionSheet.open()
 })

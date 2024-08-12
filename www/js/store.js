@@ -38,8 +38,12 @@ const store = createStore({
       page: 1,
       limit: 10,
     },
+    paths: {} // Object to store unique paths and their data
   },
   getters: {
+    getPathData({ state }) {
+      return state.paths
+    },
     user({ state }) {
       return state.user
     },
@@ -66,6 +70,18 @@ const store = createStore({
     },
   },
   actions: {
+    setPathData({ state }, { path, data }) {
+      // Ensure the path key exists
+      if (!state.paths[path]) {
+        state.paths[path] = {}
+      }
+
+      // Update the data for the given path
+      state.paths[path] = {
+        ...state.paths[path],
+        ...data,
+      }
+    },
     async login({ state }, { token }) {
       try {
         const userDetails = await getUserDetails(token)
