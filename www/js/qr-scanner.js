@@ -1,9 +1,15 @@
 import { verifyScan } from "./api/scanner.js"
+import store from "./store.js"
 
 export const onScanSuccess = async (decodedText) => {
     // https://mydrivelife.com/qr/clpmhHGEXyUD
     // get the qr code and verify it
-    alert(decodedText)
+
+    if (store.getters.isScanningQrCode.value) {
+        return
+    }
+
+    store.dispatch('setScanningQrCode', true)
 
     try {
         const url = new URL(decodedText)
@@ -11,8 +17,8 @@ export const onScanSuccess = async (decodedText) => {
             const qrCode = url.pathname.split('/').pop()
             if (qrCode) {
                 const response = await verifyScan(qrCode)
-                alert(JSON.stringify(response))
-                return response
+                store.dispatch('setScannedData', response)
+                store.dispatch('setScanningQrCode', false)
             }
         } else {
             throw new Error('Invalid QR Code')

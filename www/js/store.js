@@ -50,6 +50,8 @@ const store = createStore({
       page: 1,
       limit: 10,
     },
+    scannedData: null,
+    scanningQrCode: false,
     paths: {} // Object to store unique paths and their data
   },
   getters: {
@@ -86,6 +88,12 @@ const store = createStore({
     myTags({ state }) {
       return state.myTags
     },
+    scannedData({ state }) {
+      return state.scannedData
+    },
+    isScanningQrCode({ state }) {
+      return state.scanningQrCode
+    }
   },
   actions: {
     setPathData({ state }, { path, data }) {
@@ -241,6 +249,12 @@ const store = createStore({
       }
 
       state.myTags = data
+    },
+    setScannedData({ state }, data) {
+      state.scannedData = data
+    },
+    setScanningQrCode({ state }, value) {
+      state.scanningQrCode = value
     },
   },
 })
