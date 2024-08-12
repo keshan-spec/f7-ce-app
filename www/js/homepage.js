@@ -98,6 +98,19 @@ var CommentsPopup = app.popup.create({
   swipeToClose: 'to-bottom'
 })
 
+//Share Popup
+var SharePopup = app.popup.create({
+  el: '.share-popup',
+  swipeToClose: 'to-bottom'
+})
+
+//Share Popup
+var EditPostPopup = app.popup.create({
+  el: '.edit-post-popup',
+  swipeToClose: 'to-bottom'
+})
+
+
 function displayPosts(posts, following = false) {
   const postsContainer = document.getElementById(following ? 'tab-following' : 'tab-latest')
   postsContainer.innerHTML = '' // Clear any existing posts
@@ -111,10 +124,10 @@ function displayPosts(posts, following = false) {
         <div class="media-post-comment popup-open" data-popup=".comments-popup" data-post-id="${post.id}">
           <i class="icon f7-icons">chat_bubble</i>
         </div>
-        <div class="media-post-share">
+        <div class="media-post-share popup-open" data-popup=".share-popup">
           <i class="icon f7-icons">paperplane</i>
         </div>
-        <div class="media-post-edit">
+        <div class="media-post-edit popup-open" data-popup=".edit-post-popup">
           <i class="icon f7-icons">gear_alt</i>
         </div>
       </div>

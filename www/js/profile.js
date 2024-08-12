@@ -59,7 +59,7 @@ function createGarageContent(garages) {
   function generateVehicleHTML(vehicle) {
     return `
     <li>
-        <a href="profile-garage-car-view?id=${vehicle.id}" class="item">
+        <a href="/profile-garage-vehicle-view/${vehicle.id}" class="item">
             <div class="imageWrapper">
                 <div class="image-square image-rounded"
                     style="background-image:url('${vehicle.cover_photo}');"></div>
@@ -249,4 +249,12 @@ $(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
       }
     }
   })
+})
+
+$(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', function (e) {
+  var garageId = e.detail.route.params.id
+
+  if (!garageId) return
+
+  const garage = garageStore.getGarageById(garageId)
 })

@@ -61,6 +61,30 @@ var routes = [
     path: '/profile/',
     componentUrl: './pages/profile.html?' + v,
   },
+  {
+    path: '/profile-garage-vehicle-view/:id',
+    componentUrl: './pages/profile-garage-vehicle-view.html?' + v,
+    async: function (routeTo, routeFrom, resolve, reject) {
+      // Get the dynamic id from route parameters
+      var garageId = routeTo.params.id
+      console.log('garageId', garageId)
+
+      // Resolve the route and load the page/component
+      resolve(
+        {
+          componentUrl: './pages/profile-garage-vehicle-view.html?' + v,
+        },
+        {
+          context: {
+            id: garageId, // Pass the dynamic id to the page context
+          }
+        }
+      )
+    }
+  },
+
+
+
   // Default route (404 page). MUST BE THE LAST
   {
     path: '(.*)',
