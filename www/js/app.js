@@ -607,4 +607,45 @@ $(document).on('click', '#signup-complete', async function (e) {
   }
 })
 
+//GARAGE - DATE PICKER
+$(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', function (e) {
+  app.calendar.create({
+    inputEl: '#owned-from',
+    openIn: 'customModal',
+    header: true,
+    footer: true,
+    dateFormat: 'yyyy-mm-dd',
+    maxDate: new Date()
+  })
+
+  app.calendar.create({
+    inputEl: '#owned-to',
+    openIn: 'customModal',
+    header: true,
+    footer: true,
+    dateFormat: 'yyyy-mm-dd',
+    minDate: new Date()
+  })
+})
+
+$(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', function (e) {
+  app.calendar.create({
+    inputEl: '#owned-from',
+    openIn: 'customModal',
+    header: true,
+    footer: true,
+    dateFormat: 'yyyy-mm-dd',
+    maxDate: new Date()
+  })
+
+  app.calendar.create({
+    inputEl: '#owned-to',
+    openIn: 'customModal',
+    header: true,
+    footer: true,
+    dateFormat: 'yyyy-mm-dd',
+    minDate: new Date()
+  })
+})
+
 export default app

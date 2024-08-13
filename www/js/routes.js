@@ -70,7 +70,18 @@ var routes = [
     path: '/post-view/:id',
     componentUrl: './pages/post-view.html?' + v,
   },
-
+  {
+    path: '/profile-garage-edit/',
+    componentUrl: './pages/profile-garage-edit.html?' + v,
+  },
+  {
+    path: '/profile-garage-vehicle-add/',
+    componentUrl: './pages/profile-garage-vehicle-add.html?' + v,
+  },
+  {
+    path: '/profile-garage-vehicle-edit/:id',
+    componentUrl: './pages/profile-garage-vehicle-edit.html?' + v,
+  },
   // Default route (404 page). MUST BE THE LAST
   {
     path: '(.*)',

@@ -1,6 +1,8 @@
 import store from "./store.js"
 import app from "./app.js"
-import { getGargeById } from "./api/garage.js"
+import { addVehicleToGarage, deleteVehicleFromGarage, getGargeById, updateVehicleInGarage } from "./api/garage.js"
+import { getSessionUser } from "./api/auth.js"
+import { sendRNMessage } from "./api/consts.js"
 var $ = Dom7
 
 const garageStore = store.getters.myGarage
@@ -57,10 +59,15 @@ export function displayGarage(garage) {
   garageContainer.innerHTML = createGarageContent(garage)
 }
 
-function createGarageContent(garages) {
+function createGarageContent(garages, currentList, pastList) {
   // Elements for current and past vehicles
-  const currentVehiclesList = document.querySelector('.current-vehicles-list')
-  const pastVehiclesList = document.querySelector('.past-vehicles-list')
+  const currentVehiclesList = document.querySelector(currentList)
+  const pastVehiclesList = document.querySelector(pastList)
+
+  if (!currentVehiclesList || !pastVehiclesList) return
+
+  currentVehiclesList.innerHTML = '' // Clear the list before adding new vehicles
+  pastVehiclesList.innerHTML = '' // Clear the list before adding new vehicles
 
   // Function to generate vehicle HTML
   function generateVehicleHTML(vehicle) {
@@ -69,11 +76,12 @@ function createGarageContent(garages) {
         <a href="/profile-garage-vehicle-view/${vehicle.id}" class="item">
             <div class="imageWrapper">
                 <div class="image-square image-rounded"
-                    style="background-image:url('${vehicle.cover_photo}');"></div>
+                    style="background-image:url('${vehicle.cover_photo || 'assets/img/placeholder1.jpg'}');">
+                    </div>
             </div>
             <div class="in">
                 <div>
-                    ${vehicle.make} ${vehicle.model} - ${vehicle.variant || ''}
+                    ${vehicle.make} ${vehicle.model}
                 </div>
             </div>
         </a>
@@ -92,25 +100,28 @@ function createGarageContent(garages) {
 }
 
 function generatePostGridItem(post) {
-  return post.media.map(media => {
-    const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
-    if (isVideo) {
-      return `
-        <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}">
-          <div class="video-square">
-            <video>
-              <source src="${media.media_url}" type="video/mp4" />
-            </video>
-          </div>
-        </a>`
-    } else {
-      return `
+  if (!post.media || post.media.length === 0) return ''
+
+  const media = post.media[0] // Get the first media item
+  const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
+
+  if (isVideo) {
+    return `
       <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}">
-          <div class="image-square" style="background-image:url('${media.media_url}');"></div>
+        <div class="video-square">
+          <video>
+            <source src="${media.media_url}" type="video/mp4" />
+          </video>
+        </div>
       </a>`
-    }
-  }).join('')
+  } else {
+    return `
+      <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}">
+        <div class="image-square" style="background-image:url('${media.media_url}');"></div>
+      </a>`
+  }
 }
+
 
 // Calculate the number of posts and decide if we need to add empty items
 function fillGridWithPosts(posts, profileGridID) {
@@ -120,15 +131,18 @@ function fillGridWithPosts(posts, profileGridID) {
   profileGrid.innerHTML = '' // Clear the grid before adding new posts
 
   const gridColumns = 3 // Assuming a 3-column grid
-  const gridSize = posts.length
+  const gridSize = posts.filter(post => post.media && post.media.length > 0).length
   const emptySlotsNeeded = (gridColumns - (gridSize % gridColumns)) % gridColumns
 
   posts.forEach(post => {
     profileGrid.innerHTML += generatePostGridItem(post)
   })
 
-  // Add empty slots to fill the grid
-  profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
+  if (emptySlotsNeeded > 0) {
+    // Add empty slots to fill the grid
+    profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
+  }
+
 
   // Add the "big image" as the last item, if the grid is filled correctly
   if (emptySlotsNeeded === 0 && posts.length > 0) {
@@ -153,7 +167,7 @@ function addEmptyGridItems(count) {
 
 garageStore.onUpdated((garage) => {
   if (garage && garage.length > 0) {
-    createGarageContent(garage)
+    createGarageContent(garage, '.current-vehicles-list', '.past-vehicles-list')
   }
 })
 
@@ -348,7 +362,7 @@ store.getters.getGarageViewTags.onUpdated((data) => {
 })
 
 // Function to update the HTML with the data
-function updateProfilePage(data) {
+async function updateProfilePage(data) {
   // Update the cover photo
   const coverPhotoElement = document.querySelector('.vehicle-profile-background')
   if (coverPhotoElement) {
@@ -368,6 +382,39 @@ function updateProfilePage(data) {
     vehicleTitleElement.textContent = `${data.make} ${data.model}`
   }
 
+
+  const profileLinks = $('.profile-links-edit.garage')
+  if (profileLinks) {
+    const editLink = `<a class="profile-link" href="/profile-garage-vehicle-edit/${data.id}">Edit Vehicle</a>`
+    const user = await getSessionUser()
+
+    if (data.owner_id == user.id) {
+      profileLinks.prepend(editLink)
+    }
+
+    $('.garage-add-post').attr('data-garage-id', data.id)
+
+    $(document).on('click', '.garage-add-post', async function (e) {
+      const garageId = $(this).attr('data-garage-id')
+
+      if (!garageId) {
+        app.dialog.alert('Garage not found')
+        return
+      }
+
+      const user = await getSessionUser()
+      if (user) {
+        sendRNMessage({
+          type: "createPost",
+          user_id: user.id,
+          page: 'profile-garage-post',
+          association_id: garageId,
+          association_type: 'garage',
+        })
+      }
+    })
+  }
+
   // Update the ownership information
   const ownershipInfoElement = document.querySelector('.garage-owned-information')
   if (ownershipInfoElement) {
@@ -380,13 +427,324 @@ function updateProfilePage(data) {
   if (vehicleDescriptionElement) {
     vehicleDescriptionElement.textContent = data.short_description
   }
-
-  // Additional updates (like posts, tags, etc.) can be handled here
-  // Assuming you would dynamically update the posts or tags based on the data provided
 }
 
 $(document).on('page:init', '.page[data-name="post-view"]', async function (e) {
   var postId = e.detail.route.params.id
   console.log(postId)
   $('#post_id').innerHTML = postId
+})
+
+$(document).on('page:init', '.page[data-name="profile-garage-edit"]', async function (e) {
+  const garage = garageStore.value
+  if (garage && garage.length > 0) {
+    createGarageContent(garage, '#garage-edit-current-list', '#garage-edit-past-list')
+  }
+})
+
+$(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', async function (e) {
+  var garageId = e.detail.route.params.id
+  var view = app.views.current
+
+  if (!garageId) {
+    app.dialog.alert('Garage not found')
+    view.router.back(view.history[0], { force: true })
+    return
+  }
+
+  let data = null
+  try {
+    if (pathStore && pathStore.value[`/garage/${garageId}`]) {
+      data = pathStore.value[`/garage/${garageId}`]
+    }
+  } catch (error) {
+    console.error('Error fetching cached data:', error)
+  }
+
+  if (!data) {
+    const garage = await getGargeById(garageId)
+
+    if (!garage) {
+      app.dialog.alert('Garage not found')
+      view.router.back(view.history[0], { force: true })
+      return
+    }
+
+    data = garage
+    // Assuming `path` is a dynamic path like '/garage/2'
+    store.dispatch('setPathData', {
+      path: `/garage/${garageId}`,
+      data: data,
+    })
+  }
+
+  // check if user is the owner of the garage
+  const user = await getSessionUser()
+  if (data.owner_id != user.id) {
+    app.dialog.alert('You are not authorized to edit this vehicle')
+    view.router.back(view.history[0], { force: true })
+    return
+  }
+
+  // Populate form fields with garage data
+  document.querySelector('select[name="vehicle_make"]').value = data.make
+  document.querySelector('input[name="vehicle_model"]').value = data.model
+  document.querySelector('input[name="vehicle_variant"]').value = data.variant
+  document.querySelector('input[name="vehicle_reg"]').value = data.registration
+  document.querySelector('input[name="vehicle_colour"]').value = data.colour
+  document.querySelector('input[name="vehicle_owned_from"]').value = data.owned_since
+  document.querySelector('input[name="vehicle_owned_to"]').value = data.owned_until || ''
+  document.querySelector('input[name="vehicle_tagging"]').checked = data.allow_tagging === "1"
+
+  // If a cover photo exists, use it as the background image of the upload label
+  if (data.cover_photo) {
+    document.querySelector('.custom-file-upload label').style.backgroundImage = `url('${data.cover_photo}')`
+    document.querySelector('.custom-file-upload label').style.backgroundSize = 'cover'
+  }
+
+  // Set vehicle ownership and toggle the "Owned To" date picker
+  const ownershipSelect = document.querySelector('select[name="vehicle_ownership"]')
+
+  const toggleOwnedToDatePicker = () => {
+    const ownedToInput = document.querySelector('input[name="vehicle_owned_to"]')
+    const ownedToBContainer = document.querySelector('#owned-to-block')
+    if (ownershipSelect.value === "current") { // Current Vehicle
+      ownedToBContainer.style.display = 'none'
+      ownedToInput.value = ''
+    } else {
+      ownedToBContainer.style.display = 'block'
+    }
+  }
+
+  // Initially set the visibility based on the garage data
+  ownershipSelect.value = data.primary_car === "1" ? "current" : "past"
+  toggleOwnedToDatePicker()
+
+  // Attach event listener to toggle visibility when ownership type changes
+  ownershipSelect.addEventListener('change', toggleOwnedToDatePicker)
+
+  // input vehicle_image
+  $(document).on('change', 'input[name="vehicle_image"]', function (e) {
+    const file = e.target.files[0]
+    const reader = new FileReader()
+
+    reader.onload = function (e) {
+      document.querySelector('.custom-file-upload label').style.backgroundImage = `url('${e.target.result}')`
+      document.querySelector('.custom-file-upload label').style.backgroundSize = 'cover'
+    }
+
+    reader.readAsDataURL(file)
+  })
+
+  // submit-vehicle-form
+  $(document).on('click', '#submit-vehicle-form', async function (e) {
+    // form data
+    const form = $('form#vehicleForm')
+
+    // values
+    const make = form.find('select[name="vehicle_make"]').val()
+    const model = form.find('input[name="vehicle_model"]').val()
+    const variant = form.find('input[name="vehicle_variant"]').val()
+    const reg = form.find('input[name="vehicle_reg"]').val()
+    const colour = form.find('input[name="vehicle_colour"]').val()
+
+    const owned_from = form.find('input[name="vehicle_owned_from"]').val()
+    const owned_to = form.find('input[name="vehicle_owned_to"]').val()
+
+    const primary_car = form.find('select[name="vehicle_ownership"]').val()
+    const allow_tagging = form.find('input[name="vehicle_tagging"]').is(':checked') ? 1 : 0
+
+    const cover_image = form.find('input[name="vehicle_image"]').prop('files')[0]
+
+    // validate
+    // required fields -> make, model, reg, owned_from
+
+    if (!make) {
+      app.dialog.alert('Please select a vehicle make')
+      return
+    }
+
+    if (!model) {
+      app.dialog.alert('Please enter a vehicle model')
+      return
+    }
+
+    if (!reg) {
+      app.dialog.alert('Please enter a vehicle registration number')
+      return
+    }
+
+    if (!owned_from) {
+      app.dialog.alert('Please enter the date you owned the vehicle from')
+      return
+    }
+
+    // if primary_car is past, owned_to is required
+    if (primary_car === "past" && !owned_to) {
+      app.dialog.alert('Please enter the date you owned the vehicle to')
+      return
+    }
+
+    try {
+      $('.init-loader').show()
+
+      const response = await updateVehicleInGarage(
+        {
+          make,
+          model,
+          variant,
+          registration: reg,
+          colour,
+          ownedFrom: owned_from,
+          ownedTo: owned_to,
+          primary_car,
+          allow_tagging,
+          // cover_image,
+          vehicle_period: primary_car
+        },
+        garageId
+      )
+      console.log(response)
+
+      if (!response || !response.success) {
+        throw new Error('Failed to update vehicle')
+      }
+
+      $('.init-loader').hide()
+      app.dialog.alert('Vehicle updated successfully')
+    } catch (error) {
+      $('.init-loader').hide()
+      app.dialog.alert('Failed to update vehicle')
+    }
+  })
+
+  // #delete-vehicle on click
+  $(document).on('click', '#delete-vehicle', async function (e) {
+    app.dialog.confirm('Are you sure you want to delete this vehicle?', async function () {
+      try {
+        $('.init-loader').show()
+
+        const response = await deleteVehicleFromGarage(garageId)
+
+        if (!response || !response.success) {
+          throw new Error('Failed to delete vehicle')
+        }
+
+        $('.init-loader').hide()
+        app.dialog.alert('Vehicle deleted successfully')
+        store.dispatch('getMyGarage')
+        app.views.main.router.navigate('/profile-garage-edit/')
+      } catch (error) {
+        $('.init-loader').hide()
+        app.dialog.alert('Failed to delete vehicle')
+      }
+    })
+  })
+})
+
+$(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', async function (e) {
+  const toggleOwnedToDatePicker = (e) => {
+    const ownedToInput = document.querySelector('input[name="vehicle_owned_to"]')
+    const ownedToBContainer = document.querySelector('#owned-to-block')
+
+    const value = e.target.value
+    console.log(value)
+
+    if (value === "current") { // Current Vehicle
+      ownedToBContainer.style.display = 'none'
+      ownedToInput.value = ''
+    } else {
+      ownedToBContainer.style.display = 'block'
+    }
+  }
+
+  $(document).on('change', 'select[name="vehicle_ownership"]', toggleOwnedToDatePicker)
+
+  // input vehicle_image
+  $(document).on('change', 'input[name="vehicle_image"]', function (e) {
+    const file = e.target.files[0]
+    const reader = new FileReader()
+
+    reader.onload = function (e) {
+      document.querySelector('.custom-file-upload label').style.backgroundImage = `url('${e.target.result}')`
+      document.querySelector('.custom-file-upload label').style.backgroundSize = 'cover'
+    }
+
+    reader.readAsDataURL(file)
+  })
+
+  $(document).on('click', '#submit-add-vehicle-form', async function (e) {
+    const form = $('form#addVehicleForm')
+
+    // values
+    const make = form.find('select[name="vehicle_make"]').val()
+    const model = form.find('input[name="vehicle_model"]').val()
+    const variant = form.find('input[name="vehicle_variant"]').val()
+    const reg = form.find('input[name="vehicle_reg"]').val()
+    const colour = form.find('input[name="vehicle_colour"]').val()
+
+    const owned_from = form.find('input[name="vehicle_owned_from"]').val()
+    const owned_to = form.find('input[name="vehicle_owned_to"]').val()
+
+    const primary_car = form.find('select[name="vehicle_ownership"]').val()
+    const allow_tagging = form.find('input[name="vehicle_tagging"]').is(':checked') ? 1 : 0
+
+    const cover_image = form.find('input[name="vehicle_image"]').prop('files')[0]
+
+    if (!make) {
+      app.dialog.alert('Please select a vehicle make')
+      return
+    }
+
+    if (!model) {
+      app.dialog.alert('Please enter a vehicle model')
+      return
+    }
+
+    if (!reg) {
+      app.dialog.alert('Please enter a vehicle registration number')
+      return
+    }
+
+    if (!owned_from) {
+      app.dialog.alert('Please enter the date you owned the vehicle from')
+      return
+    }
+
+    // if primary_car is past, owned_to is required
+    if (primary_car === "past" && !owned_to) {
+      app.dialog.alert('Please enter the date you owned the vehicle to')
+      return
+    }
+
+    try {
+      $('.init-loader').show()
+
+      const response = await addVehicleToGarage({
+        make,
+        model,
+        variant,
+        registration: reg,
+        colour,
+        ownedFrom: owned_from,
+        ownedTo: owned_to,
+        primary_car,
+        allow_tagging,
+        // cover_image,
+        vehicle_period: primary_car
+      })
+
+      if (!response || !response.success) {
+        throw new Error('Failed to update vehicle')
+      }
+
+      $('.init-loader').hide()
+      app.dialog.alert('Vehicle added successfully')
+      // redirect to garage
+      app.views.main.router.navigate(`/profile-garage-vehicle-view/${response.id}`)
+    } catch (error) {
+      $('.init-loader').hide()
+      app.dialog.alert('Failed to update vehicle')
+    }
+  })
 })

@@ -1,3 +1,4 @@
+import { getSessionUser } from './auth.js'
 import { API_URL } from './consts.js'
 
 export const getUserGarage = async (profileId) => {
@@ -65,4 +66,62 @@ export const getPostsForGarage = async (garageId, page = 1, tagged = false) => {
     } catch (error) {
         return null
     }
+}
+
+export const addVehicleToGarage = async (data) => {
+    const user = await getSessionUser()
+    if (!user) return
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/add-vehicle-to-garage`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            ...data,
+            user_id: user.id,
+        }),
+    })
+
+    const res = await response.json()
+    return res
+}
+
+export const updateVehicleInGarage = async (data, garageId) => {
+    const user = await getSessionUser()
+    if (!user) return
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/update-garage`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            ...data,
+            user_id: user.id,
+            garage_id: garageId,
+        }),
+    })
+
+    const res = await response.json()
+    return res
+}
+
+export const deleteVehicleFromGarage = async (garageId) => {
+    const user = await getSessionUser()
+    if (!user) return
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/delete-garage`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            user_id: user.id,
+            garage_id: garageId,
+        }),
+    })
+
+    const res = await response.json()
+    return res
 }
