@@ -37,25 +37,31 @@ export const getUserDetails = async (token) => {
         return null
     }
 }
-
 export const verifyUser = async (credentials) => {
     try {
-        const response = await fetch(`${API_URL}/wp-json/ticket_scanner/v1/verify_user/`, {
-            method: "POST",
+        // Convert the credentials object to a URL query string
+        const queryParams = new URLSearchParams(credentials).toString()
+
+        // Make a GET request with the query parameters
+        const response = await fetch(`${API_URL}/wp-json/ticket_scanner/v1/verify_user/?${queryParams}`, {
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(credentials),
         })
 
         if (response.ok) {
             return await response.json()
+        } else {
+            console.error('Failed to verify user:', response.statusText)
+            return null
         }
     } catch (error) {
         console.error(error)
         return error
     }
 }
+
 
 export const handleSignUp = async (user) => {
     try {
