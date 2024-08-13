@@ -62,7 +62,7 @@ function displayPost(post) {
   postsContainer.insertAdjacentHTML('beforeend', postItem)
 }
 
-$(document).on('page:init', '.page[data-name="post-view"]', async function (e) {
+$(document).on('page:mount', '.page[data-name="post-view"]', async function (e) {
   var postId = e.detail.route.params.id
   const post = await getPostById(postId)
   displayPost(post)

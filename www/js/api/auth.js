@@ -45,7 +45,6 @@ export const verifyUser = async (credentials) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            mode: 'cors',
             body: JSON.stringify(credentials),
         })
 
