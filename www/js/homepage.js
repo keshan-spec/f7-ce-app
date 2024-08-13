@@ -129,8 +129,8 @@ function displayPosts(posts, following = false) {
                     ${post.media.map(mediaItem => `
                       <div class="swiper-slide">
                         ${mediaItem.media_type === 'video' ? `
-                          <video autoplay loop muted playsinline class="video-background">
-                            <source src ="${mediaItem.media_url}" type ="${mediaItem.media_mime_type}" />
+                          <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
+                            <source src="${mediaItem.media_url}" type="${mediaItem.media_mime_type}" />
                           </video>
                         ` : `
                           <img src="${mediaItem.media_url}" alt="${mediaItem.media_alt}" />
@@ -169,6 +169,15 @@ function displayPosts(posts, following = false) {
     togglePostLike(postId)
   }), { passive: false })
 }
+
+// media-post-video click
+$(document).on('click', '.media-post-video', function () {
+  if (this.paused) {
+    this.play()
+  } else {
+    this.pause()
+  }
+})
 
 function togglePostLike(postId) {
   // Find the post element and its like icon

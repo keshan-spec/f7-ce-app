@@ -39,7 +39,7 @@ export const getUserDetails = async (token) => {
 
 export const verifyUser = async (credentials) => {
     try {
-        const response = await fetch(`${API_URL}/wp-json/ticket_scanner/v1/verify_user`, {
+        const response = await fetch(`${API_URL}/wp-json/ticket_scanner/v1/verify_user/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
