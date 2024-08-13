@@ -45,6 +45,7 @@ export const verifyUser = async (credentials) => {
         // Make a GET request with the query parameters
         const response = await fetch(`${API_URL}/wp-json/ticket_scanner/v1/verify_user/?${queryParams}`, {
             method: "GET",
+            mode: 'cors',
             headers: {
                 "Content-Type": "application/json",
             },
