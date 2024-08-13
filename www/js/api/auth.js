@@ -18,9 +18,10 @@ export const getSessionUser = async () => {
 
 export const getUserDetails = async (token) => {
     try {
-        let url = `${API_URL}/wp-json/app/v1/get-user-profile`
+        let url = `${API_URL}/wp-json/app/v1/get-user-profile/`
         let response = await fetch(url, {
             method: "POST",
+            mode: 'cors',
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
@@ -44,6 +45,7 @@ export const verifyUser = async (credentials) => {
             headers: {
                 "Content-Type": "application/json",
             },
+            mode: 'cors',
             body: JSON.stringify(credentials),
         })
 
@@ -126,8 +128,6 @@ export const updateAboutUserIds = async (content_ids, user_id) => {
     const data = await response.json()
     return data
 }
-
-
 
 export const updatePassword = async (new_password, old_password) => {
     const user = await getSessionUser()
