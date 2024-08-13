@@ -3,10 +3,10 @@ import { formatPostDate } from "./utils.js"
 var $ = Dom7
 
 function displayPost(post) {
-    const postsContainer = document.getElementById('post-view-container')
-    postsContainer.innerHTML = '' // Clear any existing posts
+  const postsContainer = document.getElementById('post-view-container')
+  postsContainer.innerHTML = '' // Clear any existing posts
 
-    const post_actions = `
+  const post_actions = `
      <div class="media-post-actions">
         <div class="media-post-like" data-post-id="${post.id}">
           <i class="icon f7-icons ${post.is_liked ? 'text-red' : ''}">${post.is_liked ? 'heart_fill' : 'heart'}</i>
@@ -23,8 +23,8 @@ function displayPost(post) {
       </div>
     `
 
-    const date = formatPostDate(post.post_date)
-    const postItem = `
+  const date = formatPostDate(post.post_date)
+  const postItem = `
           <div class="media-post" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
             <div class="media-post-content">
               <div class="media-post-header">
@@ -59,27 +59,11 @@ function displayPost(post) {
             </div>
           </div>
         `
-    postsContainer.insertAdjacentHTML('beforeend', postItem)
-
-    // Add click event listener for liking a post
-    const likeButtons = document.querySelectorAll('.media-post-like')
-    likeButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            const postId = event.currentTarget.getAttribute('data-post-id')
-            togglePostLike(postId)
-        })
-    })
-
-    $('.media-post-content img, .media-post-content video').on('touchstart', detectDoubleTapClosure((e) => {
-        const parent = e.closest('.media-post')
-        const postId = parent.getAttribute('data-post-id')
-
-        togglePostLike(postId)
-    }), { passive: false })
+  postsContainer.insertAdjacentHTML('beforeend', postItem)
 }
 
 $(document).on('page:init', '.page[data-name="post-view"]', async function (e) {
-    var postId = e.detail.route.params.id
-    const post = await getPostById(postId)
-    displayPost(post)
+  var postId = e.detail.route.params.id
+  const post = await getPostById(postId)
+  displayPost(post)
 })
