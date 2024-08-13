@@ -92,25 +92,6 @@ infiniteScrollContent.addEventListener('infinite', async function () {
   isFetchingPosts = false
 })
 
-// //Comments Popup
-// var CommentsPopup = app.popup.create({
-//   el: '.comments-popup',
-//   swipeToClose: 'to-bottom'
-// })
-
-// //Share Popup
-// var SharePopup = app.popup.create({
-//   el: '.share-popup',
-//   swipeToClose: 'to-bottom'
-// })
-
-// //Share Popup
-// var EditPostPopup = app.popup.create({
-//   el: '.edit-post-popup',
-//   swipeToClose: 'to-bottom'
-// })
-
-
 function displayPosts(posts, following = false) {
   const postsContainer = document.getElementById(following ? 'tab-following' : 'tab-latest')
   postsContainer.innerHTML = '' // Clear any existing posts
@@ -172,13 +153,6 @@ function displayPosts(posts, following = false) {
     postsContainer.insertAdjacentHTML('beforeend', postItem)
   })
 
-  // Initialize swiper for the dynamically added content
-  app.swiper.create('.swiper-container', {
-    pagination: {
-      el: '.swiper-pagination',
-    },
-  })
-
   // Add click event listener for liking a post
   const likeButtons = document.querySelectorAll('.media-post-like')
   likeButtons.forEach(button => {
@@ -227,6 +201,7 @@ function togglePostLike(postId) {
 }
 
 function displayComments(comments, postId) {
+
   const commentsContainer = document.getElementById('comments-list')
   // reset the comments container
   commentsContainer.innerHTML = ''
@@ -235,7 +210,6 @@ function displayComments(comments, postId) {
 
   if (!comments.length) {
     commentsContainer.innerHTML = '<div class="no-comments">No comments found</div>'
-    commentForm.setAttribute('data-post-id', '')
     return
   }
 
@@ -350,7 +324,7 @@ function toggleCommentLike(commentId, ownerId) {
 }
 
 // on .popup-open click
-$(document).on('click', '.popup-open', async function () {
+$(document).on('click', '.media-post-comment', async function () {
   const postId = this.getAttribute('data-post-id')
 
   if (!postId) {

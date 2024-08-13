@@ -96,6 +96,9 @@ const store = createStore({
     }
   },
   actions: {
+    clearPathData({ state }) {
+      state.paths = {}
+    },
     setPathData({ state }, { path, data }) {
       // Ensure the path key exists
       if (!state.paths[path]) {

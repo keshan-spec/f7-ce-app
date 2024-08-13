@@ -166,6 +166,9 @@ function addEmptyGridItems(count) {
 }
 
 garageStore.onUpdated((garage) => {
+  // clear path data
+  store.dispatch('clearPathData')
+
   if (garage && garage.length > 0) {
     createGarageContent(garage, '.current-vehicles-list', '.past-vehicles-list')
   }
@@ -429,11 +432,6 @@ async function updateProfilePage(data) {
   }
 }
 
-$(document).on('page:init', '.page[data-name="post-view"]', async function (e) {
-  var postId = e.detail.route.params.id
-  console.log(postId)
-  $('#post_id').innerHTML = postId
-})
 
 $(document).on('page:init', '.page[data-name="profile-garage-edit"]', async function (e) {
   const garage = garageStore.value
@@ -556,10 +554,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
 
     const cover_image = form.find('input[name="vehicle_image"]').prop('files')[0]
 
-    // validate
-    // required fields -> make, model, reg, owned_from
-
-    if (!make) {
+    if (!make || make === "0") {
       app.dialog.alert('Please select a vehicle make')
       return
     }
@@ -585,6 +580,19 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
       return
     }
 
+    let base64 = null
+
+    if (cover_image) {
+      // Wrap the FileReader in a Promise to wait for it to complete
+      base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(cover_image)
+
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = () => reject(new Error('Failed to read image as base64'))
+      })
+    }
+
     try {
       $('.init-loader').show()
 
@@ -599,12 +607,11 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
           ownedTo: owned_to,
           primary_car,
           allow_tagging,
-          // cover_image,
+          cover_photo: base64,
           vehicle_period: primary_car
         },
         garageId
       )
-      console.log(response)
 
       if (!response || !response.success) {
         throw new Error('Failed to update vehicle')
@@ -612,6 +619,11 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
 
       $('.init-loader').hide()
       app.dialog.alert('Vehicle updated successfully')
+
+      // refresh garage
+      await store.dispatch('getMyGarage')
+
+      view.router.back(view.history[0], { force: true })
     } catch (error) {
       $('.init-loader').hide()
       app.dialog.alert('Failed to update vehicle')
@@ -632,8 +644,8 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
 
         $('.init-loader').hide()
         app.dialog.alert('Vehicle deleted successfully')
-        store.dispatch('getMyGarage')
-        app.views.main.router.navigate('/profile-garage-edit/')
+        await store.dispatch('getMyGarage')
+        view.router.back('/profile-garage-edit/', { force: true })
       } catch (error) {
         $('.init-loader').hide()
         app.dialog.alert('Failed to delete vehicle')
@@ -643,12 +655,13 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
 })
 
 $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', async function (e) {
+  var view = app.views.current
+
   const toggleOwnedToDatePicker = (e) => {
     const ownedToInput = document.querySelector('input[name="vehicle_owned_to"]')
     const ownedToBContainer = document.querySelector('#owned-to-block')
 
     const value = e.target.value
-    console.log(value)
 
     if (value === "current") { // Current Vehicle
       ownedToBContainer.style.display = 'none'
@@ -691,7 +704,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', asy
 
     const cover_image = form.find('input[name="vehicle_image"]').prop('files')[0]
 
-    if (!make) {
+    if (!make || make === "0") {
       app.dialog.alert('Please select a vehicle make')
       return
     }
@@ -717,6 +730,24 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', asy
       return
     }
 
+    if (!cover_image) {
+      app.dialog.alert('Please upload a cover image')
+      return
+    }
+
+    let base64 = null
+
+    if (cover_image) {
+      // Wrap the FileReader in a Promise to wait for it to complete
+      base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(cover_image)
+
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = () => reject(new Error('Failed to read image as base64'))
+      })
+    }
+
     try {
       $('.init-loader').show()
 
@@ -730,7 +761,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', asy
         ownedTo: owned_to,
         primary_car,
         allow_tagging,
-        // cover_image,
+        cover_photo: base64,
         vehicle_period: primary_car
       })
 
@@ -741,7 +772,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', asy
       $('.init-loader').hide()
       app.dialog.alert('Vehicle added successfully')
       // redirect to garage
-      app.views.main.router.navigate(`/profile-garage-vehicle-view/${response.id}`)
+      view.router.back(`/profile-garage-vehicle-view/${response.id}`, { force: true })
     } catch (error) {
       $('.init-loader').hide()
       app.dialog.alert('Failed to update vehicle')
