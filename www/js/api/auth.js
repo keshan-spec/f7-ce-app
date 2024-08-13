@@ -2,6 +2,10 @@ import { API_URL } from "./consts.js"
 import store from "../store.js"
 
 export const getSessionUser = async () => {
+    return {
+        id: 1
+    }
+
     // get session from somewhere    
     if (store.state.user) {
         return store.state.user
