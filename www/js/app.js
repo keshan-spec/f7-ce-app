@@ -15,6 +15,10 @@ var toolbarEl = $('.footer')[0]
 var html5QrCode
 
 var app = new Framework7({
+  initOnDeviceReady: true,
+  view: {
+    pushState: true,
+  },
   name: 'DriveLife',
   theme: 'ios',
   //theme: 'auto',
