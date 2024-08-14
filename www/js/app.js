@@ -18,10 +18,17 @@ var app = new Framework7({
   initOnDeviceReady: true,
   view: {
     pushState: true,
+    stackPages: true
   },
   name: 'DriveLife',
   theme: 'ios',
   //theme: 'auto',
+  panel: {
+    swipe: 'right',
+  },
+  smartSelect: {
+    closeOnSelect: true,
+  },
   cache: true,
   el: '#app', // App root element
   on: {
@@ -40,6 +47,8 @@ var app = new Framework7({
       }, 200)
     },
     pageInit: function (page) {
+      window.f7View = this.views.current
+
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
           displayProfile(data)
@@ -61,6 +70,36 @@ var app = new Framework7({
   },
   store: store,
   routes: routes,
+})
+
+export function onBackKeyDown() {
+  var view = app.views.current
+
+  var leftp = app.panel.left && app.panel.left.opened
+  var rightp = app.panel.right && app.panel.right.opened
+
+  if (leftp || rightp) {
+    app.panel.close()
+    return false
+  } else if ($('.modal-in').length > 0) {
+    app.dialog.close()
+    app.popup.close()
+    return false
+  } else if (app.views.main.router.url == '/') {
+    window.ReactNativeWebView.postMessage('exit_app')
+    return true
+  } else {
+    view.router.back(view.history[0], { force: true })
+    return false
+  }
+}
+
+window.onAppBackKey = onBackKeyDown
+
+$(document).on('page:mounted', function (e) {
+  // window.f7View = app.views.current
+
+  console.log('in ', e)
 })
 
 const renderResult = (result) => {
@@ -170,7 +209,6 @@ $(document).on('click', '#unlink-profile', async function () {
 })
 
 $(document).on('click', '.open-qr-modal', function () {
-  console.log('Opening QR Modal')
   openModal()
 
   html5QrCode = new Html5Qrcode("reader")
