@@ -47,7 +47,7 @@ var app = new Framework7({
       }, 200)
     },
     pageInit: function (page) {
-      window.f7View = this.views.current
+      // window.f7View = this.views.current
 
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
@@ -78,6 +78,13 @@ export function onBackKeyDown() {
   var leftp = app.panel.left && app.panel.left.opened
   var rightp = app.panel.right && app.panel.right.opened
 
+  window.ReactNativeWebView.postMessage(JSON.stringify({
+    his: view.history,
+    url: app.views.main.router.url,
+    leftp,
+    rightp
+  }))
+
   if (leftp || rightp) {
     app.panel.close()
     return false
@@ -85,11 +92,17 @@ export function onBackKeyDown() {
     app.dialog.close()
     app.popup.close()
     return false
-  } else if (app.views.main.router.url == '/') {
+  } else if (view.history[0] == '/') {
     window.ReactNativeWebView.postMessage('exit_app')
     return true
   } else {
-    view.router.back(view.history[0], { force: true })
+
+    if (view.history.length < 2) {
+      $('.tab-link[href="#view-home"]').click()
+      return
+    }
+
+    view.router.back()
     return false
   }
 }
