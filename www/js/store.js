@@ -8,12 +8,14 @@ const store = createStore({
   state: {
     user: null,
     posts: {
+      new_data: [],
       data: [],
       total_pages: 0,
       page: 1,
       limit: 10,
     },
     following_posts: {
+      new_data: [],
       data: [],
       total_pages: 0,
       page: 1,
@@ -27,12 +29,14 @@ const store = createStore({
     },
     myGarage: [],
     myPosts: {
+      new_data: [],
       data: [],
       total_pages: 0,
       page: 1,
       limit: 10,
     },
     myTags: {
+      new_data: [],
       data: [],
       total_pages: 0,
       page: 1,
@@ -143,6 +147,7 @@ const store = createStore({
       const posts = await fetchPosts(page)
 
       const data = {
+        new_data: posts.data,
         data: [
           ...state.posts.data,
           ...posts.data,
@@ -200,6 +205,7 @@ const store = createStore({
       const posts = await fetchPosts(page, true)
 
       const data = {
+        new_data: posts.data,
         data: [
           ...state.following_posts.data,
           ...posts.data,
@@ -227,6 +233,7 @@ const store = createStore({
       const posts = await getPostsForUser(state.user.id, page)
 
       const data = {
+        new_data: posts.data,
         data: [
           ...state.myPosts.data,
           ...posts.data,
@@ -242,6 +249,7 @@ const store = createStore({
       const posts = await getPostsForUser(state.user.id, page, true)
 
       const data = {
+        new_data: posts.data,
         data: [
           ...state.myTags.data,
           ...posts.data,

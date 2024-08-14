@@ -92,3 +92,17 @@
     font-size: calc(var(--f7-input-clear-button-size) /(14 / 10));
     line-height: 1.4;
 } */
+
+.media-post .media-single-post-content {
+    position: relative;
+}
+
+.media-post .media-single-post-content img {
+    width: 100%;
+    height: auto;
+}
+
+.media-post .media-single-post-content video {
+    width: 100%;
+    height: auto;
+}

@@ -122,13 +122,12 @@ function generatePostGridItem(post) {
   }
 }
 
-
 // Calculate the number of posts and decide if we need to add empty items
 function fillGridWithPosts(posts, profileGridID) {
   // Select the container where the posts will be displayed
   const profileGrid = document.getElementById(profileGridID)
 
-  profileGrid.innerHTML = '' // Clear the grid before adding new posts
+  // profileGrid.innerHTML = '' // Clear the grid before adding new posts
 
   const gridColumns = 3 // Assuming a 3-column grid
   const gridSize = posts.filter(post => post.media && post.media.length > 0).length
@@ -147,9 +146,9 @@ function fillGridWithPosts(posts, profileGridID) {
   // Add the "big image" as the last item, if the grid is filled correctly
   if (emptySlotsNeeded === 0 && posts.length > 0) {
     profileGrid.innerHTML += `
-            <a href="/post-view/${posts[posts.length - 1].id}" class="grid-item large-item">
-                <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
-            </a>`
+      <a href="/post-view/${posts[posts.length - 1].id}" class="grid-item large-item">
+          <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
+      </a>`
   }
 }
 
@@ -175,20 +174,14 @@ garageStore.onUpdated((garage) => {
 })
 
 myPostsStore.onUpdated((data) => {
-  if (data && data.data) {
-    const posts = data.data
+  if (data && data.new_data) {
+    const posts = data.new_data
     totalPostPages = data.total_pages
-
 
     if ((data.page === data.total_pages) || (data.total_pages == 0)) {
       // hide preloader
       $('.infinite-scroll-preloader.posts-tab').hide()
     }
-
-    // Select the container where the posts will be displayed
-    const profileGrid = document.getElementById('profile-grid-posts')
-
-    profileGrid.innerHTML = '' // Clear the grid before adding new posts
 
     // Call the function to fill the grid
     fillGridWithPosts(posts, 'profile-grid-posts')
@@ -196,8 +189,8 @@ myPostsStore.onUpdated((data) => {
 })
 
 myTagsStore.onUpdated((data) => {
-  if (data && data.data) {
-    const posts = data.data
+  if (data && data.new_data) {
+    const posts = data.new_data
     totalFPostPages = data.total_pages
 
     if ((data.page === data.total_pages) || (data.total_pages == 0)) {
@@ -431,7 +424,6 @@ async function updateProfilePage(data) {
     vehicleDescriptionElement.textContent = data.short_description
   }
 }
-
 
 $(document).on('page:init', '.page[data-name="profile-garage-edit"]', async function (e) {
   const garage = garageStore.value

@@ -7,14 +7,6 @@ import { fetchComments, maybeLikePost, maybeLikeComment, addComment } from './ap
 var $ = Dom7
 var currentPage = 1
 
-// // Init slider
-// app.swiper.create('.swiper-container', {
-//   speed: 400,
-//   spaceBetween: 0,
-//   observer: true,
-//   pagination: '.swiper-pagination'
-// })
-
 var postsStore = store.getters.posts
 var followingPostsStore = store.getters.followingPosts
 
@@ -23,12 +15,12 @@ var totalFPostPages = 0
 
 postsStore.onUpdated((data) => {
   totalPostPages = data.total_pages
-  displayPosts(data.data)
+  displayPosts(data.new_data)
 })
 
 followingPostsStore.onUpdated((data) => {
   totalFPostPages = data.total_pages
-  displayPosts(data.data, true)
+  displayPosts(data.new_data, true)
 })
 
 // Pull to refresh content
@@ -40,7 +32,7 @@ ptrContent.addEventListener('ptr:refresh', function (e) {
 })
 
 /* Based on this http://jsfiddle.net/brettwp/J4djY/*/
-function detectDoubleTapClosure(callback) {
+export function detectDoubleTapClosure(callback) {
   let lastTap = 0
   let timeout
 
@@ -94,7 +86,7 @@ infiniteScrollContent.addEventListener('infinite', async function () {
 
 function displayPosts(posts, following = false) {
   const postsContainer = document.getElementById(following ? 'tab-following' : 'tab-latest')
-  postsContainer.innerHTML = '' // Clear any existing posts
+  // postsContainer.innerHTML = '' // Clear any existing posts
 
   posts.forEach(post => {
     const post_actions = `
@@ -154,7 +146,7 @@ function displayPosts(posts, following = false) {
   })
 
   // Add click event listener for liking a post
-  const likeButtons = document.querySelectorAll('.media-post-like')
+  const likeButtons = document.querySelectorAll('.media-post-like i')
   likeButtons.forEach(button => {
     button.addEventListener('click', (event) => {
       const postId = event.currentTarget.getAttribute('data-post-id')
@@ -179,9 +171,10 @@ $(document).on('click', '.media-post-video', function () {
   }
 })
 
-function togglePostLike(postId) {
+export function togglePostLike(postId, single = false) {
   // Find the post element and its like icon
-  const postElement = document.querySelector(`.media-post[data-post-id="${postId}"]`)
+  let container = single ? `.media-post.single[data-post-id="${postId}"]` : `.media-post[data-post-id="${postId}"]`
+  const postElement = document.querySelector(container)
   const likeIcon = postElement.querySelector('.media-post-like i')
   const isLiked = postElement.getAttribute('data-is-liked') === 'true'
   const likeCountElem = postElement.querySelector('.media-post-likecount')

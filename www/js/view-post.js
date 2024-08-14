@@ -1,4 +1,5 @@
 import { getPostById } from "./api/posts.js"
+import { detectDoubleTapClosure, togglePostLike } from "./homepage.js"
 import { formatPostDate } from "./utils.js"
 var $ = Dom7
 
@@ -8,7 +9,7 @@ function displayPost(post) {
 
   const post_actions = `
      <div class="media-post-actions">
-        <div class="media-post-like" data-post-id="${post.id}">
+        <div class="media-post-like single" data-post-id="${post.id}">
           <i class="icon f7-icons ${post.is_liked ? 'text-red' : ''}">${post.is_liked ? 'heart_fill' : 'heart'}</i>
         </div>
         <div class="media-post-comment popup-open" data-popup=".comments-popup" data-post-id="${post.id}">
@@ -25,14 +26,14 @@ function displayPost(post) {
 
   const date = formatPostDate(post.post_date)
   const postItem = `
-          <div class="media-post" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
-            <div class="media-post-content">
+          <div class="media-post single" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
+            <div class="media-single-post-content">
               <div class="media-post-header">
                 <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
                 <div class="media-post-user">${post.username}</div>
                 <div class="media-post-date">${date}</div>
               </div>
-              <div class="media-post-content">
+              <div class="media-single-post-content">
                 <div class="swiper-container">
                   <div class="swiper-wrapper">
                     ${post.media.map(mediaItem => `
@@ -60,9 +61,23 @@ function displayPost(post) {
           </div>
         `
   postsContainer.insertAdjacentHTML('beforeend', postItem)
+
+  // Add click event listener for liking a post
+  const likeButton = document.querySelector('.media-post-like.single i')
+  likeButton.addEventListener('click', (event) => {
+    const postId = event.currentTarget.getAttribute('data-post-id')
+    togglePostLike(postId, true)
+  })
+
+  $('.media-single-post-content img, .media-single-post-content video').on('touchstart', detectDoubleTapClosure((e) => {
+    const parent = e.closest('.media-post')
+    const postId = parent.getAttribute('data-post-id')
+
+    togglePostLike(postId, true)
+  }), { passive: false })
 }
 
-$(document).on('page:mount', '.page[data-name="post-view"]', async function (e) {
+$(document).on('page:afterin', '.page[data-name="post-view"]', async function (e) {
   var postId = e.detail.route.params.id
   const post = await getPostById(postId)
   displayPost(post)
