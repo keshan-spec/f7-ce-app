@@ -92,7 +92,7 @@ function displayPosts(posts, following = false) {
     const post_actions = `
      <div class="media-post-actions">
         <div class="media-post-like" data-post-id="${post.id}">
-          <i class="icon f7-icons ${post.is_liked ? 'text-red' : ''}">${post.is_liked ? 'heart_fill' : 'heart'}</i>
+          <i class="icon f7-icons ${post.is_liked ? 'text-red' : ''}" data-post-id="${post.id}">${post.is_liked ? 'heart_fill' : 'heart'}</i>
         </div>
         <div class="media-post-comment popup-open" data-popup=".comments-popup" data-post-id="${post.id}">
           <i class="icon f7-icons">chat_bubble</i>
