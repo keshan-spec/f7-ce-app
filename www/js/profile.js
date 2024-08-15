@@ -135,7 +135,7 @@ function generatePostGridItem(post) {
     return `
       <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}">
         <div class="video-square">
-          <video>
+          <video playsinline>
             <source src="${media.media_url}" type="video/mp4" />
           </video>
         </div>
