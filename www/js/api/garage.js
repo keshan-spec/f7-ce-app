@@ -18,7 +18,6 @@ export const getUserGarage = async (profileId) => {
 
         return data
     } catch (error) {
-        console.error(error)
         return []
     }
 }

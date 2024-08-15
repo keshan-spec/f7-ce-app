@@ -110,9 +110,11 @@ function displayPosts(posts, following = false) {
     const postItem = `
           <div class="media-post" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
             <div class="media-post-content">
-              <div class="media-post-header">
+            <div class="media-post-header">
+            <a href="/profile-view/${post.user_id}">
                 <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
                 <div class="media-post-user">${post.username}</div>
+                </a>
                 <div class="media-post-date">${date}</div>
               </div>
               <div class="media-post-content">
@@ -231,7 +233,7 @@ function displayComments(comments, postId) {
                   <div class="comment-profile-img" style="background-image:url('${reply.profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
                   <div class="comment-content-container">
                     <div class="comment-username">
-                    <span>${reply.user_login}</span>
+                    <a href="/profile-view/${reply.user_id}">${reply.user_login}</a>
                     <span class="date">${formatPostDate(reply.comment_date)}</span>
                     </div>
                     <div class="comment-content">${reply.comment}</div>
@@ -263,7 +265,7 @@ function displayComments(comments, postId) {
         <div class="comment-profile-img" style="background-image:url('${comment.profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
         <div class="comment-content-container">
           <div class="comment-username">
-          <span>${comment.user_login}</span>
+           <a href="/profile-view/${comment.user_id}">${comment.user_login}</a>
           <span class="date">${formatPostDate(comment.comment_date)}</span>
           </div>
           <div class="comment-content">${comment.comment}</div>
@@ -351,7 +353,20 @@ $(document).on('click', '.media-post-comment', async function () {
 // .media-post-share
 $(document).on('click', '.media-post-share', function () {
   // set the post id as a data attribute 
-  $('.share-popup').attr('data-post-id', $(this).closest('.media-post').attr('data-post-id'))
+  const postId = $(this).closest('.media-post').attr('data-post-id')
+  $('.share-popup').attr('data-post-id', postId)
+  $('#copy-link').attr('data-clipboard-text', `${window.location.origin}/post-view/${postId}`)
+})
+
+// data-clipboard-text click
+$(document).on('click', '#copy-link', function () {
+  const copyText = $(this).attr('data-clipboard-text')
+  navigator.clipboard.writeText(copyText)
+
+  app.toast.create({
+    text: 'Link copied to clipboard',
+    closeTimeout: 2000
+  }).open()
 })
 
 // on .comment-replies-toggle click
@@ -409,4 +424,9 @@ $(document).on('click', '.comment-reply', function () {
   const replyingTo = document.getElementById('comment-form').querySelector('.replying-to')
   replyingTo.innerHTML = `Replying to <strong>${ownerName}</strong>`
   document.getElementById('comment-form').prepend(replyingTo)
+})
+
+$(document).on('page:afterin', '.page[data-name="home"]', function (e) {
+  store.dispatch('getPosts', currentPage)
+  store.dispatch('getFollowingPosts', currentPage)
 })

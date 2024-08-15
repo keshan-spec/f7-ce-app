@@ -56,11 +56,19 @@ const store = createStore({
     },
     scannedData: null,
     scanningQrCode: false,
-    paths: {} // Object to store unique paths and their data
+    paths: {}, // Object to store unique paths and their data
+    userPaths: {}, // Object to store unique user paths and their data
+    userPathsUpdated: false,
   },
   getters: {
     getPathData({ state }) {
       return state.paths
+    },
+    getUserPathUpdated({ state }) {
+      return state.userPathsUpdated
+    },
+    getUserPathData({ state }) {
+      return state.userPaths
     },
     getGarageViewPosts({ state }) {
       return state.garageViewPosts
@@ -100,6 +108,54 @@ const store = createStore({
     }
   },
   actions: {
+    async getUserPosts({ state }, { user_id, page = 1 }) {
+      console.log('Getting user posts', user_id, page)
+
+      const posts = await getPostsForUser(user_id, page)
+
+      let prevUserPosts = { data: [] }
+
+      if (state.userPaths[`user-${user_id}-posts`]) {
+        prevUserPosts = state.userPaths[`user-${user_id}-posts`]
+      }
+
+      const data = {
+        new_data: posts.data,
+        data: [
+          ...prevUserPosts.data,
+          ...posts.data,
+        ],
+        total_pages: posts.total_pages,
+        page: page,
+        limit: posts.limit,
+      }
+
+      state.userPaths[`user-${user_id}-posts`] = data
+      state.userPathsUpdated = true
+    },
+    async getUserTags({ state }, { user_id, page = 1 }) {
+      const posts = await getPostsForUser(user_id, page, true)
+
+      let prevUserPosts = { data: [] }
+
+      if (state.userPaths[`user-${user_id}-tags`]) {
+        prevUserPosts = state.userPaths[`user-${user_id}-tags`]
+      }
+
+      const data = {
+        new_data: posts.data,
+        data: [
+          ...prevUserPosts.data,
+          ...posts.data,
+        ],
+        total_pages: posts.total_pages,
+        page: page,
+        limit: posts.limit,
+      }
+
+      state.userPaths[`user-${user_id}-tags`] = data
+      state.userPathsUpdated = true
+    },
     clearPathData({ state }) {
       state.paths = {}
     },

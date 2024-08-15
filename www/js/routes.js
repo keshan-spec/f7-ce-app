@@ -62,6 +62,10 @@ var routes = [
     componentUrl: './pages/profile.html?' + v,
   },
   {
+    path: '/profile-view/:id',
+    componentUrl: './pages/profile-view.html?' + v,
+  },
+  {
     path: '/profile-garage-vehicle-view/:id',
     componentUrl: './pages/profile-garage-vehicle-view.html?' + v,
 

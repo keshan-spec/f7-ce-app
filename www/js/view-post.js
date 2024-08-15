@@ -1,3 +1,4 @@
+import app from "./app.js"
 import { getPostById } from "./api/posts.js"
 import { detectDoubleTapClosure, togglePostLike } from "./homepage.js"
 import { formatPostDate } from "./utils.js"
@@ -80,5 +81,10 @@ function displayPost(post) {
 $(document).on('page:afterin', '.page[data-name="post-view"]', async function (e) {
   var postId = e.detail.route.params.id
   const post = await getPostById(postId)
+  if (!post) {
+    app.dialog.alert('Post not found', 'Error')
+    return
+  }
+
   displayPost(post)
 })

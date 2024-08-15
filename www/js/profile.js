@@ -38,17 +38,43 @@ export function displayProfile(user) {
 
   // Profile Links
   const profileLinks = user.profile_links
+
   if (profileLinks.instagram) {
     document.querySelector('#instagram').setAttribute('href', `https://www.instagram.com/${profileLinks.instagram}`)
   }
+
   if (profileLinks.facebook) {
     document.querySelector('#facebook').setAttribute('href', `https://www.facebook.com/${profileLinks.facebook}`)
   }
+
   if (profileLinks.tiktok) {
     document.querySelector('#tiktok').setAttribute('href', `https://www.tiktok.com/${profileLinks.tiktok}`)
   }
+
   if (profileLinks.youtube) {
     document.querySelector('#youtube').setAttribute('href', `https://www.youtube.com/${profileLinks.youtube}`)
+  }
+
+  // Display External Links
+  const externalLinks = profileLinks.external_links // Assuming this is an array like the example you provided
+  const linksList = document.querySelector('.profile-external-links ul')
+  linksList.innerHTML = '' // Clear any existing links
+
+  if (externalLinks && externalLinks.length > 0) {
+    externalLinks.forEach(linkObj => {
+      const listItem = document.createElement('li')
+      const link = document.createElement('a')
+      link.href = linkObj.link.url
+      link.target = '_blank'
+      link.textContent = linkObj.link.label
+      listItem.appendChild(link)
+      linksList.appendChild(listItem)
+    })
+  } else {
+    // Optionally handle the case where there are no external links
+    const noLinksItem = document.createElement('li')
+    noLinksItem.textContent = 'No external links available'
+    linksList.appendChild(noLinksItem)
   }
 }
 
@@ -59,7 +85,7 @@ export function displayGarage(garage) {
   garageContainer.innerHTML = createGarageContent(garage)
 }
 
-function createGarageContent(garages, currentList, pastList) {
+export function createGarageContent(garages, currentList, pastList) {
   // Elements for current and past vehicles
   const currentVehiclesList = document.querySelector(currentList)
   const pastVehiclesList = document.querySelector(pastList)
@@ -123,7 +149,7 @@ function generatePostGridItem(post) {
 }
 
 // Calculate the number of posts and decide if we need to add empty items
-function fillGridWithPosts(posts, profileGridID) {
+export function fillGridWithPosts(posts, profileGridID) {
   // Select the container where the posts will be displayed
   const profileGrid = document.getElementById(profileGridID)
 
@@ -201,13 +227,6 @@ myTagsStore.onUpdated((data) => {
     // Call the function to fill the grid
     fillGridWithPosts(posts, 'profile-grid-tags')
   }
-})
-
-$(document).on('page:init', '.page[data-name="profile"]', function (e) {
-  app.popup.create({
-    el: '.links-popup',
-    swipeToClose: 'to-bottom'
-  })
 })
 
 $(document).on('page:afterin', '.page[data-name="profile"]', function (e) {

@@ -37,6 +37,7 @@ export const getUserDetails = async (token) => {
         return null
     }
 }
+
 export const verifyUser = async (credentials) => {
     try {
         // Convert the credentials object to a URL query string
@@ -62,7 +63,6 @@ export const verifyUser = async (credentials) => {
         return error
     }
 }
-
 
 export const handleSignUp = async (user) => {
     try {
@@ -165,4 +165,25 @@ export const updateUserDetails = async (details, email_changed) => {
 
     const data = await response.json()
     return data
+}
+
+export const getUserById = async (id) => {
+    try {
+        let url = `${API_URL}/wp-json/app/v1/get-user-profile-next`
+        let response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_id: id }),
+        })
+
+        const data = await response.json()
+
+        if (response.status !== 200) throw new Error(data.message)
+        return data
+    } catch (error) {
+        console.error('Error fetching user details:', error)
+        return null
+    }
 }

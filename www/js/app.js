@@ -45,6 +45,17 @@ var app = new Framework7({
       setTimeout(() => {
         $('.init-loader').hide()
       }, 200)
+
+      const deeplink = getQueryParameter('deeplink')
+      if (deeplink) {
+        // get the page from the deeplink and navigate to it
+        // ex; http://localhost:3000/post-view/308
+        // get the /post-view/308 and navigate to it
+        const path = deeplink.split('/').slice(3).join('/')
+        this.views.main.router.navigate(path)
+        // remove the query parameter from the URL
+        window.history.pushState({}, document.title, window.location.pathname)
+      }
     },
     pageInit: function (page) {
       // window.f7View = this.views.current
@@ -71,6 +82,12 @@ var app = new Framework7({
   store: store,
   routes: routes,
 })
+
+// Function to parse query parameters from the URL
+function getQueryParameter(name) {
+  const urlParams = new URLSearchParams(window.location.search)
+  return urlParams.get(name)
+}
 
 export function onBackKeyDown() {
   var view = app.views.current
@@ -106,14 +123,7 @@ export function onBackKeyDown() {
     return false
   }
 }
-
 window.onAppBackKey = onBackKeyDown
-
-$(document).on('page:mounted', function (e) {
-  // window.f7View = app.views.current
-
-  console.log('in ', e)
-})
 
 const renderResult = (result) => {
   const user = store.getters.user.value
