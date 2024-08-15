@@ -187,3 +187,26 @@ export const getUserById = async (id) => {
         return null
     }
 }
+
+export const getUserNotifications = async () => {
+    try {
+        const user = await getSessionUser()
+        if (!user) {
+            throw new Error('Session user not found')
+        }
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/get-notifications`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_id: user.id }),
+        })
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error fetching user notifications:', error)
+        return null
+    }
+}

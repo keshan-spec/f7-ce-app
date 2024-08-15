@@ -113,3 +113,42 @@
     justify-content: center;
     align-items: center;
 }
+
+#notifications-list {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: start;
+}
+
+.notification-item .profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin-right: 10px;
+}
+
+.notification-item .notification-content {
+    flex: 1;
+}
+
+.notification-item .media-preview {
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+.media-post .media-post-content img {
+    max-height: 500px;
+    object-fit: cover;
+}

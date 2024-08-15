@@ -58,8 +58,6 @@ var app = new Framework7({
       }
     },
     pageInit: function (page) {
-      // window.f7View = this.views.current
-
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
           displayProfile(data)
@@ -70,6 +68,12 @@ var app = new Framework7({
           store.dispatch('getMyTags')
         })
       }
+
+      // if (page.name === 'notifications') {
+      //   userStore.onUpdated((data) => {
+      //     store.dispatch('fetchNotifications')
+      //   })
+      // }
 
       if (page.name === 'signup-step2') {
         const registerData = store.getters.getRegisterData.value

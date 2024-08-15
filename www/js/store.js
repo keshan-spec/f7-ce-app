@@ -1,4 +1,4 @@
-import { getSessionUser, getUserDetails } from './api/auth.js'
+import { getSessionUser, getUserDetails, getUserNotifications } from './api/auth.js'
 import { getPostsForGarage, getUserGarage } from './api/garage.js'
 import { fetchPosts, getPostsForUser } from './api/posts.js'
 
@@ -59,6 +59,7 @@ const store = createStore({
     paths: {}, // Object to store unique paths and their data
     userPaths: {}, // Object to store unique user paths and their data
     userPathsUpdated: false,
+    notifications: [],
   },
   getters: {
     getPathData({ state }) {
@@ -105,9 +106,16 @@ const store = createStore({
     },
     isScanningQrCode({ state }) {
       return state.scanningQrCode
-    }
+    },
+    getNotifications({ state }) {
+      return state.notifications
+    },
   },
   actions: {
+    async fetchNotifications({ state }) {
+      const notifications = await getUserNotifications()
+      state.notifications = notifications
+    },
     async getUserPosts({ state }, { user_id, page = 1 }) {
       console.log('Getting user posts', user_id, page)
 

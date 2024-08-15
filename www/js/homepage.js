@@ -146,23 +146,36 @@ function displayPosts(posts, following = false) {
         `
     postsContainer.insertAdjacentHTML('beforeend', postItem)
   })
-
-  // Add click event listener for liking a post
-  const likeButtons = document.querySelectorAll('.media-post-like i')
-  likeButtons.forEach(button => {
-    button.addEventListener('click', (event) => {
-      const postId = event.currentTarget.getAttribute('data-post-id')
-      togglePostLike(postId)
-    })
-  })
-
-  $('.media-post-content img, .media-post-content video').on('touchstart', detectDoubleTapClosure((e) => {
-    const parent = e.closest('.media-post')
-    const postId = parent.getAttribute('data-post-id')
-
-    togglePostLike(postId)
-  }), { passive: false })
 }
+
+// Add click event listener for liking a post
+// const likeButtons = document.querySelectorAll('.media-post-like i')
+// likeButtons.forEach(button => {
+//   button.addEventListener('click', (event) => {
+
+//   })
+// })
+
+$(document).on('click', '.media-post-like i', (e) => {
+  const postId = e.target.getAttribute('data-post-id')
+  togglePostLike(postId)
+})
+
+$(document).on('touchstart', '.media-post-content img, .media-post-content video', detectDoubleTapClosure((e) => {
+  const parent = e.closest('.media-post')
+  const postId = parent.getAttribute('data-post-id')
+
+  togglePostLike(postId)
+}), { passive: false })
+
+
+$('.media-post-content img, .media-post-content video').on('touchstart', detectDoubleTapClosure((e) => {
+  const parent = e.closest('.media-post')
+  const postId = parent.getAttribute('data-post-id')
+
+  togglePostLike(postId)
+}), { passive: false })
+
 
 // media-post-video click
 $(document).on('click', '.media-post-video', function () {
