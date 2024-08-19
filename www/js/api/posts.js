@@ -124,3 +124,26 @@ export const getPostById = async (post_id) => {
         return null
     }
 }
+
+export const deletePost = async (post_id) => {
+    const user = await getSessionUser()
+    if (!user) return
+
+    try {
+        const response = await fetch(`${API_URL}/wp-json/app/v1/delete-post`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_id: user.id, post_id }),
+        })
+       
+        if (response.status !== 200) {
+            throw new Error("Error deleting post")
+        }
+
+        return true
+    } catch (error) {
+        return false
+    }
+}

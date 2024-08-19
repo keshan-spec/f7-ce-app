@@ -2,7 +2,7 @@ import app from "./app.js"
 import store from "./store.js"
 
 import { formatPostDate } from './utils.js'
-import { fetchComments, maybeLikePost, maybeLikeComment, addComment } from './api/posts.js'
+import { fetchComments, maybeLikePost, maybeLikeComment, addComment, deletePost } from './api/posts.js'
 
 var $ = Dom7
 var currentPage = 1
@@ -88,8 +88,10 @@ function displayPosts(posts, following = false) {
   const postsContainer = document.getElementById(following ? 'tab-following' : 'tab-latest')
   // postsContainer.innerHTML = '' // Clear any existing posts
 
+  const user = store.getters.user.value
+
   posts.forEach(post => {
-    const post_actions = `
+    let post_actions = `
      <div class="media-post-actions">
         <div class="media-post-like" data-post-id="${post.id}">
           <i class="icon f7-icons ${post.is_liked ? 'text-red' : ''}" data-post-id="${post.id}">${post.is_liked ? 'heart_fill' : 'heart'}</i>
@@ -100,11 +102,17 @@ function displayPosts(posts, following = false) {
         <div class="media-post-share popup-open" data-popup=".share-popup">
           <i class="icon f7-icons">paperplane</i>
         </div>
-        <div class="media-post-edit popup-open" data-popup=".edit-post-popup">
+    `
+
+    if (post.user_id == user.id) {
+      post_actions += `
+        <div class="media-post-edit popup-open" data-popup=".edit-post-popup" data-post-id="${post.id}">
           <i class="icon f7-icons">gear_alt</i>
         </div>
-      </div>
-    `
+      `
+    }
+
+    post_actions += `</div>`
 
     const date = formatPostDate(post.post_date)
     const postItem = `
@@ -159,6 +167,30 @@ function displayPosts(posts, following = false) {
 $(document).on('click', '.media-post-like i', (e) => {
   const postId = e.target.getAttribute('data-post-id')
   togglePostLike(postId)
+})
+
+// media-post-edit click
+// set the post id as a data attribute from the edit post popup
+$(document).on('click', '.media-post-edit', function () {
+  const postId = $(this).closest('.media-post').attr('data-post-id')
+  $('.edit-post-popup').attr('data-post-id', postId)
+})
+
+$(document).on('click', '#delete-post', function () {
+  // set the post id as a data attribute from the edit post popup
+  const postId = $('.edit-post-popup').attr('data-post-id')
+  
+  app.dialog.confirm('Are you sure you want to delete this post?', 'Delete Post', async () => {
+    const response = await deletePost(postId)
+    if (response) {
+      app.dialog.alert('Post deleted successfully')
+      // remove the post from the DOM
+      $(`.media-post[data-post-id="${postId}"]`).remove()
+      app.popup.close('.edit-post-popup')
+    } else {
+      app.dialog.alert('Failed to delete post')
+    }
+  })
 })
 
 $(document).on('touchstart', '.media-post-content img, .media-post-content video', detectDoubleTapClosure((e) => {
