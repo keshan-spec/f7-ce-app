@@ -78,26 +78,28 @@ var app = new Framework7({
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
           displayProfile(data)
-
           store.dispatch('getMyGarage')
-          store.dispatch('getFollowingPosts')
-          store.dispatch('getMyPosts')
-          store.dispatch('getMyTags')
+
+          if (data && !data.refreshed) {
+            store.dispatch('getFollowingPosts')
+            store.dispatch('getMyPosts')
+            store.dispatch('getMyTags')
+          }
         })
       }
 
       if (page.name === 'notifications') {
-        userStore.onUpdated((data) => {
-          store.dispatch('fetchNotifications')
-        })
+        // userStore.onUpdated((data) => {
+        store.dispatch('fetchNotifications')
+        // })
       }
 
       if (page.name === 'discover') {
-        userStore.onUpdated((data) => {
-          store.dispatch('getTrendingEvents')
-          store.dispatch('getTrendingVenues')
-          store.dispatch('fetchEventCategories')
-        })
+        // userStore.onUpdated((data) => {
+        store.dispatch('getTrendingEvents')
+        store.dispatch('getTrendingVenues')
+        store.dispatch('fetchEventCategories')
+        // })
       }
 
       if (page.name === 'signup-step2') {

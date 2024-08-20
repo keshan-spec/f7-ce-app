@@ -1,8 +1,16 @@
 import app from "./app.js"
 import store from "./store.js"
 
-import { formatPostDate } from './utils.js'
-import { fetchComments, maybeLikePost, maybeLikeComment, addComment, deletePost } from './api/posts.js'
+import {
+  formatPostDate
+} from './utils.js'
+import {
+  fetchComments,
+  maybeLikePost,
+  maybeLikeComment,
+  addComment,
+  deletePost
+} from './api/posts.js'
 
 var $ = Dom7
 var currentPage = 1
@@ -156,14 +164,6 @@ function displayPosts(posts, following = false) {
   })
 }
 
-// Add click event listener for liking a post
-// const likeButtons = document.querySelectorAll('.media-post-like i')
-// likeButtons.forEach(button => {
-//   button.addEventListener('click', (event) => {
-
-//   })
-// })
-
 $(document).on('click', '.media-post-like i', (e) => {
   const postId = e.target.getAttribute('data-post-id')
   togglePostLike(postId)
@@ -179,7 +179,7 @@ $(document).on('click', '.media-post-edit', function () {
 $(document).on('click', '#delete-post', function () {
   // set the post id as a data attribute from the edit post popup
   const postId = $('.edit-post-popup').attr('data-post-id')
-  
+
   app.dialog.confirm('Are you sure you want to delete this post?', 'Delete Post', async () => {
     const response = await deletePost(postId)
     if (response) {
@@ -196,18 +196,18 @@ $(document).on('click', '#delete-post', function () {
 $(document).on('touchstart', '.media-post-content img, .media-post-content video', detectDoubleTapClosure((e) => {
   const parent = e.closest('.media-post')
   const postId = parent.getAttribute('data-post-id')
+  const isLiked = parent.getAttribute('data-is-liked') === 'true'
+
+  console.log('isLiked', isLiked, postId);
+
+  if (isLiked) {
+    return
+  }
 
   togglePostLike(postId)
-}), { passive: false })
-
-
-$('.media-post-content img, .media-post-content video').on('touchstart', detectDoubleTapClosure((e) => {
-  const parent = e.closest('.media-post')
-  const postId = parent.getAttribute('data-post-id')
-
-  togglePostLike(postId)
-}), { passive: false })
-
+}), {
+  passive: false
+})
 
 // media-post-video click
 $(document).on('click', '.media-post-video', function () {

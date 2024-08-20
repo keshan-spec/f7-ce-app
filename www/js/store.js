@@ -239,8 +239,6 @@ const store = createStore({
       user_id,
       page = 1
     }) {
-      console.log('Getting user posts', user_id, page)
-
       const posts = await getPostsForUser(user_id, page)
 
       let prevUserPosts = {
@@ -341,6 +339,32 @@ const store = createStore({
     }) {
       state.user = null
       window.localStorage.removeItem('token')
+    },
+    async updateUserDetails({
+      state
+    }) {
+      const token = window.localStorage.getItem('token')
+
+      if (!token) {
+        return this.logout()
+      }
+
+      try {
+        const userDetails = await getUserDetails(token)
+
+        if (!userDetails || !userDetails.success) {
+          window.localStorage.removeItem('token')
+          throw new Error('User not found')
+        }
+
+        window.localStorage.setItem('token', token)
+        state.user = {
+          ...userDetails.user,
+          refreshed: true
+        }
+      } catch (error) {
+        console.error('Login failed', error)
+      }
     },
     async checkAuth(context) {
       const token = await getSessionUser()

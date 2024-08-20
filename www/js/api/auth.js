@@ -1,4 +1,6 @@
-import { API_URL } from "./consts.js"
+import {
+    API_URL
+} from "./consts.js"
 import store from "../store.js"
 
 export const getSessionUser = async () => {
@@ -90,13 +92,19 @@ export const handleSignUp = async (user) => {
     }
 }
 
-export const updateUsername = async (user) => {
+export const updateUsername = async (username) => {
+    const user = await getSessionUser();
+    if (!user) return;
+
     const response = await fetch(`${API_URL}/wp-json/app/v1/update-username`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(user),
+        body: JSON.stringify({
+            user_id: user.id,
+            username
+        }),
     })
 
     const data = await response.json()
@@ -144,7 +152,11 @@ export const updatePassword = async (new_password, old_password) => {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: user.id, new_password, old_password }),
+        body: JSON.stringify({
+            user_id: user.id,
+            new_password,
+            old_password
+        }),
     })
 
     const data = await response.json()
@@ -155,16 +167,24 @@ export const updateUserDetails = async (details, email_changed) => {
     const user = await getSessionUser()
     if (!user) return
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/update-user-details`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user_id: user.id, ...details, email_changed }),
-    })
+    try {
+        const response = await fetch(`${API_URL}/wp-json/app/v1/update-user-details`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                ...details,
+                email_changed
+            }),
+        })
 
-    const data = await response.json()
-    return data
+        const data = await response.json()
+        return data
+    } catch (error) {
+        return null
+    }
 }
 
 export const getUserById = async (id) => {
@@ -175,7 +195,9 @@ export const getUserById = async (id) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ user_id: id }),
+            body: JSON.stringify({
+                user_id: id
+            }),
         })
 
         const data = await response.json()
@@ -200,7 +222,9 @@ export const getUserNotifications = async () => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ user_id: user.id }),
+            body: JSON.stringify({
+                user_id: user.id
+            }),
         })
 
         const data = await response.json()

@@ -1,8 +1,17 @@
 import store from "./store.js"
 import app from "./app.js"
-import { addVehicleToGarage, deleteVehicleFromGarage, getGargeById, updateVehicleInGarage } from "./api/garage.js"
-import { getSessionUser } from "./api/auth.js"
-import { sendRNMessage } from "./api/consts.js"
+import {
+  addVehicleToGarage,
+  deleteVehicleFromGarage,
+  getGargeById,
+  updateVehicleInGarage
+} from "./api/garage.js"
+import {
+  getSessionUser
+} from "./api/auth.js"
+import {
+  sendRNMessage
+} from "./api/consts.js"
 var $ = Dom7
 
 const garageStore = store.getters.myGarage
@@ -457,7 +466,9 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
 
   if (!garageId) {
     app.dialog.alert('Garage not found')
-    view.router.back(view.history[0], { force: true })
+    view.router.back(view.history[0], {
+      force: true
+    })
     return
   }
 
@@ -475,7 +486,9 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
 
     if (!garage) {
       app.dialog.alert('Garage not found')
-      view.router.back(view.history[0], { force: true })
+      view.router.back(view.history[0], {
+        force: true
+      })
       return
     }
 
@@ -491,7 +504,9 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
   const user = await getSessionUser()
   if (data.owner_id != user.id) {
     app.dialog.alert('You are not authorized to edit this vehicle')
-    view.router.back(view.history[0], { force: true })
+    view.router.back(view.history[0], {
+      force: true
+    })
     return
   }
 
@@ -533,7 +548,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
   ownershipSelect.addEventListener('change', toggleOwnedToDatePicker)
 
   // input vehicle_image
-  $(document).on('change', 'input[name="vehicle_image"]', function (e) {
+  $(document).on('change', 'input#fileuploadInput', function (e) {
     const file = e.target.files[0]
     const reader = new FileReader()
 
@@ -607,8 +622,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
     try {
       $('.init-loader').show()
 
-      const response = await updateVehicleInGarage(
-        {
+      const response = await updateVehicleInGarage({
           make,
           model,
           variant,
@@ -634,7 +648,9 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
       // refresh garage
       await store.dispatch('getMyGarage')
 
-      view.router.back(view.history[0], { force: true })
+      view.router.back(view.history[0], {
+        force: true
+      })
     } catch (error) {
       $('.init-loader').hide()
       app.dialog.alert('Failed to update vehicle')
@@ -656,7 +672,9 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
         $('.init-loader').hide()
         app.dialog.alert('Vehicle deleted successfully')
         await store.dispatch('getMyGarage')
-        view.router.back('/profile-garage-edit/', { force: true })
+        view.router.back('/profile-garage-edit/', {
+          force: true
+        })
       } catch (error) {
         $('.init-loader').hide()
         app.dialog.alert('Failed to delete vehicle')
@@ -783,7 +801,9 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', asy
       $('.init-loader').hide()
       app.dialog.alert('Vehicle added successfully')
       // redirect to garage
-      view.router.back(`/profile-garage-vehicle-view/${response.id}`, { force: true })
+      view.router.back(`/profile-garage-vehicle-view/${response.id}`, {
+        force: true
+      })
     } catch (error) {
       $('.init-loader').hide()
       app.dialog.alert('Failed to update vehicle')
