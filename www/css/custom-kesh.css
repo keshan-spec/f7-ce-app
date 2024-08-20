@@ -152,3 +152,8 @@
     max-height: 500px;
     object-fit: cover;
 }
+
+#category-filters ul{
+    overflow-y: scroll;
+    max-height: 66vh;
+}

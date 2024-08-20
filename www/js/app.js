@@ -1,12 +1,29 @@
 //------------------------------------------ CORE ------------------------------------------//
-import { getSessionUser, handleSignUp, updateAboutUserIds, updateContentIds, updateUsername, verifyUser } from './api/auth.js'
+import {
+  getSessionUser,
+  handleSignUp,
+  updateAboutUserIds,
+  updateContentIds,
+  updateUsername,
+  verifyUser
+} from './api/auth.js'
 import store from './store.js'
 import routes from './routes.js'
 
-import { displayProfile } from './profile.js'
-import { sendRNMessage } from './api/consts.js'
-import { onScanFailure, onScanSuccess } from './qr-scanner.js'
-import { handleLink, handleUnlink } from './api/scanner.js'
+import {
+  displayProfile
+} from './profile.js'
+import {
+  sendRNMessage
+} from './api/consts.js'
+import {
+  onScanFailure,
+  onScanSuccess
+} from './qr-scanner.js'
+import {
+  handleLink,
+  handleUnlink
+} from './api/scanner.js'
 
 var $ = Dom7
 var userStore = store.getters.user
@@ -69,11 +86,19 @@ var app = new Framework7({
         })
       }
 
-      // if (page.name === 'notifications') {
-      //   userStore.onUpdated((data) => {
-      //     store.dispatch('fetchNotifications')
-      //   })
-      // }
+      if (page.name === 'notifications') {
+        userStore.onUpdated((data) => {
+          store.dispatch('fetchNotifications')
+        })
+      }
+
+      if (page.name === 'discover') {
+        userStore.onUpdated((data) => {
+          store.dispatch('getTrendingEvents')
+          store.dispatch('getTrendingVenues')
+          store.dispatch('fetchEventCategories')
+        })
+      }
 
       if (page.name === 'signup-step2') {
         const registerData = store.getters.getRegisterData.value
@@ -171,22 +196,20 @@ function openModal() {
         <div id="reader" width="600px"></div>
       </div>
     `,
-    buttons: [
-      {
-        text: 'Close',
-        onClick: function () {
-          try {
-            if (html5QrCode) {
-              html5QrCode.stop()
-            }
-
-            store.dispatch('setScannedData', null)
-          } catch (error) {
-            console.error('Error stopping qr code', error)
+    buttons: [{
+      text: 'Close',
+      onClick: function () {
+        try {
+          if (html5QrCode) {
+            html5QrCode.stop()
           }
+
+          store.dispatch('setScannedData', null)
+        } catch (error) {
+          console.error('Error stopping qr code', error)
         }
       }
-    ]
+    }]
   })
 
   // Open the modal
@@ -194,7 +217,10 @@ function openModal() {
 }
 
 let defaultConfig = {
-  qrbox: { width: 250, height: 250 },
+  qrbox: {
+    width: 250,
+    height: 250
+  },
   fps: 60,
   showTorchButtonIfSupported: true,
   showZoomSliderIfSupported: true,
@@ -240,8 +266,9 @@ $(document).on('click', '.open-qr-modal', function () {
 
   html5QrCode = new Html5Qrcode("reader")
 
-  html5QrCode?.start(
-    { facingMode: "environment" },
+  html5QrCode?.start({
+      facingMode: "environment"
+    },
     defaultConfig,
     onScanSuccess,
     onScanFailure
@@ -264,8 +291,7 @@ userStore.onUpdated((data) => {
 var actionSheet = app.actions.create({
   grid: true,
   buttons: [
-    [
-      {
+    [{
         text: '<div class="actions-grid-item">Add Post</div>',
         icon: '<img src="assets/img/actionsheet-img1.jpg" width="48" style="max-width: 100%; border-radius: 8px"/>',
         onClick: async function () {
@@ -370,7 +396,9 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
 
     if (response.success) {
       app.dialog.alert('Login successful')
-      await store.dispatch('login', { token: response.token })
+      await store.dispatch('login', {
+        token: response.token
+      })
       app.views.main.router.navigate('/')
       toolbarEl.style.display = 'block'
       return
@@ -509,7 +537,12 @@ $(document).on('submit', 'form#sign-up-step1', async function (e) {
       return
     }
 
-    store.dispatch('setRegisterData', { email, password, user_id: response.user_id, username: response.username })
+    store.dispatch('setRegisterData', {
+      email,
+      password,
+      user_id: response.user_id,
+      username: response.username
+    })
     app.views.main.router.navigate('/signup-step2/')
   } catch (error) {
     console.log(error)
@@ -554,7 +587,10 @@ $(document).on('submit', 'form#sign-up-step2', async function (e) {
         return
       }
 
-      store.dispatch('setRegisterData', { ...registerData, username })
+      store.dispatch('setRegisterData', {
+        ...registerData,
+        username
+      })
     }
 
     app.views.main.router.navigate('/signup-step3/')
@@ -666,7 +702,9 @@ $(document).on('click', '#signup-complete', async function (e) {
     }
 
     if (response.success) {
-      await store.dispatch('login', { token: response.token })
+      await store.dispatch('login', {
+        token: response.token
+      })
       app.views.main.router.navigate('/')
       toolbarEl.style.display = 'block'
       return
@@ -716,5 +754,46 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', fu
     minDate: new Date()
   })
 })
+
+//PROFILE SECTION
+$(document).on('page:init', '.page[data-name="profile"]', function (e) {
+  var LinksPopup = app.popup.create({
+    el: '.links-popup',
+    swipeToClose: 'to-bottom'
+  });
+
+  var EditProfilePopup = app.popup.create({
+    el: '.edit-profile-popup',
+    swipeToClose: 'to-bottom'
+  });
+
+  // Edit Profile Action Sheet
+  document.getElementById('edit-profile').addEventListener('click', function () {
+    app.actions.create({
+      buttons: [
+        // First group
+        [{
+          text: 'Action 1',
+          bold: true,
+          onClick: function () {
+            app.router.navigate('/profile-edit-mydetails/');
+          }
+        }, ],
+        // Second group
+        [{
+          text: 'Cancel',
+          color: 'red'
+        }]
+      ]
+    }).open();
+  });
+});
+
+$(document).on('page:init', '.page[data-name="profile-edit-socials"]', function (e) {
+  app.popup.create({
+    el: '.add-link-popup',
+    swipeToClose: 'to-bottom'
+  });
+});
 
 export default app

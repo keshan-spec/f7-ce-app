@@ -28,8 +28,15 @@ function renderNotifications(notifications) {
     // container.innerHTML = '' // Clear the container
 
     notifications.forEach(notification => {
-        const { entity, date, type } = notification
-        const { initiator_data, entity_data } = entity
+        const {
+            entity,
+            date,
+            type
+        } = notification
+        const {
+            initiator_data,
+            entity_data
+        } = entity
 
         // Create notification wrapper
         const notificationItem = document.createElement('div')

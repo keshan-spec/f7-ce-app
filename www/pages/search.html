@@ -1,0 +1,467 @@
+<template>
+  <div class="page" data-name="search">
+
+
+    <!-- Top Navbar -->
+          <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+              <div class="left">
+                <a href="#" class="link icon-only panel-open" data-panel="left">
+                  <i class="icon f7-icons">bars</i>
+                </a>
+              </div>
+              <div class="middle">
+                <div class="header-logo"><img src="assets/img/logo-dark.png"/></div>
+            </div>
+              <div class="right">
+                <a href="#" class="link icon-only">
+                  <i class="icon f7-icons">qrcode</i>
+                </a>
+                <a href="#" class="link icon-only">
+                  <i class="icon f7-icons">bell</i>
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+
+      <!-- Page content-->
+      <div class="page-content">
+
+        <div class="discovery-wrap">
+
+            <form class="searchbar">
+                <div class="searchbar-inner">
+                    <div class="searchbar-input-wrap">
+                        <input type="search" placeholder="Search" class="discover-search" />
+                        <i class="searchbar-icon"></i>
+                        <!-- <span class="input-clear-button"></span> -->
+                    </div>
+                    <span class="searchbar-disable-button if-not-aurora">Cancel</span>
+                </div>
+            </form>
+
+            <div class="tabbar-nav pt-1">
+                <ul>
+                    <li><a href="#featured" class="tab-link tab-link-active">Featured</a></li>
+                    <li><a href="#events" class="tab-link">Events</a></li>
+                    <li><a href="#venues" class="tab-link">Venues</a></li>
+                    <li><a href="#users_vehicles" class="tab-link">Users & Vehicles</a></li>
+                    <li><a href="#photo_locations" class="tab-link">Photo locations</a></li>
+                    <li><a href="#businesses" class="tab-link">Businesses</a></li>
+                </ul>
+            </div>
+
+            <div class="container mt-15 mb-15">
+                <div class="tabs">
+                    <div class="tab tab-active" id="featured">
+                        <div class="featured-section">
+                            <swiper-container slides-per-view="1" loop="true">
+                                <swiper-slide>
+                                    <div class="featured-item">
+                                        <div class="featured-img" style="background-image:url(assets/img/example002.jpg)"></div>
+                                        <div class="featured-content">
+                                            <h2>Great British <br />Motor Show</h2>
+                                            <p>17th – 20th August</p>
+                                            <a href="http://" class="btn  btn-primary ">See More</a>
+                                        </div>
+                                    </div>
+                                </swiper-slide>
+                                <swiper-slide>
+                                    <div class="featured-item">
+                                        <div class="featured-img" style="background-image:url(assets/img/example002.jpg)"></div>
+                                        <div class="featured-content">
+                                            <h2>Great British <br />Motor Show</h2>
+                                            <p>17th – 20th August</p>
+                                            <a href="http://" class="btn  btn-primary ">See More</a>
+                                        </div>
+                                    </div>
+                                </swiper-slide>
+                            </swiper-container>
+                        </div>
+                        <div class="trending-section">
+                            <h2 class="section-title mt-3 mb-2">Trending Events</h2>
+                            <swiper-container class="event-listing"
+                                slides-per-view="2"
+                                loop="true"
+                            >
+                                <swiper-slide>
+                                    <div class="card event-item">
+                                        <div class="event-image position-relative">
+                                            <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                            <div class="event-dates">
+                                                <div class="event-date-item">
+                                                <p>Feb</p>
+                                                <h5>18</h5>
+                                                </div>
+                                                <div class="event-date-item">
+                                                <p>Feb</p>
+                                                <h5>21</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-content">
+                                            <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
+                                            <p class="event-info">Starts Thu, 18 Feb 2023</p>
+                                            <div class="event-info">NEC Birmingham</div>
+                                        </div>
+                                    </div>
+                                </swiper-slide>
+                                <swiper-slide>
+                                    <div class="card event-item">
+                                        <div class="event-image position-relative">
+                                            <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                            <div class="event-dates">
+                                                <div class="event-date-item">
+                                                <p>Feb</p>
+                                                <h5>18</h5>
+                                                </div>
+                                                <div class="event-date-item">
+                                                <p>Feb</p>
+                                                <h5>21</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-content">
+                                            <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
+                                            <p class="event-info">Starts Thu, 18 Feb 2023</p>
+                                            <div class="event-info">NEC Birmingham</div>
+                                        </div>
+                                    </div>
+                                </swiper-slide>
+                                <swiper-slide>
+                                    <div class="card event-item">
+                                        <div class="event-image position-relative">
+                                            <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                            <div class="event-dates">
+                                                <div class="event-date-item">
+                                                <p>Feb</p>
+                                                <h5>18</h5>
+                                                </div>
+                                                <div class="event-date-item">
+                                                <p>Feb</p>
+                                                <h5>21</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-content">
+                                            <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
+                                            <p class="event-info">Starts Thu, 18 Feb 2023</p>
+                                            <div class="event-info">NEC Birmingham</div>
+                                        </div>
+                                    </div>
+                                </swiper-slide>
+                                <swiper-slide>
+                                    <div class="card event-item">
+                                        <div class="event-image position-relative">
+                                            <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                            <div class="event-dates">
+                                                <div class="event-date-item">
+                                                <p>Feb</p>
+                                                <h5>18</h5>
+                                                </div>
+                                                <div class="event-date-item">
+                                                <p>Feb</p>
+                                                <h5>21</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-content">
+                                            <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
+                                            <p class="event-info">Starts Thu, 18 Feb 2023</p>
+                                            <div class="event-info">NEC Birmingham</div>
+                                        </div>
+                                    </div>
+                                </swiper-slide>
+                            </swiper-container>
+                        </div>
+                        <div class="trending-section">
+                            <h2 class="section-title mt-3 mb-2">Trending Venues</h2>
+                            <swiper-container class="event-listing"
+                                slides-per-view="2"
+                                loop="true"
+                            >
+                                <swiper-slide>
+                                    <div class="card event-item">
+                                        <div class="event-image position-relative">
+                                            <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                        </div>
+                                        <div class="card-content">
+                                            <h3 class="event-title">Venue Name</h3>
+                                            <div class="event-info">NEC Birmingham</div>
+                                        </div>
+                                    </div>
+                                </swiper-slide>
+                                <swiper-slide>
+                                    <div class="card event-item">
+                                        <div class="event-image position-relative">
+                                            <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                        </div>
+                                        <div class="card-content">
+                                            <h3 class="event-title">Venue Name</h3>
+                                            <div class="event-info">NEC Birmingham</div>
+                                        </div>
+                                    </div>
+                                </swiper-slide>
+                                <swiper-slide>
+                                    <div class="card event-item">
+                                        <div class="event-image position-relative">
+                                            <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                        </div>
+                                        <div class="card-content">
+                                            <h3 class="event-title">Venue Name</h3>
+                                            <div class="event-info">NEC Birmingham</div>
+                                        </div>
+                                    </div>
+                                </swiper-slide>
+                                <swiper-slide>
+                                    <div class="card event-item">
+                                        <div class="event-image position-relative">
+                                            <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                        </div>
+                                        <div class="card-content">
+                                            <h3 class="event-title">Venue Name</h3>
+                                            <div class="event-info">NEC Birmingham</div>
+                                        </div>
+                                    </div>
+                                </swiper-slide>
+                            </swiper-container>
+                        </div>
+                    </div>
+                    <div class="tab" id="events">
+                        <div class="filter-bar mb-2">
+                            <div class="filter-item popup-open" data-popup=".filter-popup">
+                                <span>Date</span>
+                                <i class="icon f7-icons">chevron_down</i>
+                            </div>
+                            <div class="filter-item">
+                                <span>Category </span>
+                                <i class="icon f7-icons">chevron_down</i>
+                            </div>
+                            <div class="filter-item">
+                                <span>Location </span>
+                                <i class="icon f7-icons">chevron_down</i>
+                            </div>
+                        </div>
+                        <div class="trending-section">
+                            <div class="grid grid-cols-2 event-listing">
+                                <div class="card event-item">
+                                    <div class="event-image position-relative">
+                                        <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                        <div class="event-dates">
+                                            <div class="event-date-item">
+                                            <p>Feb</p>
+                                            <h5>18</h5>
+                                            </div>
+                                            <div class="event-date-item">
+                                            <p>Feb</p>
+                                            <h5>21</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
+                                        <p class="event-info">Starts Thu, 18 Feb 2023</p>
+                                        <div class="event-info">NEC Birmingham</div>
+                                    </div>
+                                </div>
+                                <div class="card event-item">
+                                    <div class="event-image position-relative">
+                                        <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                        <div class="event-dates">
+                                            <div class="event-date-item">
+                                            <p>Feb</p>
+                                            <h5>18</h5>
+                                            </div>
+                                            <div class="event-date-item">
+                                            <p>Feb</p>
+                                            <h5>21</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
+                                        <p class="event-info">Starts Thu, 18 Feb 2023</p>
+                                        <div class="event-info">NEC Birmingham</div>
+                                    </div>
+                                </div>
+                                <div class="card event-item">
+                                    <div class="event-image position-relative">
+                                        <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                        <div class="event-dates">
+                                            <div class="event-date-item">
+                                            <p>Feb</p>
+                                            <h5>18</h5>
+                                            </div>
+                                            <div class="event-date-item">
+                                            <p>Feb</p>
+                                            <h5>21</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
+                                        <p class="event-info">Starts Thu, 18 Feb 2023</p>
+                                        <div class="event-info">NEC Birmingham</div>
+                                    </div>
+                                </div>
+                                <div class="card event-item">
+                                    <div class="event-image position-relative">
+                                        <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                        <div class="event-dates">
+                                            <div class="event-date-item">
+                                            <p>Feb</p>
+                                            <h5>18</h5>
+                                            </div>
+                                            <div class="event-date-item">
+                                            <p>Feb</p>
+                                            <h5>21</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
+                                        <p class="event-info">Starts Thu, 18 Feb 2023</p>
+                                        <div class="event-info">NEC Birmingham</div>
+                                    </div>
+                                </div>
+                                <div class="card event-item">
+                                    <div class="event-image position-relative">
+                                        <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                        <div class="event-dates">
+                                            <div class="event-date-item">
+                                            <p>Feb</p>
+                                            <h5>18</h5>
+                                            </div>
+                                            <div class="event-date-item">
+                                            <p>Feb</p>
+                                            <h5>21</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
+                                        <p class="event-info">Starts Thu, 18 Feb 2023</p>
+                                        <div class="event-info">NEC Birmingham</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab" id="venues">
+                        <div class="trending-section">
+                            <div class="grid grid-cols-2 event-listing">
+                                <div class="card event-item">
+                                    <div class="event-image position-relative">
+                                        <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3 class="event-title">Venue Name</h3>
+                                        <div class="event-info">NEC Birmingham</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab" id="users_vehicles">
+                        <ul class="card-listview">
+                            <li class="listview-item">
+                                <div class="listview-image">
+                                    <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                </div>
+                                <div class="listview-content">
+                                    <div class="listview-title">Search Result</div>
+                                    <a href="#" class="listview-action"><i class="icon f7-icons">chevron_right</i></a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab" id="photo_locations">
+                        <ul class="card-listview">
+                            <li class="listview-item">
+                                <div class="listview-image">
+                                    <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                </div>
+                                <div class="listview-content">
+                                    <div class="listview-title">Search Result</div>
+                                    <a href="#" class="listview-action"><i class="icon f7-icons">chevron_right</i></a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab" id="businesses">
+                        <ul class="card-listview">
+                            <li class="listview-item">
+                                <div class="listview-image">
+                                    <div class="image-rectangle" style="background-image: url('assets/img/start01.jpg');"></div>
+                                </div>
+                                <div class="listview-content">
+                                    <div class="listview-title">Search Result</div>
+                                    <a href="#" class="listview-action"><i class="icon f7-icons">chevron_right</i></a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Date Popup Start  -->
+        <div class="popup filter-popup p-2">
+            <div class="popup-header">
+                <div class="popup-title" style="left: 138px;">Filter by Date</div>
+                <div class="popup-right">
+                    <span class="link popup-close"><i class="icon f7-icons">xmark</i></span>
+                </div>
+            </div>
+            <div class="popup-content">
+                <div class="list">
+                    <ul>
+                        <li>
+                            <label class="item-checkbox item-content">
+                                <input type="checkbox" name="venue1" value="1" />
+                                <i class="icon icon-checkbox"></i>
+                                <div class="item-inner">
+                                    <div class="item-title">Anytime</div>
+                                </div>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="item-checkbox item-content">
+                                <input type="checkbox" name="venue1" value="1" />
+                                <i class="icon icon-checkbox"></i>
+                                <div class="item-inner">
+                                    <div class="item-title">Today</div>
+                                </div>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="item-checkbox item-content">
+                                <input type="checkbox" name="venue1" value="1" />
+                                <i class="icon icon-checkbox"></i>
+                                <div class="item-inner">
+                                    <div class="item-title">Tomorrow</div>
+                                </div>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="item-checkbox item-content">
+                                <input type="checkbox" name="venue1" value="1" />
+                                <i class="icon icon-checkbox"></i>
+                                <div class="item-inner">
+                                    <div class="item-title">This Weekend</div>
+                                </div>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Filter Date Popup Ends  -->
+
+    </div>
+    <!-- Page content-->
+  </div>
+</template>

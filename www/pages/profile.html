@@ -33,7 +33,7 @@
 
       <div class="profile-links">
         <div class="profile-links-edit d-flex">
-          <a class="profile-link">Edit Profile</a>
+          <a class="profile-link popup-open" data-popup=".edit-profile-popup">Edit Profile</a>
           <a class="profile-link dark-bg" href="/profile-garage-edit/">Edit Garage</a>
         </div>
 
@@ -128,5 +128,37 @@
         </div>
       </div>
     </div>
+
+    <!-- Edit Profile Slider -->
+    <div class="popup edit-profile-popup three-quarter-popup">
+      <div class="view">
+        <div class="page">
+          <div class="navbar">
+            <div class="navbar-inner">
+              <div class="title">Edit Profile</div>
+              <div class="right">
+                <!-- Link to close popup -->
+                <a class="link popup-close"><i class="icon f7-icons">xmark</i></a>
+              </div>
+            </div>
+          </div>
+          <div class="page-content">
+
+            <div class="block">
+              <div class="list links-list list-outline-ios list-strong-ios list-dividers-ios">
+                <ul>
+                  <li><a href="/profile-edit-images/">Edit Profile Images</a></li>
+                  <li><a href="/profile-edit-socials/">Manage Social Links</a></li>
+                  <li><a href="/profile-edit-mydetails/">My Details</a></li>
+                  <li><a href="/profile-edit-username/">Username</a></li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- * Edit Profile Slider -->
   </div>
 </template>

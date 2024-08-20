@@ -1,6 +1,21 @@
-import { getSessionUser, getUserDetails, getUserNotifications } from './api/auth.js'
-import { getPostsForGarage, getUserGarage } from './api/garage.js'
-import { fetchPosts, getPostsForUser } from './api/posts.js'
+import {
+  getSessionUser,
+  getUserDetails,
+  getUserNotifications
+} from './api/auth.js'
+import {
+  fetchTrendingEvents,
+  fetchTrendingVenues,
+  getEventCategories
+} from './api/discover.js'
+import {
+  getPostsForGarage,
+  getUserGarage
+} from './api/garage.js'
+import {
+  fetchPosts,
+  getPostsForUser
+} from './api/posts.js'
 
 var createStore = Framework7.createStore
 
@@ -60,68 +75,177 @@ const store = createStore({
     userPaths: {}, // Object to store unique user paths and their data
     userPathsUpdated: false,
     notifications: [],
+    // discover page
+    trendingEvents: [],
+    trendingVenues: [],
+    eventCategories: [],
+    filteredEvents: {
+      data: [],
+      total_pages: 0,
+      page: 1,
+      limit: 10,
+    },
   },
   getters: {
-    getPathData({ state }) {
+    getFilteredEvents({
+      state
+    }) {
+      return state.filteredEvents
+    },
+    getEventCategories({
+      state
+    }) {
+      return state.eventCategories
+    },
+    getTrendingEvents({
+      state
+    }) {
+      return state.trendingEvents
+    },
+    getTrendingVenues({
+      state
+    }) {
+      return state.trendingVenues
+    },
+    getPathData({
+      state
+    }) {
       return state.paths
     },
-    getUserPathUpdated({ state }) {
+    getUserPathUpdated({
+      state
+    }) {
       return state.userPathsUpdated
     },
-    getUserPathData({ state }) {
+    getUserPathData({
+      state
+    }) {
       return state.userPaths
     },
-    getGarageViewPosts({ state }) {
+    getGarageViewPosts({
+      state
+    }) {
       return state.garageViewPosts
     },
-    getGarageViewTags({ state }) {
+    getGarageViewTags({
+      state
+    }) {
       return state.garageViewTags
     },
-    user({ state }) {
+    user({
+      state
+    }) {
       return state.user
     },
-    getRegisterData({ state }) {
+    getRegisterData({
+      state
+    }) {
       return state.registerData
     },
-    isAuthenticated({ state }) {
+    isAuthenticated({
+      state
+    }) {
       return !!state.user
     },
-    posts({ state }) {
+    posts({
+      state
+    }) {
       return state.posts
     },
-    followingPosts({ state }) {
+    followingPosts({
+      state
+    }) {
       return state.following_posts
     },
-    myGarage({ state }) {
+    myGarage({
+      state
+    }) {
       return state.myGarage
     },
-    myPosts({ state }) {
+    myPosts({
+      state
+    }) {
       return state.myPosts
     },
-    myTags({ state }) {
+    myTags({
+      state
+    }) {
       return state.myTags
     },
-    scannedData({ state }) {
+    scannedData({
+      state
+    }) {
       return state.scannedData
     },
-    isScanningQrCode({ state }) {
+    isScanningQrCode({
+      state
+    }) {
       return state.scanningQrCode
     },
-    getNotifications({ state }) {
+    getNotifications({
+      state
+    }) {
       return state.notifications
     },
   },
   actions: {
-    async fetchNotifications({ state }) {
+    async filterEvents({
+      state
+    }, {
+      filters,
+      page = 1
+    }) {
+      try {
+        const events = await fetchTrendingEvents(page, true, filters)
+        state.filteredEvents = events
+      } catch (error) {
+        console.error('Failed to filter events', error)
+        state.filteredEvents = {
+          data: [],
+          total_pages: 0,
+          page: 1,
+          limit: 10,
+        }
+      }
+    },
+    async fetchEventCategories({
+      state
+    }) {
+      const categories = await getEventCategories()
+
+      state.eventCategories = categories
+    },
+    async getTrendingEvents({
+      state
+    }) {
+      const events = await fetchTrendingEvents(1, false)
+      state.trendingEvents = events
+    },
+    async getTrendingVenues({
+      state
+    }) {
+      const venues = await fetchTrendingVenues(1, false)
+      state.trendingVenues = venues
+    },
+    async fetchNotifications({
+      state
+    }) {
       const notifications = await getUserNotifications()
       state.notifications = notifications
     },
-    async getUserPosts({ state }, { user_id, page = 1 }) {
+    async getUserPosts({
+      state
+    }, {
+      user_id,
+      page = 1
+    }) {
       console.log('Getting user posts', user_id, page)
 
       const posts = await getPostsForUser(user_id, page)
 
-      let prevUserPosts = { data: [] }
+      let prevUserPosts = {
+        data: []
+      }
 
       if (state.userPaths[`user-${user_id}-posts`]) {
         prevUserPosts = state.userPaths[`user-${user_id}-posts`]
@@ -141,10 +265,17 @@ const store = createStore({
       state.userPaths[`user-${user_id}-posts`] = data
       state.userPathsUpdated = true
     },
-    async getUserTags({ state }, { user_id, page = 1 }) {
+    async getUserTags({
+      state
+    }, {
+      user_id,
+      page = 1
+    }) {
       const posts = await getPostsForUser(user_id, page, true)
 
-      let prevUserPosts = { data: [] }
+      let prevUserPosts = {
+        data: []
+      }
 
       if (state.userPaths[`user-${user_id}-tags`]) {
         prevUserPosts = state.userPaths[`user-${user_id}-tags`]
@@ -164,10 +295,17 @@ const store = createStore({
       state.userPaths[`user-${user_id}-tags`] = data
       state.userPathsUpdated = true
     },
-    clearPathData({ state }) {
+    clearPathData({
+      state
+    }) {
       state.paths = {}
     },
-    setPathData({ state }, { path, data }) {
+    setPathData({
+      state
+    }, {
+      path,
+      data
+    }) {
       // Ensure the path key exists
       if (!state.paths[path]) {
         state.paths[path] = {}
@@ -179,7 +317,11 @@ const store = createStore({
         ...data,
       }
     },
-    async login({ state }, { token }) {
+    async login({
+      state
+    }, {
+      token
+    }) {
       try {
         const userDetails = await getUserDetails(token)
 
@@ -194,7 +336,9 @@ const store = createStore({
         console.error('Login failed', error)
       }
     },
-    logout({ state }) {
+    logout({
+      state
+    }) {
       state.user = null
       window.localStorage.removeItem('token')
     },
@@ -202,12 +346,16 @@ const store = createStore({
       const token = await getSessionUser()
 
       if (token) {
-        await context.dispatch('login', { token: token })
+        await context.dispatch('login', {
+          token: token
+        })
       } else {
         window.localStorage.removeItem('token')
       }
     },
-    async getPosts({ state }, page = 1) {
+    async getPosts({
+      state
+    }, page = 1) {
       const posts = await fetchPosts(page)
 
       const data = {
@@ -223,7 +371,9 @@ const store = createStore({
 
       state.posts = data
     },
-    async setGarageViewPosts({ state }, garage_id, page = 1) {
+    async setGarageViewPosts({
+      state
+    }, garage_id, page = 1) {
       const posts = await getPostsForGarage(garage_id, page)
 
       let prevData = state.garageViewPosts.data
@@ -244,7 +394,9 @@ const store = createStore({
 
       state.garageViewPosts = data
     },
-    async setGarageViewTags({ state }, garage_id, page = 1) {
+    async setGarageViewTags({
+      state
+    }, garage_id, page = 1) {
       const posts = await getPostsForGarage(garage_id, page, true)
 
       let prevData = state.garageViewTags.data
@@ -265,7 +417,9 @@ const store = createStore({
 
       state.garageViewTags = data
     },
-    async getFollowingPosts({ state }, page = 1) {
+    async getFollowingPosts({
+      state
+    }, page = 1) {
       const posts = await fetchPosts(page, true)
 
       const data = {
@@ -281,7 +435,14 @@ const store = createStore({
 
       state.following_posts = data
     },
-    async setRegisterData({ state }, { email, password, username, user_id }) {
+    async setRegisterData({
+      state
+    }, {
+      email,
+      password,
+      username,
+      user_id
+    }) {
       state.registerData = {
         email: email,
         password: password,
@@ -289,11 +450,15 @@ const store = createStore({
         user_id: user_id,
       }
     },
-    async getMyGarage({ state }) {
+    async getMyGarage({
+      state
+    }) {
       const garage = await getUserGarage(state.user.id)
       state.myGarage = garage
     },
-    async getMyPosts({ state }, page = 1) {
+    async getMyPosts({
+      state
+    }, page = 1) {
       const posts = await getPostsForUser(state.user.id, page)
 
       const data = {
@@ -309,7 +474,9 @@ const store = createStore({
 
       state.myPosts = data
     },
-    async getMyTags({ state }, page = 1) {
+    async getMyTags({
+      state
+    }, page = 1) {
       const posts = await getPostsForUser(state.user.id, page, true)
 
       const data = {
@@ -325,10 +492,14 @@ const store = createStore({
 
       state.myTags = data
     },
-    setScannedData({ state }, data) {
+    setScannedData({
+      state
+    }, data) {
       state.scannedData = data
     },
-    setScanningQrCode({ state }, value) {
+    setScanningQrCode({
+      state
+    }, value) {
       state.scanningQrCode = value
     },
   },

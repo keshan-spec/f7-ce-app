@@ -86,6 +86,22 @@ var routes = [
     path: '/profile-garage-vehicle-edit/:id',
     componentUrl: './pages/profile-garage-vehicle-edit.html?' + v,
   },
+   {
+    path: '/profile-edit-images/',
+    componentUrl: './pages/profile-edit-images.html?' + v,
+  },
+  {
+    path: '/profile-edit-socials/',
+    componentUrl: './pages/profile-edit-socials.html?' + v,
+  },
+  {
+    path: '/profile-edit-mydetails/',
+    componentUrl: './pages/profile-edit-mydetails.html?' + v,
+  },
+  {
+    path: '/profile-edit-username/',
+    componentUrl: './pages/profile-edit-username.html?' + v,
+  },
   // Default route (404 page). MUST BE THE LAST
   {
     path: '(.*)',
