@@ -213,11 +213,14 @@ function displayPosts(posts, following = false) {
               <div class="swiper-wrapper">
                 ${post.media.map(mediaItem => `
                   <div class="swiper-slide">
-                    ${mediaItem.media_type === 'video' ? `
-                      <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
-                        <source src="${mediaItem.media_url}" type="${mediaItem.media_mime_type}" />
-                      </video>
-                    ` : `
+                    ${mediaItem.media_type === 'video' ? 
+                    // `
+                    //   <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
+                    //     <source src="${mediaItem.media_url}" type="${mediaItem.media_mime_type}" />
+                    //   </video>
+                    // `
+                    'Disabled for testing'
+                     : `
                       <img src="${mediaItem.media_url}" alt="${mediaItem.media_alt}" />
                     `}
                   </div>
