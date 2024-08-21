@@ -759,36 +759,10 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', fu
 
 //PROFILE SECTION
 $(document).on('page:init', '.page[data-name="profile"]', function (e) {
-  var LinksPopup = app.popup.create({
+  app.popup.create({
     el: '.links-popup',
     swipeToClose: 'to-bottom'
   });
-
-  // var EditProfilePopup = app.popup.create({
-  //   el: '.edit-profile-popup',
-  //   swipeToClose: 'to-bottom'
-  // });
-
-  // // Edit Profile Action Sheet
-  // document.getElementById('edit-profile').addEventListener('click', function () {
-  //   app.actions.create({
-  //     buttons: [
-  //       // First group
-  //       [{
-  //         text: 'Action 1',
-  //         bold: true,
-  //         onClick: function () {
-  //           app.router.navigate('/profile-edit-mydetails/');
-  //         }
-  //       }, ],
-  //       // Second group
-  //       [{
-  //         text: 'Cancel',
-  //         color: 'red'
-  //       }]
-  //     ]
-  //   }).open();
-  // });
 });
 
 $(document).on('page:init', '.page[data-name="profile-edit-socials"]', function (e) {
@@ -806,7 +780,8 @@ $(document).on('click', '.logout-button', async function (e) {
 
   await store.dispatch('logout')
   toolbarEl.style.display = 'none'
-  app.views.main.router.navigate('/auth/')
+
+  app.views.current.router.navigate('/auth/')
 })
 
 export default app
