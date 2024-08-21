@@ -46,7 +46,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 30px;
+    width: 18px;
     height: 40px;
     background: url('../assets/loader.gif') center center no-repeat;
     background-size: contain;
@@ -201,4 +201,23 @@
 
 .pac-container {
     z-index: 9999 !important;
+}
+
+.post-media {
+    position: relative;
+    min-height: 300px;
+    max-height: 600px;
+}
+
+.post-media::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18px;
+    height: 40px;
+    background: url('../assets/loader.gif') center center no-repeat;
+    background-size: contain;
+    transform: translate(-50%, -50%);
+    z-index: -1;
 }

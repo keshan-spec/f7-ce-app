@@ -122,15 +122,31 @@ function displayPosts(posts, following = false) {
     post_actions += `</div>`;
 
     const date = formatPostDate(post.post_date);
-    const maxDescriptionLength = 10; // Set your character limit here
+    const maxDescriptionLength = 100; // Set your character limit here
     const isLongDescription = post.caption.length > maxDescriptionLength;
     const shortDescription = isLongDescription ? post.caption.slice(0, maxDescriptionLength) : post.caption;
+
+    let imageHeight = 400;
+
+    if (post.media.length > 0) {
+      imageHeight = post.media[0].media_height;
+
+      if (imageHeight > 800) {
+        imageHeight = 'auto';
+      }
+    }
+
+    let profile_link = `/profile-view/${post.user_id}`;
+
+    if (post.user_id == user.id) {
+      profile_link = '#view-profile';
+    }
 
     const postItem = `
       <div class="media-post" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
         <div class="media-post-content">
           <div class="media-post-header">
-            <a href="/profile-view/${post.user_id}">
+            <a href="${profile_link}">
               <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
               <div class="media-post-user">${post.username}</div>
             </a>
@@ -140,7 +156,7 @@ function displayPosts(posts, following = false) {
             <div class="swiper-container">
               <div class="swiper-wrapper">
                 ${post.media.map(mediaItem => `
-                  <div class="swiper-slide">
+                  <div class="swiper-slide post-media" style="height: ${imageHeight}; ">
                     ${mediaItem.media_type === 'video' ? 
                     // `
                     //   <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
@@ -395,7 +411,7 @@ function toggleCommentLike(commentId, ownerId) {
 }
 
 // on .popup-open click
-$(document).on('click', '.media-post-comment', async function () {
+$(document).on('click', '.media-post-comment, .media-post-commentcount', async function () {
   const postId = this.getAttribute('data-post-id')
 
   if (!postId) {

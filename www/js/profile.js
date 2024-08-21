@@ -145,13 +145,14 @@ function generatePostGridItem(post) {
   const media = post.media[0] // Get the first media item
   const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
 
+  // <video playsinline>
+  //           <source src="${media.media_url}" type="video/mp4" />
+  //         </video>
   if (isVideo) {
     return `
       <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}">
         <div class="video-square">
-          <video playsinline>
-            <source src="${media.media_url}" type="video/mp4" />
-          </video>
+          
         </div>
       </a>`
   } else {
@@ -659,7 +660,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
     }
 
     try {
-      $('.init-loader').show()
+      $('.init-loader.light').show()
 
       const response = await updateVehicleInGarage({
           make,
@@ -681,7 +682,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
         throw new Error('Failed to update vehicle')
       }
 
-      $('.init-loader').hide()
+      $('.init-loader.light').hide()
       app.dialog.alert('Vehicle updated successfully')
 
       // refresh garage
@@ -691,7 +692,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
         force: true
       })
     } catch (error) {
-      $('.init-loader').hide()
+      $('.init-loader.light').hide()
       app.dialog.alert('Failed to update vehicle')
     }
   })
@@ -817,7 +818,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', asy
     }
 
     try {
-      $('.init-loader').show()
+      $('.init-loader.light').show()
 
       const response = await addVehicleToGarage({
         make,
@@ -837,7 +838,8 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', asy
         throw new Error('Failed to update vehicle')
       }
 
-      $('.init-loader').hide()
+      $('.init-loader.light').hide()
+      store.dispatch('getMyGarage')
       app.dialog.alert('Vehicle added successfully')
       // redirect to garage
       view.router.back(`/profile-garage-vehicle-view/${response.id}`, {

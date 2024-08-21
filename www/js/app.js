@@ -88,18 +88,10 @@ var app = new Framework7({
         })
       }
 
-      // if (page.name === 'notifications') {
-      //   // userStore.onUpdated((data) => {
-      //   store.dispatch('fetchNotifications')
-      //   // })
-      // }
-
       if (page.name === 'discover') {
-        // userStore.onUpdated((data) => {
         store.dispatch('getTrendingEvents')
         store.dispatch('getTrendingVenues')
         store.dispatch('fetchEventCategories')
-        // })
       }
 
       if (page.name === 'signup-step2') {

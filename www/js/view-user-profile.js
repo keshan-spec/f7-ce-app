@@ -1,7 +1,16 @@
-import { getSessionUser, getUserById } from "./api/auth.js"
-import { getUserGarage } from "./api/garage.js"
+import {
+    getSessionUser,
+    getUserById
+} from "./api/auth.js"
+import {
+    getUserGarage
+} from "./api/garage.js"
 import app from "./app.js"
-import { createGarageContent, displayProfile, fillGridWithPosts } from "./profile.js"
+import {
+    createGarageContent,
+    displayProfile,
+    fillGridWithPosts
+} from "./profile.js"
 import store from "./store.js"
 
 var $ = Dom7
@@ -16,6 +25,12 @@ var isFetchingPosts = false
 $(document).on('page:afterin', '.page[data-name="profile-view"]', async function (e) {
     var view = app.views.current
     var userId = e.detail.route.params.id
+
+    // const sessionUser = await getSessionUser()
+    // if (sessionUser.id == userId) {
+    //     $('.tab-link[href="#view-profile"]').click()
+    //     return
+    // }
 
     // Infinite Scroll
     const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content.view-page')
@@ -36,7 +51,8 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
             currentPostPage++
             if (currentPostPage <= totalPostPages) {
                 await store.dispatch(getterFunc, {
-                    user_id: userId, page: currentPostPage
+                    user_id: userId,
+                    page: currentPostPage
                 })
                 isFetchingPosts = false
             }
@@ -45,24 +61,20 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
 
             if (currentFPostPage <= totalFPostPages) {
                 await store.dispatch(getterFunc, {
-                    user_id: userId, page: currentFPostPage
+                    user_id: userId,
+                    page: currentFPostPage
                 })
                 isFetchingPosts = false
             }
         }
     })
 
-    const sessionUser = await getSessionUser()
-    // if (sessionUser.id == userId) {
-    //     $('.tab-link[href="#view-profile"]').click()
-    //     return
-    // }
-
-
     const data = await getUserById(userId)
     if (!data || data.error) {
         app.dialog.alert('User not found', 'Error')
-        view.router.back(view.history[0], { force: true })
+        view.router.back(view.history[0], {
+            force: true
+        })
         return
     }
 
@@ -73,8 +85,12 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
         createGarageContent(garage, '.current-vehicles-list', '.past-vehicles-list')
     }
 
-    store.dispatch('getUserPosts', { user_id: userId })
-    store.dispatch('getUserTags', { user_id: userId })
+    store.dispatch('getUserPosts', {
+        user_id: userId
+    })
+    store.dispatch('getUserTags', {
+        user_id: userId
+    })
 
     store.getters.getUserPathUpdated.onUpdated(() => {
         const data = store.getters.getUserPathData.value
@@ -118,4 +134,3 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
     })
 
 })
-

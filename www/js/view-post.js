@@ -45,7 +45,15 @@ function displayPost(post) {
   const maxDescriptionLength = 10; // Set your character limit here
   const isLongDescription = post.caption.length > maxDescriptionLength;
   const shortDescription = isLongDescription ? post.caption.slice(0, maxDescriptionLength) : post.caption;
+  let imageHeight = 400;
 
+  if (post.media.length > 0) {
+    imageHeight = post.media[0].media_height;
+
+    if (imageHeight > 800) {
+      imageHeight = 'auto';
+    }
+  }
   const postItem = `
   <div class="media-post single" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
             <div class="media-single-post-content">
@@ -60,7 +68,7 @@ function displayPost(post) {
                 <div class="swiper-container">
                   <div class="swiper-wrapper">
                     ${post.media.map(mediaItem => `
-                      <div class="swiper-slide">
+                       <div class="swiper-slide post-media" style="height: ${imageHeight};">
                         ${mediaItem.media_type === 'video' ? `
                           <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
                             <source src="${mediaItem.media_url}" type="${mediaItem.media_mime_type}" />
