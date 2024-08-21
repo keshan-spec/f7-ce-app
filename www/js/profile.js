@@ -564,6 +564,8 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
     return
   }
 
+  document.querySelector('input[name="garage_id"]').value = garageId
+
   // Populate form fields with garage data
   document.querySelector('select[name="vehicle_make"]').value = data.make
   document.querySelector('input[name="vehicle_model"]').value = data.model
@@ -595,7 +597,9 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
   }
 
   // Initially set the visibility based on the garage data
-  ownershipSelect.value = data.primary_car === "1" ? "current" : "past"
+  const isPrimary = data.primary_car === "1" ? true : false;
+  const hasOwndedTo = data.owned_until && data.owned_until.length > 1 ? true : false;
+  ownershipSelect.value = hasOwndedTo ? "past" : "current"
   toggleOwnedToDatePicker()
 
   // Attach event listener to toggle visibility when ownership type changes
@@ -613,8 +617,6 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
 
     reader.readAsDataURL(file)
   })
-
-
 
   // #delete-vehicle on click
   $(document).on('click', '#delete-vehicle', async function (e) {
@@ -648,10 +650,14 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
 
 // submit-vehicle-form
 $(document).on('click', '#submit-vehicle-form', async function (e) {
+  var view = app.views.current
+
   // form data
   const form = $('form#vehicleForm')
 
   // values
+  const garageId = form.find('input[name="garage_id"]').val()
+
   const make = form.find('select[name="vehicle_make"]').val()
   const model = form.find('input[name="vehicle_model"]').val()
   const variant = form.find('input[name="vehicle_variant"]').val()
@@ -738,6 +744,7 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
       force: true
     })
   } catch (error) {
+    console.log(error);
     app.preloader.hide()
     app.dialog.alert('Failed to update vehicle')
   }

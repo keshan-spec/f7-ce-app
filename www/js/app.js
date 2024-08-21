@@ -77,8 +77,10 @@ var app = new Framework7({
     pageInit: function (page) {
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
-          displayProfile(data)
-          store.dispatch('getMyGarage')
+          if (data && data.id) {
+            displayProfile(data)
+            store.dispatch('getMyGarage')
+          }
 
           if (data && !data.refreshed) {
             store.dispatch('getFollowingPosts')
@@ -89,9 +91,11 @@ var app = new Framework7({
       }
 
       if (page.name === 'discover') {
-        store.dispatch('getTrendingEvents')
-        store.dispatch('getTrendingVenues')
-        store.dispatch('fetchEventCategories')
+        userStore.onUpdated((data) => {
+          store.dispatch('getTrendingEvents')
+          store.dispatch('getTrendingVenues')
+          store.dispatch('fetchEventCategories')
+        })
       }
 
       if (page.name === 'signup-step2') {
