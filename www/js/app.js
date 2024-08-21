@@ -709,7 +709,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', fun
     openIn: 'customModal',
     header: true,
     footer: true,
-    dateFormat: 'yyyy-mm-dd',
+    dateFormat: 'dd/mm/yyyy',
     maxDate: new Date()
   })
 
@@ -718,7 +718,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', fun
     openIn: 'customModal',
     header: true,
     footer: true,
-    dateFormat: 'yyyy-mm-dd',
+    dateFormat: 'dd/mm/yyyy',
     minDate: new Date()
   })
 })

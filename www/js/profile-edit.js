@@ -102,11 +102,11 @@ $(document).on('click', '#save-details', async function () {
     }
 
     try {
-        $('.init-loader.light').show()
+        app.preloader.show()
 
         const response = await updateUserDetails(requestData, email !== user.email)
 
-        $('.init-loader.light').hide()
+        app.preloader.hide()
 
 
         if (response && response.success) {
@@ -118,7 +118,7 @@ $(document).on('click', '#save-details', async function () {
 
         throw new Error(response.message);
     } catch (error) {
-        $('.init-loader.light').hide()
+        app.preloader.hide()
         app.dialog.alert(error.message, 'Error');
     }
 });
@@ -168,11 +168,11 @@ $(document).on('click', '#update_password', async function () {
     }
 
     try {
-        $('.init-loader.light').show()
+        app.preloader.show()
 
         const response = await updatePassword(password, current_password)
 
-        $('.init-loader.light').hide()
+        app.preloader.hide()
 
         if (response && response.success) {
             app.dialog.alert('Password updated successfully', 'Success');
@@ -181,7 +181,7 @@ $(document).on('click', '#update_password', async function () {
 
         throw new Error(response.message);
     } catch (error) {
-        $('.init-loader.light').hide()
+        app.preloader.hide()
         app.dialog.alert(error.message || 'Failed to update password', 'Error');
     }
 })
@@ -218,10 +218,10 @@ $(document).on('click', '#save-username', async function () {
         app.dialog.alert('Please enter a username', 'Error')
         return
     }
-    $('.init-loader.light').show()
+    app.preloader.show()
 
     const response = await updateUsername(username)
-    $('.init-loader.light').hide()
+    app.preloader.hide()
 
     if (response && response.success) {
         app.dialog.alert('Username updated successfully', 'Success')
@@ -293,7 +293,7 @@ $(document).on('click', '#save-profile-images', async function () {
     }
 
     try {
-        $('.init-loader.light').show()
+        app.preloader.show()
 
         let promises = []
 
@@ -306,7 +306,7 @@ $(document).on('click', '#save-profile-images', async function () {
         }
 
         const responses = await Promise.all(promises)
-        $('.init-loader.light').hide()
+        app.preloader.hide()
 
         if (responses.every(response => response && response.success)) {
             app.dialog.alert('Images updated successfully', 'Success')
@@ -431,7 +431,7 @@ $(document).on('click', '#add-link-btn', async function () {
 
     app.popup.close()
 
-    $('.init-loader.light').show()
+    app.preloader.show()
 
     const response = await addUserProfileLinks({
         type: 'external_links',
@@ -458,7 +458,7 @@ $(document).on('click', '#add-link-btn', async function () {
         externalLinksContainer.appendChild(listItem);
     }
 
-    $('.init-loader.light').hide()
+    app.preloader.hide()
 });
 
 // Save social links
@@ -497,11 +497,11 @@ $(document).on('click', '#save-profile-socials', async function () {
         return
     }
 
-    $('.init-loader.light').show()
+    app.preloader.show()
 
     const response = await updateSocialLinks(links);
 
-    $('.init-loader.light').hide()
+    app.preloader.hide()
 
     if (response && response.success) {
         app.dialog.alert('Social links updated successfully', 'Success');
@@ -517,11 +517,11 @@ $(document).on('click', '.delete-external-link', async function (e) {
 
     // confirm dialog
     app.dialog.confirm('Are you sure you want to delete this link?', 'Delete Link', async function () {
-        $('.init-loader.light').show()
+        app.preloader.show()
 
         const response = await removeProfileLink(linkId);
 
-        $('.init-loader.light').hide()
+        app.preloader.hide()
 
         if (response) {
             app.dialog.alert('Link deleted successfully', 'Success')
