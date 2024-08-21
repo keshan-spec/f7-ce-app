@@ -583,7 +583,7 @@ $(document).on('submit', 'form#sign-up-step2', async function (e) {
 
     app.views.main.router.navigate('/signup-step3/')
   } catch (error) {
-    app.dialog.alert(error.message || 'An error occurred, please try again')
+    app.dialog.alert(error.message || 'Failed to update username')
     return
   }
 })

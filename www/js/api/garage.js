@@ -1,5 +1,9 @@
-import { getSessionUser } from './auth.js'
-import { API_URL } from './consts.js'
+import {
+    getSessionUser
+} from './auth.js'
+import {
+    API_URL
+} from './consts.js'
 
 export const getUserGarage = async (profileId) => {
     try {
@@ -8,7 +12,9 @@ export const getUserGarage = async (profileId) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ user_id: profileId }),
+            body: JSON.stringify({
+                user_id: profileId
+            }),
         })
 
         const data = await response.json()
@@ -30,7 +36,9 @@ export const getGargeById = async (garageId) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ garage_id: garageId }),
+            body: JSON.stringify({
+                garage_id: garageId
+            }),
         })
 
         const data = await response.json()
@@ -53,7 +61,12 @@ export const getPostsForGarage = async (garageId, page = 1, tagged = false) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ garage_id: garageId, page, limit: 10, tagged }),
+            body: JSON.stringify({
+                garage_id: garageId,
+                page,
+                limit: 10,
+                tagged
+            }),
         })
 
         const data = await response.json()
@@ -108,7 +121,6 @@ export const updateVehicleInGarage = async (data, garageId) => {
 
 export const deleteVehicleFromGarage = async (garageId) => {
     const user = await getSessionUser()
-    if (!user) return
 
     const response = await fetch(`${API_URL}/wp-json/app/v1/delete-garage`, {
         method: "POST",

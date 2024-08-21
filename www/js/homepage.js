@@ -168,7 +168,7 @@ function displayPosts(posts, following = false) {
     let profile_link = `/profile-view/${post.user_id}`;
 
     if (post.user_id == user.id) {
-      profile_link = '#view-profile';
+      profile_link = '/profile/';
     }
 
     const postItem = `
@@ -346,7 +346,9 @@ function displayComments(comments, postId) {
                   <div class="comment-profile-img" style="background-image:url('${reply.profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
                   <div class="comment-content-container">
                     <div class="comment-username">
-                      <a href="/profile-view/${reply.user_id}">${reply.user_login}</a>
+                      <a href="${reply.user_id == user.id ? '/profile/' : `/profile-view/${reply.user_id}`}">
+                      ${reply.user_login}
+                      </a>
                     <span class="date">${formatPostDate(reply.comment_date)}</span>
                     </div>
                     <div class="comment-content">${reply.comment}</div>
@@ -369,6 +371,12 @@ function displayComments(comments, postId) {
       </div>
     ` : ''
 
+    let commenter_link = `/profile-view/${comment.user_id}`;
+
+    if (comment.user_id == user.id) {
+      commenter_link = '/profile/';
+    }
+
     const commentItem = `
       <div class="comment" 
         data-comment-id="${comment.id}" 
@@ -378,7 +386,7 @@ function displayComments(comments, postId) {
         <div class="comment-profile-img" style="background-image:url('${comment.profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
         <div class="comment-content-container">
           <div class="comment-username">
-           <a href="/profile-view/${comment.user_id}">${comment.user_login}</a>
+           <a href="${commenter_link}">${comment.user_login}</a>
           <span class="date">${formatPostDate(comment.comment_date)}</span>
           </div>
           <div class="comment-content">${comment.comment}</div>
@@ -456,6 +464,7 @@ $(document).on('click', '.media-post-comment, .media-post-commentcount', async f
   document.getElementById('comment-form').removeAttribute('data-comment-id')
 
   document.getElementById('comment-form').querySelector('.replying-to').innerHTML = ''
+  document.getElementById('comment-form').querySelector('.replying-to').classList.add('hidden')
 
   const comments = await fetchComments(postId)
 
@@ -514,6 +523,7 @@ $('#comment-form').on('submit', async function (e) {
     this.reset()
     this.removeAttribute('data-comment-id')
     this.querySelector('.replying-to').innerHTML = ''
+    this.querySelector('.replying-to').classList.add('hidden')
     const comments = await fetchComments(postId)
     displayComments(comments, postId)
   } else {
@@ -539,6 +549,7 @@ $(document).on('click', '.comment-reply', function () {
   //  <span class="replying-to">Replying to <strong>m88xrk</strong></span>
   const replyingTo = document.getElementById('comment-form').querySelector('.replying-to')
   replyingTo.innerHTML = `Replying to <strong>${ownerName}</strong>`
+  replyingTo.classList.remove('hidden')
   document.getElementById('comment-form').prepend(replyingTo)
 })
 

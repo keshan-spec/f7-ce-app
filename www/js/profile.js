@@ -109,6 +109,12 @@ export function createGarageContent(garages, currentList, pastList) {
   currentVehiclesList.innerHTML = '' // Clear the list before adding new vehicles
   pastVehiclesList.innerHTML = '' // Clear the list before adding new vehicles
 
+  if (garages.error) {
+    currentVehiclesList.innerHTML = '<li>No current vehicles</li>'
+    pastVehiclesList.innerHTML = '<li>No past vehicles</li>'
+    return
+  }
+
   // Function to generate vehicle HTML
   function generateVehicleHTML(vehicle) {
     return `
@@ -429,6 +435,8 @@ store.getters.getGarageViewTags.onUpdated((data) => {
 
 // Function to update the HTML with the data
 async function updateProfilePage(data) {
+  const user = await getSessionUser()
+
   // Update the cover photo
   const coverPhotoElement = document.querySelector('.vehicle-profile-background')
   if (coverPhotoElement) {
@@ -439,9 +447,15 @@ async function updateProfilePage(data) {
   const profileImageElement = document.querySelector('.vehicle-profile-image')
   if (profileImageElement) {
     profileImageElement.style.backgroundImage = `url('${data.owner.profile_image || 'assets/img/profile-placeholder.jpg'}')`
-    profileImageElement.setAttribute('href', `/profile-view/${data.owner_id}`)
-  }
 
+    let profile_link = `/profile-view/${data.owner_id}`
+
+    if (user.id == data.owner_id) {
+      profile_link = '/profile/'
+
+      profileImageElement.setAttribute('href', profile_link)
+    }
+  }
   // Update the vehicle make and model
   const vehicleTitleElement = document.querySelector('.profile-garage-intro h1')
   if (vehicleTitleElement) {
@@ -600,6 +614,36 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
     reader.readAsDataURL(file)
   })
 
+
+
+  // #delete-vehicle on click
+  $(document).on('click', '#delete-vehicle', async function (e) {
+    app.dialog.confirm('Are you sure you want to delete this vehicle?', async function () {
+      try {
+        app.preloader.show()
+
+        const response = await deleteVehicleFromGarage(garageId)
+
+        if (!response || !response.success) {
+          throw new Error('Failed to delete vehicle')
+        }
+
+        app.preloader.hide()
+
+        app.dialog.alert('Vehicle deleted successfully')
+
+        await store.dispatch('getMyGarage')
+        view.router.back('/profile-garage-edit/', {
+          force: true
+        })
+
+      } catch (error) {
+        console.log(error);
+        app.preloader.hide()
+        app.dialog.alert('Failed to delete vehicle')
+      }
+    })
+  })
 })
 
 // submit-vehicle-form
@@ -699,30 +743,6 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
   }
 })
 
-// #delete-vehicle on click
-$(document).on('click', '#delete-vehicle', async function (e) {
-  app.dialog.confirm('Are you sure you want to delete this vehicle?', async function () {
-    try {
-      app.preloader.show()
-
-      const response = await deleteVehicleFromGarage(garageId)
-
-      if (!response || !response.success) {
-        throw new Error('Failed to delete vehicle')
-      }
-
-      app.preloader.hide()
-      app.dialog.alert('Vehicle deleted successfully')
-      await store.dispatch('getMyGarage')
-      view.router.back('/profile-garage-edit/', {
-        force: true
-      })
-    } catch (error) {
-      app.preloader.hide()
-      app.dialog.alert('Failed to delete vehicle')
-    }
-  })
-})
 
 $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', async function (e) {
   var view = app.views.current
