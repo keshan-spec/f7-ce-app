@@ -65,11 +65,11 @@ $(document).on('click', '#save-details', async function () {
         return;
     }
 
-    // phone validation
-    if (telNo === '') {
-        app.dialog.alert('Please enter a valid phone number', 'Error');
-        return
-    }
+    // // phone validation
+    // if (telNo === '') {
+    //     app.dialog.alert('Please enter a valid phone number', 'Error');
+    //     return
+    // }
 
     // Prepare the data for the API request
     const requestData = {
@@ -134,10 +134,27 @@ $(document).on('click', '#update_password', async function () {
         return
     }
 
-    // Validate the input fields
-    if (password === '') {
-        app.dialog.alert('Please enter your password', 'Error');
-        return;
+    if (password.length < 8) {
+        app.dialog.alert('Password must be at least 8 characters long.')
+        return
+    }
+
+    // Check if password contains at least one lowercase letter
+    if (!/[a-z]/.test(password)) {
+        app.dialog.alert('Password must contain at least one lowercase letter.')
+        return
+    }
+
+    // Check if password contains at least one uppercase letter
+    if (!/[A-Z]/.test(password)) {
+        app.dialog.alert('Password must contain at least one uppercase letter.')
+        return
+    }
+
+    // Check if password contains at least one number
+    if (!/\d/.test(password)) {
+        app.dialog.alert('Password must contain at least one number.')
+        return
     }
 
     if (confirmPassword === '') {
@@ -412,6 +429,8 @@ $(document).on('click', '#add-link-btn', async function () {
         url: linkUrl
     };
 
+    app.popup.close()
+
     $('.init-loader.light').show()
 
     const response = await addUserProfileLinks({
@@ -419,11 +438,9 @@ $(document).on('click', '#add-link-btn', async function () {
         link: requestData
     })
 
-    $('.init-loader.light').hide()
-
-
     if (response && response.success) {
         app.dialog.alert('Link added successfully', 'Success');
+
         // Add the new link to the list
         const listItem = document.createElement('li');
         listItem.innerHTML = `
@@ -441,7 +458,7 @@ $(document).on('click', '#add-link-btn', async function () {
         externalLinksContainer.appendChild(listItem);
     }
 
-    app.popup.close()
+    $('.init-loader.light').hide()
 });
 
 // Save social links
@@ -480,7 +497,6 @@ $(document).on('click', '#save-profile-socials', async function () {
         return
     }
 
-
     $('.init-loader.light').show()
 
     const response = await updateSocialLinks(links);
@@ -497,7 +513,6 @@ $(document).on('click', '#save-profile-socials', async function () {
 
 // Delete link
 $(document).on('click', '.delete-external-link', async function (e) {
-
     const linkId = e.target.closest('.item-link').dataset.linkId;
 
     // confirm dialog
@@ -506,7 +521,7 @@ $(document).on('click', '.delete-external-link', async function (e) {
 
         const response = await removeProfileLink(linkId);
 
-        $('.init-loader.light').show()
+        $('.init-loader.light').hide()
 
         if (response) {
             app.dialog.alert('Link deleted successfully', 'Success')

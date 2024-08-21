@@ -455,12 +455,6 @@ $(document).on('submit', 'form#sign-up-step1', async function (e) {
     return
   }
 
-  // // regex to check if password contains at least one number, one lowercase and one uppercase letter, and at least 8 characters
-  // var passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
-  // if (!passwordPattern.test(password)) {
-  //   app.dialog.alert('Password must contain at least one number, one lowercase and one uppercase letter, and at least 8 characters')
-  //   return
-  // }
   // Check if password has at least 8 characters
   if (password.length < 8) {
     app.dialog.alert('Password must be at least 8 characters long.')

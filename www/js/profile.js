@@ -137,6 +137,14 @@ export function createGarageContent(garages, currentList, pastList) {
       pastVehiclesList.innerHTML += generateVehicleHTML(vehicle)
     }
   })
+
+  if (currentVehiclesList.innerHTML === '') {
+    currentVehiclesList.innerHTML = '<li>No current vehicles</li>'
+  }
+
+  if (pastVehiclesList.innerHTML === '') {
+    pastVehiclesList.innerHTML = '<li>No past vehicles</li>'
+  }
 }
 
 function generatePostGridItem(post) {
