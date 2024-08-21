@@ -1,8 +1,7 @@
 // var v = 3.1;
 var v = Date.now()
 
-var routes = [
-  {
+var routes = [{
     path: '/',
     url: './index.html',
   },
@@ -75,6 +74,14 @@ var routes = [
     componentUrl: './pages/post-view.html?' + v,
   },
   {
+    path: '/profile-edit/',
+    componentUrl: './pages/profile-edit.html?' + v,
+  },
+  {
+    path: '/search/',
+    componentUrl: './pages/search.html?' + v,
+  },
+  {
     path: '/profile-garage-edit/',
     componentUrl: './pages/profile-garage-edit.html?' + v,
   },
@@ -86,7 +93,7 @@ var routes = [
     path: '/profile-garage-vehicle-edit/:id',
     componentUrl: './pages/profile-garage-vehicle-edit.html?' + v,
   },
-   {
+  {
     path: '/profile-edit-images/',
     componentUrl: './pages/profile-edit-images.html?' + v,
   },

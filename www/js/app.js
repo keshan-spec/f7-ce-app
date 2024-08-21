@@ -88,11 +88,11 @@ var app = new Framework7({
         })
       }
 
-      if (page.name === 'notifications') {
-        // userStore.onUpdated((data) => {
-        store.dispatch('fetchNotifications')
-        // })
-      }
+      // if (page.name === 'notifications') {
+      //   // userStore.onUpdated((data) => {
+      //   store.dispatch('fetchNotifications')
+      //   // })
+      // }
 
       if (page.name === 'discover') {
         // userStore.onUpdated((data) => {

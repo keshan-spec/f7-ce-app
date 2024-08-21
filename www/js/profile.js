@@ -14,10 +14,11 @@ import {
 } from "./api/consts.js"
 var $ = Dom7
 
-const garageStore = store.getters.myGarage
-const myPostsStore = store.getters.myPosts
-const myTagsStore = store.getters.myTags
-const pathStore = store.getters.getPathData
+var garageStore = store.getters.myGarage
+var myPostsStore = store.getters.myPosts
+var myTagsStore = store.getters.myTags
+var pathStore = store.getters.getPathData
+var userStore = store.getters.user
 
 var isFetchingPosts = false
 var totalPostPages = 1
@@ -270,6 +271,40 @@ $(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
       }
     }
   })
+
+  if (garageStore.value && garageStore.value.length > 0) {
+    createGarageContent(garageStore.value, '.current-vehicles-list', '.past-vehicles-list')
+  }
+
+  if (userStore.value) {
+    displayProfile(userStore.value)
+  }
+
+  if (myPostsStore.value && myPostsStore.value.data) {
+    const posts = myPostsStore.value.data
+    totalPostPages = myPostsStore.value.total_pages
+
+    if ((myPostsStore.value.page === myPostsStore.value.total_pages) || (myPostsStore.value.total_pages == 0)) {
+      // hide preloader
+      $('.infinite-scroll-preloader.posts-tab').hide()
+    }
+
+    // Call the function to fill the grid
+    fillGridWithPosts(posts, 'profile-grid-posts')
+  }
+
+  if (myTagsStore.value && myTagsStore.value.data) {
+    const posts = myTagsStore.value.data
+    totalFPostPages = myTagsStore.value.total_pages
+
+    if ((myTagsStore.value.page === myTagsStore.value.total_pages) || (myTagsStore.value.total_pages == 0)) {
+      // hide preloader
+      $('.infinite-scroll-preloader.tags-tab').hide()
+    }
+
+    // Call the function to fill the grid
+    fillGridWithPosts(posts, 'profile-grid-tags')
+  }
 })
 
 $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', async function (e) {

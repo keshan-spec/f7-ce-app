@@ -559,6 +559,72 @@ body {
 
 
 
+/*************** Notifications ***************/
+.notification-title{
+    padding: 12px 16px 12px 16px;
+    font-size: 16px;
+    text-transform: unset;
+}
+.notification-item{
+    padding: 14px 16px 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    background-color: #fff;
+}
+.notification-left{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.notification-left .image-square {
+	width: 45px;
+	height: 45px;
+	padding: 0;
+}
+.people-img{
+    width: 40px;
+    border-radius: 50%;
+}
+.notification-img{
+    width: 36px;
+}
+.notification-text{
+    margin-bottom: 4px;
+}
+.notification-time{
+    font-size: 14px;
+    color: #797979;
+}
+
+
+
+/*************** Search ***************/
+
+.search-result {
+	font-size: 14px;
+}
+.search-result .item-media {
+	width: 40px;
+}
+.popup-lower-button {
+	position: absolute;
+	left: 5%;
+	width: 90%;
+	bottom: 10px;
+}
+.location-field input {
+	border: 1px #d0d0d0 solid;
+	border-radius: 5px;
+	display: block;
+	width: 100%;
+	padding: 10px 6px;
+}
+
+
+
+
 
 /*************** Profile - Landing ***************/
 
@@ -1466,7 +1532,7 @@ swiper-container.event-listing{
     position: relative;
     column-gap: 16px;
 }
-.card-listview .listview-image img{
+.card-listview .listview-image {
     border-radius: 6px;
     width: 50px;
 }

@@ -185,3 +185,16 @@
 .custom-file-upload label{
     z-index: 2;
 }
+
+.hidden {
+  display: none;
+}
+
+.media-post-readmore {
+  color: blue;
+  cursor: pointer;
+}
+
+.media-post-readmore{
+    display: inline !important;
+}

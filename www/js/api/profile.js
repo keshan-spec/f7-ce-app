@@ -129,3 +129,22 @@ export const updateCoverImage = async (image) => {
     const data = await response.json();
     return data;
 };
+
+export const maybeFollowUser = async (profileId) => {
+    const user = await getSessionUser();
+    if (!user) return;
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/follow-user`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            following_id: profileId,
+            follower_id: user.id
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+};

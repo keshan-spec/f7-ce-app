@@ -272,3 +272,42 @@ filteredEventsStore.onUpdated((data) => {
     totalEventPages = data.total_pages
     populateEventCard(data.data, false);
 });
+
+//DISCOVER SECTION - FILTERING
+$(document).on('page:init', '.page[data-name="discover"]', function (e) {
+    //Date Filters
+    calendarModal = app.calendar.create({
+        inputEl: '#date-from',
+        openIn: 'customModal',
+        header: true,
+        footer: true,
+    });
+
+    calendarModal = app.calendar.create({
+        inputEl: '#date-to',
+        openIn: 'customModal',
+        header: true,
+        footer: true,
+    });
+
+    //Filter Date Popup
+    var FilterDatePopup = app.popup.create({
+        el: '.filter-bydate-popup',
+        swipeToClose: 'to-bottom'
+    });
+
+    //Filter Category Popup
+    var FilterCategoryPopup = app.popup.create({
+        el: '.filter-bycategory-popup',
+        swipeToClose: 'to-bottom'
+    });
+
+    //Filter Location Popup
+    var FilterLocationPopup = app.popup.create({
+        el: '.filter-bylocation-popup',
+        swipeToClose: 'to-bottom'
+    });
+
+
+
+});

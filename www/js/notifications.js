@@ -1,3 +1,9 @@
+import {
+    getSessionUser
+} from "./api/auth.js"
+import {
+    maybeFollowUser
+} from "./api/profile.js"
 import store from "./store.js"
 
 var $ = Dom7
@@ -7,8 +13,7 @@ $(document).on('page:init', '.page[data-name="notifications"]', function (e) {
     store.dispatch('fetchNotifications')
 })
 
-notificationsStore.onUpdated((data) => {
-
+notificationsStore.onUpdated(async (data) => {
     if (!data || !data.success) {
         $('#notifications-list').html('<p class="text-center">No notifications</p>')
         return
@@ -16,88 +21,152 @@ notificationsStore.onUpdated((data) => {
 
     const notifications = data.data
 
-    console.log('Notifications updated', notifications)
+    const recentContainer = document.getElementById('recent');
+    const thisWeekContainer = document.getElementById('this-week');
 
-    renderNotifications(notifications.recent)
-    renderNotifications(notifications.last_week)
-    renderNotifications(notifications.last_30_days)
+    var user = await getSessionUser()
+
+    notifications.recent.forEach(notification => {
+        const notificationItem = createNotificationItem(notification, user);
+        recentContainer.appendChild(notificationItem);
+    });
+
+    notifications.last_week.forEach(notification => {
+        const notificationItem = createNotificationItem(notification, user);
+        thisWeekContainer.appendChild(notificationItem);
+    });
 })
 
-function renderNotifications(notifications) {
-    const container = document.getElementById('notifications-list')
-    // container.innerHTML = '' // Clear the container
+function timeAgo(dateString) {
+    const now = new Date();
+    const past = new Date(dateString);
+    const diffInHours = Math.floor((now - past) / (1000 * 60 * 60));
+    return diffInHours > 24 ? `${Math.floor(diffInHours / 24)}d ago` : `${diffInHours}h ago`;
+}
 
-    notifications.forEach(notification => {
-        const {
-            entity,
-            date,
-            type
-        } = notification
-        const {
-            initiator_data,
-            entity_data
-        } = entity
+function createNotificationItem(notification, user) {
+    const container = document.createElement('div');
+    container.className = 'notification-item';
 
-        // Create notification wrapper
-        const notificationItem = document.createElement('div')
-        notificationItem.className = 'notification-item'
+    // Profile image and notification content container
+    const leftContainer = document.createElement('a');
+    leftContainer.href = `/profile-view/${notification.entity.user_id}`;
+    leftContainer.className = 'notification-left';
 
-        // User profile image
-        const profileImage = document.createElement('div')
-        profileImage.className = 'profile-image'
-        profileImage.style.width = '40px'
-        profileImage.style.height = '40px'
-        profileImage.style.borderRadius = '50%'
-        profileImage.style.backgroundImage = `url('${initiator_data.profile_image || 'assets/img/profile-placeholder.jpg'}')`
-        profileImage.style.backgroundSize = 'cover'
-        profileImage.style.backgroundPosition = 'center'
-        profileImage.style.marginRight = '10px'
+    const imageDiv = document.createElement('div');
+    imageDiv.className = 'image-square image-rounded';
+    imageDiv.style.backgroundImage = `url('${notification.entity.initiator_data.profile_image || 'assets/img/profile-placeholder.jpg'}')`;
 
-        // Notification content
-        const notificationContent = document.createElement('div')
-        notificationContent.className = 'notification-content'
-        notificationContent.style.flex = '1'
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'notification-info';
 
-        // User name and message
-        const userName = document.createElement('span')
-        userName.className = 'user-name'
-        userName.textContent = initiator_data.display_name
-        userName.style.fontWeight = 'bold'
-        userName.style.marginRight = '5px'
+    let content = '';
+    let isReadClass = notification.is_read === "0" ? "absolute right-0 h-2 w-2 translate-x-3 translate-y-2 rounded-full border-2 bg-customred" : "";
 
-        const message = document.createElement('span')
-        message.className = 'message'
-        message.textContent = `mentioned you in a ${entity.entity_type}: ${entity_data.comment}`
+    // Conditional content rendering based on the type
+    if (notification.type === 'like') {
+        content = `
+            <div class="notification-text">
+                <strong>${notification.entity.initiator_data.display_name}</strong> liked your ${notification.entity.entity_type}
+                ${notification.entity.entity_data.comment ? `<span class="inline font-semibold text-black">: "${notification.entity.entity_data.comment}"</span>` : ''}
+                <span class="${isReadClass}"></span>
+            </div>
+        `;
+    } else if (notification.type === 'comment') {
+        content = `
+            <div class="notification-text">
+                <strong>${notification.entity.initiator_data.display_name}</strong> commented on your post: 
+                <span class="block font-semibold text-black">"${notification.entity.entity_data.comment}"</span>
+                <span class="${isReadClass}"></span>
+            </div>
+        `;
+    } else if (notification.type === 'follow') {
+        content = `
+            <div class="notification-text">
+                <strong>${notification.entity.initiator_data.display_name}</strong> followed you
+                <span class="${isReadClass}"></span>
+            </div>
+        `;
+    } else if (notification.type === 'mention') {
+        content = `
+            <div class="notification-text">
+                <strong>${notification.entity.initiator_data.display_name}</strong> mentioned you in a ${notification.entity.entity_type}
+                ${notification.entity.entity_data.comment ? `<span class="block font-semibold text-black">"${notification.entity.entity_data.comment}"</span>` : ''}
+                <span class="${isReadClass}"></span>
+            </div>
+        `;
+    } else if (notification.type === 'post') {
+        content = `
+            <div class="notification-text">
+                <strong>${notification.entity.initiator_data.display_name}</strong> has posted ${notification.entity.entity_type === 'car' ? "your car" : "a post"} 
+                <a href="/profile/garage/${notification.entity.entity_data?.garage?.id}" class="font-semibold hover:cursor-pointer hover:text-customblue">
+                    ${notification.entity.entity_data?.garage?.make || ''} ${notification.entity.entity_data?.garage?.model || ''}
+                </a>
+                <span class="${isReadClass}"></span>
+            </div>
+        `;
+    } else if (notification.type === 'tag') {
+        content = `
+            <div class="notification-text">
+                <strong>${notification.entity.initiator_data.display_name}</strong> ${notification.entity.entity_type === 'car' ? "tagged your car in a post" : "tagged you in a post"}
+                <span class="${isReadClass}"></span>
+            </div>
+        `;
+    }
 
-        // Date
-        const notificationDate = document.createElement('div')
-        notificationDate.className = 'notification-date'
-        notificationDate.textContent = new Date(date).toLocaleDateString()
-        notificationDate.style.fontSize = '12px'
-        notificationDate.style.color = '#999'
+    // Add time ago
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'notification-time';
+    timeSpan.textContent = timeAgo(notification.date);
 
-        // Media preview
-        const mediaPreview = document.createElement('div')
-        mediaPreview.className = 'media-preview'
-        mediaPreview.style.width = '40px'
-        mediaPreview.style.height = '40px'
-        mediaPreview.style.backgroundImage = `url('${entity_data.media}')`
-        mediaPreview.style.backgroundSize = 'cover'
-        mediaPreview.style.backgroundPosition = 'center'
-        mediaPreview.style.borderRadius = '4px'
-        mediaPreview.style.marginLeft = '10px'
 
-        // Append elements
-        notificationContent.appendChild(userName)
-        notificationContent.appendChild(message)
-        notificationContent.appendChild(notificationDate)
+    infoDiv.innerHTML = `${content} ${timeSpan.outerHTML}`;
 
-        notificationItem.appendChild(profileImage)
-        notificationItem.appendChild(notificationContent)
-        if (entity_data.media) {
-            notificationItem.appendChild(mediaPreview)
+    // Adding profile image and content to the left container
+    leftContainer.appendChild(imageDiv);
+    leftContainer.appendChild(infoDiv);
+
+    // Append left container to the main container
+    container.appendChild(leftContainer);
+
+    if (notification.type === 'follow') {
+        const isFollowing = user.following.includes(notification.entity.user_id);
+        let followBtn = `<div class="btn btn-primary btn-sm toggle-follow" data-is-following="${isFollowing}" data-user-id="${notification.entity.user_id}">
+            ${isFollowing ? 'Unfollow' : 'Follow'}
+        </div>`;
+
+        container.innerHTML += followBtn;
+    } else {
+        const rightContainer = document.createElement('a');
+        rightContainer.className = 'notification-left';
+        let path;
+
+        if (notification.entity.entity_type === 'car') {
+            path = 'car';
+        } else if (notification.entity.entity_type === 'post') {
+            path = 'post-view';
         }
 
-        container.appendChild(notificationItem)
-    })
+        rightContainer.href = `/${path}/${notification.entity.entity_id}`;
+
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'image-square image-rounded';
+        imageDiv.style.backgroundImage = `url('${notification.entity.entity_data.media || 'assets/img/profile-placeholder.jpg'}')`;
+
+        rightContainer.appendChild(imageDiv);
+        container.appendChild(rightContainer)
+    }
+
+    return container;
 }
+
+$(document).on('click', '.toggle-follow', async function (e) {
+    const userId = e.target.dataset.userId;
+    const isFollowing = e.target.dataset.isFollowing === 'true';
+
+    // update the button text
+    e.target.textContent = isFollowing ? 'Follow' : 'Unfollow';
+    e.target.dataset.isFollowing = !isFollowing;
+
+    maybeFollowUser(userId);
+});
