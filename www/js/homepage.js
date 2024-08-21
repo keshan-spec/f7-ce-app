@@ -13,7 +13,8 @@ import {
 } from './api/posts.js'
 
 var $ = Dom7
-var currentPage = 1
+var currentPostsPage = 1
+var currentFollowingPostsPage = 1
 
 var postsStore = store.getters.posts
 var followingPostsStore = store.getters.followingPosts
@@ -21,15 +22,22 @@ var followingPostsStore = store.getters.followingPosts
 var totalPostPages = 0
 var totalFPostPages = 0
 
-var hasPosts = true;
-var hasFollowingPosts = true;
+// Infinite Scroll Event
+var isFetchingPosts = false
+var activeTab = 'latest'
 
 postsStore.onUpdated((data) => {
   totalPostPages = data.total_pages
 
-  if ((data.page == data.total_pages) && (data.new_data.length == 0)) {
-    hasPosts = false;
+  if ((data.page == data.total_pages) || (data.new_data.length == 0)) {
+    $('.infinite-scroll-preloader.home-posts').hide()
+
+    if (data.data.length == 0) {
+      $('#tab-latest .data').html('<p class="text-center">No posts</p>')
+    }
+    return;
   }
+
 
   displayPosts(data.new_data)
 })
@@ -37,8 +45,14 @@ postsStore.onUpdated((data) => {
 followingPostsStore.onUpdated((data) => {
   totalFPostPages = data.total_pages
 
-  if ((data.page == data.total_pages) && (data.new_data.length == 0)) {
-    hasFollowingPosts = false;
+  if ((data.page == data.total_pages) || (data.new_data.length == 0)) {
+    console.log('No more following posts');
+    $('.infinite-scroll-preloader.home-following-posts').hide()
+    if (data.data.length == 0) {
+      $('#tab-following .data').html('<p class="text-center">No posts</p>')
+    }
+
+    return;
   }
 
   displayPosts(data.new_data, true)
@@ -46,9 +60,29 @@ followingPostsStore.onUpdated((data) => {
 
 // Pull to refresh content
 const ptrContent = document.querySelector('.ptr-content')
-ptrContent.addEventListener('ptr:refresh', function (e) {
-  currentPage = 1
-  store.dispatch('getPosts', currentPage)
+ptrContent.addEventListener('ptr:refresh', async function (e) {
+  const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
+  const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
+  const currentPage = activeTab === 'following' ? currentFollowingPostsPage : currentPostsPage
+
+  if (currentPage >= totalPages) {
+    app.infiniteScroll.destroy(infiniteScrollContent)
+    return
+  }
+
+  if (isFetchingPosts) return
+
+  isFetchingPosts = true
+
+  if (activeTab === 'following') {
+    currentFollowingPostsPage++
+  } else {
+    currentPostsPage++
+  }
+
+  await store.dispatch(storeName, currentPage)
+
+  isFetchingPosts = false
   app.ptr.done()
 })
 
@@ -76,37 +110,18 @@ export function detectDoubleTapClosure(callback) {
   }
 }
 
-// Infinite Scroll Event
-var isFetchingPosts = false
-var activeTab = 'latest'
-
 // event listener for tab change
 $('.tab-link').on('click', async function (e) {
   currentPage = 1
   const type = this.getAttribute('data-type')
   activeTab = type
-
-  if (type === 'following') {
-    if (!hasFollowingPosts) {
-      $('.infinite-scroll-preloader.homepage').hide()
-      return
-    }
-  }
-
-  if (type === 'latest') {
-    if (!hasPosts) {
-      $('.infinite-scroll-preloader.homepage').hide()
-      return
-    }
-  }
-
-  $('.infinite-scroll-preloader.homepage').show()
 })
 
 const infiniteScrollContent = document.querySelector('.infinite-scroll-content')
 infiniteScrollContent.addEventListener('infinite', async function () {
   const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
   const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
+  const currentPage = activeTab === 'following' ? currentFollowingPostsPage : currentPostsPage
 
   if (currentPage >= totalPages) {
     app.infiniteScroll.destroy(infiniteScrollContent)
@@ -116,13 +131,19 @@ infiniteScrollContent.addEventListener('infinite', async function () {
   if (isFetchingPosts) return
 
   isFetchingPosts = true
-  currentPage++
+
+  if (activeTab === 'following') {
+    currentFollowingPostsPage++
+  } else {
+    currentPostsPage++
+  }
+
   await store.dispatch(storeName, currentPage)
   isFetchingPosts = false
 })
 
 function displayPosts(posts, following = false) {
-  const postsContainer = document.getElementById(following ? 'tab-following' : 'tab-latest');
+  const postsContainer = $(following ? '#tab-following .data' : '#tab-latest .data');
 
   const user = store.getters.user.value;
 
@@ -214,7 +235,7 @@ function displayPosts(posts, following = false) {
       </div>
     `;
 
-    postsContainer.insertAdjacentHTML('beforeend', postItem);
+    postsContainer.append(postItem);
   });
 }
 

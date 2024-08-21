@@ -208,6 +208,8 @@ $(document).on('page:init', '.page[data-name="profile-edit-username"]', async fu
 })
 
 $(document).on('click', '#save-username', async function () {
+    const user = await getSessionUser()
+
     if (!user.can_update_username) {
         return
     }

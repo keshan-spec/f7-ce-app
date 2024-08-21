@@ -422,7 +422,10 @@ $(document).on('click', '.toggle-password', function () {
 $(document).on('submit', 'form#sign-up-step1', async function (e) {
   e.preventDefault()
   // app.views.main.router.navigate('/signup-step2/')
-  // store.dispatch('setRegisterData', { username: 'test', user_id: 65251 })
+  // store.dispatch('setRegisterData', {
+  //   username: 'test',
+  //   user_id: 65251
+  // })
   // return
 
   var firstName = $(this).find('input[name="first_name"]').val().trim()
@@ -560,22 +563,21 @@ $(document).on('submit', 'form#sign-up-step2', async function (e) {
     if (registerData.username !== username) {
       app.preloader.show()
 
-      const response = await updateUsername({
-        user_id: registerData.user_id,
-        username,
-      })
+      const response = await updateUsername(username, registerData.user_id)
 
       app.preloader.hide()
 
       if (!response || !response.success) {
-        switch (response?.code) {
-          case "username_exists":
-            app.dialog.alert('Username already exists, please choose another one')
-            break
-          default:
-            app.dialog.alert(response.message || 'An error occurred, please try again')
-            break
-        }
+        app.dialog.alert(response.message || 'An error occurred, please try again')
+
+        // switch (response?.code) {
+        //   case "username_exists":
+        //     app.dialog.alert('Username already exists, please choose another one')
+        //     break
+        //   default:
+        //     app.dialog.alert(response.message || 'An error occurred, please try again')
+        //     break
+        // }
         return
       }
 
@@ -587,6 +589,7 @@ $(document).on('submit', 'form#sign-up-step2', async function (e) {
 
     app.views.main.router.navigate('/signup-step3/')
   } catch (error) {
+    console.log(error);
     app.dialog.alert(error.message || 'Failed to update username')
     return
   }

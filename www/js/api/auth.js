@@ -92,9 +92,16 @@ export const handleSignUp = async (user) => {
     }
 }
 
-export const updateUsername = async (username) => {
-    const user = await getSessionUser();
-    if (!user) return;
+export const updateUsername = async (username, user_id = null) => {
+    if (!user_id) {
+        const user = await getSessionUser();
+        if (!user) return {
+            success: false,
+            message: 'User id not provided'
+        };
+        user_id = user.id
+    }
+
 
     const response = await fetch(`${API_URL}/wp-json/app/v1/update-username`, {
         method: "POST",
@@ -102,7 +109,7 @@ export const updateUsername = async (username) => {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            user_id: user.id,
+            user_id: user_id,
             username
         }),
     })

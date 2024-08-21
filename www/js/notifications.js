@@ -9,17 +9,20 @@ import store from "./store.js"
 var $ = Dom7
 var notificationsStore = store.getters.getNotifications
 
-$(document).on('page:init', '.page[data-name="notifications"]', function (e) {
-    store.dispatch('fetchNotifications')
+$(document).on('page:init', '.page[data-name="notifications"]', async function (e) {
+    $('.init-loader').show()
+    await store.dispatch('fetchNotifications')
+    $('.init-loader').hide()
 })
 
 notificationsStore.onUpdated(async (data) => {
     if (!data || !data.success) {
-        $('#notifications-list').html('<p class="text-center">No notifications</p>')
+        $('.notification-wrap').html('<p class="text-center">No notifications</p>')
         return
     }
 
     const notifications = data.data
+
 
     const recentContainer = document.getElementById('recent');
     const thisWeekContainer = document.getElementById('this-week');
