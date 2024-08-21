@@ -798,4 +798,15 @@ $(document).on('page:init', '.page[data-name="profile-edit-socials"]', function 
   });
 });
 
+// logout-button
+$(document).on('click', '.logout-button', async function (e) {
+  app.dialog.close()
+  app.popup.close()
+  app.panel.close()
+
+  await store.dispatch('logout')
+  toolbarEl.style.display = 'none'
+  app.views.main.router.navigate('/auth/')
+})
+
 export default app
