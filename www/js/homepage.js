@@ -21,13 +21,26 @@ var followingPostsStore = store.getters.followingPosts
 var totalPostPages = 0
 var totalFPostPages = 0
 
+var hasPosts = true;
+var hasFollowingPosts = true;
+
 postsStore.onUpdated((data) => {
   totalPostPages = data.total_pages
+
+  if ((data.page == data.total_pages) && (data.new_data.length == 0)) {
+    hasPosts = false;
+  }
+
   displayPosts(data.new_data)
 })
 
 followingPostsStore.onUpdated((data) => {
   totalFPostPages = data.total_pages
+
+  if ((data.page == data.total_pages) && (data.new_data.length == 0)) {
+    hasFollowingPosts = false;
+  }
+
   displayPosts(data.new_data, true)
 })
 
@@ -72,6 +85,22 @@ $('.tab-link').on('click', async function (e) {
   currentPage = 1
   const type = this.getAttribute('data-type')
   activeTab = type
+
+  if (type === 'following') {
+    if (!hasFollowingPosts) {
+      $('.infinite-scroll-preloader.homepage').hide()
+      return
+    }
+  }
+
+  if (type === 'latest') {
+    if (!hasPosts) {
+      $('.infinite-scroll-preloader.homepage').hide()
+      return
+    }
+  }
+
+  $('.infinite-scroll-preloader.homepage').show()
 })
 
 const infiniteScrollContent = document.querySelector('.infinite-scroll-content')
@@ -233,7 +262,7 @@ $(document).on('click', '#delete-post', function () {
   })
 })
 
-$(document).on('touchstart', '.media-post-content img, .media-post-content video', detectDoubleTapClosure((e) => {
+$(document).on('touchstart', '.media-post-content .swiper-wrapper', detectDoubleTapClosure((e) => {
   const parent = e.closest('.media-post')
   const postId = parent.getAttribute('data-post-id')
   const isLiked = parent.getAttribute('data-is-liked') === 'true'
@@ -288,6 +317,7 @@ export function togglePostLike(postId, single = false) {
 }
 
 function displayComments(comments, postId) {
+  const user = store.getters.user.value
 
   const commentsContainer = document.getElementById('comments-list')
   // reset the comments container
@@ -316,7 +346,7 @@ function displayComments(comments, postId) {
                   <div class="comment-profile-img" style="background-image:url('${reply.profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
                   <div class="comment-content-container">
                     <div class="comment-username">
-                    <a href="/profile-view/${reply.user_id}">${reply.user_login}</a>
+                      <a href="/profile-view/${reply.user_id}">${reply.user_login}</a>
                     <span class="date">${formatPostDate(reply.comment_date)}</span>
                     </div>
                     <div class="comment-content">${reply.comment}</div>
@@ -470,14 +500,17 @@ $('#comment-form').on('submit', async function (e) {
   const comment = this.comment.value
 
   if (!comment) {
-    app.dialog.alert('Please enter a comment')
+    // app.dialog.alert('Please enter a comment')
     return
   }
 
+  app.preloader.show()
+
   const response = await addComment(postId, comment, commentId)
 
+  app.preloader.hide()
+
   if (response) {
-    app.dialog.alert('Comment added successfully')
     this.reset()
     this.removeAttribute('data-comment-id')
     this.querySelector('.replying-to').innerHTML = ''
@@ -512,4 +545,9 @@ $(document).on('click', '.comment-reply', function () {
 $(document).on('page:afterin', '.page[data-name="home"]', function (e) {
   store.dispatch('getPosts', currentPage)
   store.dispatch('getFollowingPosts', currentPage)
+})
+
+$(document).on('click', '.comment-username a', function (e) {
+  // hide the comments popup
+  app.popup.close()
 })

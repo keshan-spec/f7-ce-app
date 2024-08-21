@@ -221,3 +221,19 @@
     transform: translate(-50%, -50%);
     z-index: -1;
 }
+
+.replying-to {
+     position: absolute;
+    top: -28px;
+    left: 11px;
+    background-color: #e4e4e4;
+    width: 84%;
+    padding: .7rem;
+    border-radius: 15px;
+    font-size: 13px;
+}
+
+#comment-form{
+    min-height: 50px;
+    position: relative;
+}
