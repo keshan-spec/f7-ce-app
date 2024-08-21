@@ -85,12 +85,23 @@ const store = createStore({
       page: 1,
       limit: 10,
     },
+    filteredVenues: {
+      data: [],
+      total_pages: 0,
+      page: 1,
+      limit: 10,
+    },
   },
   getters: {
     getFilteredEvents({
       state
     }) {
       return state.filteredEvents
+    },
+    getFilteredVenues({
+      state
+    }) {
+      return state.filteredVenues
     },
     getEventCategories({
       state
@@ -197,10 +208,55 @@ const store = createStore({
     }) {
       try {
         const events = await fetchTrendingEvents(page, true, filters)
-        state.filteredEvents = events
+
+        const data = {
+          new_data: events.data,
+          data: [
+            ...state.filteredEvents.data,
+            ...events.data,
+          ],
+          total_pages: events.total_pages,
+          page: page,
+          limit: events.limit,
+        }
+
+        state.filteredEvents = data
       } catch (error) {
         console.error('Failed to filter events', error)
         state.filteredEvents = {
+          new_data: [],
+          data: [],
+          total_pages: 0,
+          page: 1,
+          limit: 10,
+        }
+      }
+    },
+    async filterVenues({
+      state
+    }, {
+      filters,
+      page = 1
+    }) {
+      try {
+        const events = await fetchTrendingVenues(page, true, filters)
+
+        const data = {
+          new_data: events.data,
+          data: [
+            ...state.filteredVenues.data,
+            ...events.data,
+          ],
+          total_pages: events.total_pages,
+          page: page,
+          limit: events.limit,
+        }
+
+        state.filteredVenues = data
+      } catch (error) {
+        console.error('Failed to filter venues', error)
+        state.filteredVenues = {
+          new_data: [],
           data: [],
           total_pages: 0,
           page: 1,

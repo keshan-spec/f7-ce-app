@@ -6,6 +6,7 @@ var trendingEventsStore = store.getters.getTrendingEvents;
 var trendingVenuesStore = store.getters.getTrendingVenues;
 var eventCategories = store.getters.getEventCategories;
 var filteredEventsStore = store.getters.getFilteredEvents;
+var filteredVenuesStore = store.getters.getFilteredVenues;
 
 var isFetchingPosts = false
 var currentEventsPage = 1
@@ -13,6 +14,32 @@ var currentVenuesPage = 1
 
 var totalEventPages = 1
 var totalVenuesPages = 1
+
+var autocomplete;
+var filters = {};
+
+//AUTOCOMPLETE FUNCTIONS
+function initAutocomplete() {
+    autocomplete = new google.maps.places.Autocomplete(
+        document.getElementById("autocomplete"), {
+            types: ["establishment", "geocode"],
+            componentRestrictions: {
+                country: 'GB'
+            }
+        }
+    );
+    autocomplete.setFields(["geometry", "address_component"]);
+    autocomplete.addListener("place_changed", fillInAddress);
+}
+
+function fillInAddress() {
+    const place = autocomplete.getPlace();
+
+    console.log(place);
+
+    document.getElementById('lat').value = place.geometry.location.lat();
+    document.getElementById('lng').value = place.geometry.location.lng();
+}
 
 function populateEventCard(data = [], isSwiper = true) {
     const swiperContainer = document.querySelector('#trending-events');
@@ -65,112 +92,92 @@ function populateEventCard(data = [], isSwiper = true) {
     });
 }
 
-// DISCOVER SECTION
-$(document).on('page:init', '.page[data-name="discover"]', function (e) {
-    const infiniteScrollContent = document.querySelector('.discover-page.infinite-scroll-content')
+function populateVenueCard(data = [], isSwiper = true) {
+    const swiperContainer = document.querySelector('#trending-venues');
+    const eventsTabContainer = document.querySelector('#filtered-venues-tab');
 
-    infiniteScrollContent.addEventListener('infinite', async function () {
-        // if (isFetchingPosts) return
+    data.forEach(event => {
+        const swiperSlide = document.createElement('swiper-slide');
 
-        const activeTab = document.querySelector('.tabbar-nav .tab-link-active')
-        const activeTabId = activeTab.id
+        const card = `
+            <div class="card event-item">
+                <div class="event-image position-relative">
+                    <div class="image-rectangle" style="background-image: url('${event.cover_image}');"></div>
+                </div>
+                <div class="card-content">
+                    <h3 class="event-title">${event.title}</h3>
+                    <div class="event-info">
+                        ${event.venue_location}
+                    </div>
+                    <div class="event-info">
+                        Apprx. ${event.distance} miles away
+                    </div>
+                </div>
+            </div>
+        `;
 
-        console.log(activeTabId);
-
-
-        if (!activeTabId) return
-
-        isFetchingPosts = true
-
-        if (activeTabId === 'events') {
-            currentEventsPage++
-
-            if (currentEventsPage <= totalEventPages) {
-                await store.dispatch('filterEvents', currentEventsPage)
-                isFetchingPosts = false
-            }
-        } else {
-            currentVenuesPage++
-
-            if (currentVenuesPage <= totalVenuesPages) {
-                await store.dispatch('filterVenues', currentVenuesPage)
-                isFetchingPosts = false
-            }
+        if (isSwiper) {
+            swiperSlide.innerHTML = card;
+            swiperContainer.appendChild(swiperSlide);
         }
-    })
 
-    //SEARCH BAR
-    $('.discover-search').on('mousedown', function (event) {
-        event.preventDefault();
+        eventsTabContainer.innerHTML += card;
     });
 
+
+}
+
+// Event listener for the submit button
+$(document).on('click', '.apply-filters', function (e) {
     const dateFilters = document.querySelector('#date-filters ul');
     const locationFilters = document.querySelector('#location-filters ul');
+    const categoryFilters = document.querySelector('#category-filters ul');
 
+    e.preventDefault(); // Prevent form submission if you're handling it via JavaScript
+    const selectedCats = [...categoryFilters.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
+    const selectedLocation = [...locationFilters.querySelectorAll('input[type="radio"]:checked')].map(cb => cb.value);
+    const dateFilter = [...dateFilters.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
 
-    // Event listener for checkbox selection
-    dateFilters.addEventListener('change', function (e) {
-        const targetCheckbox = e.target;
+    filters = {
+        'event_location': selectedLocation,
+        //  'custom_location': location,
+        'event_date': dateFilter,
+        //  'event_start': customDateRange?.start,
+        //  'event_end': customDateRange?.end,
+        'event_category': !selectedCats?.includes(0) ? selectedCats : undefined,
+    };
 
-        // Uncheck all checkboxes except the one that was clicked
-        if (targetCheckbox.type === "checkbox") {
-            [...dateFilters.querySelectorAll('input[type="checkbox"]')].forEach(checkbox => {
-                if (checkbox !== targetCheckbox) {
-                    checkbox.checked = false;
-                }
-            });
-        }
-    });
+    // get active tab
+    const activeTab = document.querySelector('.tabbar-nav .tab-link-active').getAttribute('data-id');
 
-    locationFilters.addEventListener('change', function (e) {
-        const targetCheckbox = e.target;
-
-        // Uncheck all checkboxes except the one that was clicked
-        if (targetCheckbox.type === "checkbox") {
-            [...locationFilters.querySelectorAll('input[type="checkbox"]')].forEach(checkbox => {
-                if (checkbox !== targetCheckbox) {
-                    checkbox.checked = false;
-                }
-            });
-        }
-    });
-
-    // Event listener for the submit button
-    $(document).on('click', '.apply-filters', function (e) {
-        const categoryFilters = document.querySelector('#category-filters ul');
-
-        e.preventDefault(); // Prevent form submission if you're handling it via JavaScript
-        const selectedCats = [...categoryFilters.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
-
-        const selectedLocation = [...locationFilters.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
-
-        // date filter
-        const dateFilter = [...dateFilters.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
-
-        const filters = {
-            'event_location': selectedLocation,
-            //  'custom_location': location,
-            'event_date': dateFilter,
-            //  'event_start': customDateRange?.start,
-            //  'event_end': customDateRange?.end,
-            'event_category': !selectedCats?.includes(0) ? selectedCats : undefined,
-        };
-
+    if (activeTab === 'events') {
         store.dispatch('filterEvents', {
             page: 1,
             filters
         })
 
         currentEventsPage = 1
-        currentVenuesPage = 1
         isFetchingPosts = false
 
         const eventsTabContainer = document.querySelector('#filtered-events-tab');
         eventsTabContainer.innerHTML = '';
+    }
 
-        // close popup
-        app.popup.close()
-    });
+    if (activeTab === 'venues') {
+        store.dispatch('filterVenues', {
+            page: 1,
+            filters
+        })
+
+        currentVenuesPage = 1
+        isFetchingPosts = false
+
+        const venuesTabContainer = document.querySelector('#filtered-venues-tab');
+        venuesTabContainer.innerHTML = '';
+    }
+
+    // close popup
+    app.popup.close()
 });
 
 eventCategories.onUpdated((data) => {
@@ -225,42 +232,21 @@ eventCategories.onUpdated((data) => {
 })
 
 trendingVenuesStore.onUpdated((data) => {
-    const swiperContainer = document.querySelector('#trending-venues');
 
-    data.forEach(event => {
-        const swiperSlide = document.createElement('swiper-slide');
+    totalVenuesPages = data.total_pages
 
-        swiperSlide.innerHTML = `
-            <div class="card event-item">
-                <div class="event-image position-relative">
-                    <div class="image-rectangle" style="background-image: url('${event.cover_image}');"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="event-title">${event.title}</h3>
-                    <div class="event-info">
-                        ${event.venue_location}
-                    </div>
-                    <div class="event-info">
-                        Apprx. ${event.distance} miles away
-                    </div>
-                </div>
-            </div>
-        `;
-
-        swiperContainer.appendChild(swiperSlide);
-    });
-
+    populateVenueCard(data.data);
 });
 
 trendingEventsStore.onUpdated((data) => {
-    populateEventCard(data);
+
+    totalEventPages = data.total_pages
+
+    populateEventCard(data.data);
 });
 
 filteredEventsStore.onUpdated((data) => {
-    const eventsTabContainer = document.querySelector('#filtered-events-tab');
-    eventsTabContainer.innerHTML = '';
-
-    if (!data || data.length === 0) {
+    if (!data || data.new_data.length === 0) {
         eventsTabContainer.innerHTML = `
             <div class="no-events">
                 <h3>No events found</h3>
@@ -270,20 +256,46 @@ filteredEventsStore.onUpdated((data) => {
     }
 
     totalEventPages = data.total_pages
-    populateEventCard(data.data, false);
+
+    if ((totalEventPages == data.page) || (totalEventPages == 0) || (data.new_data.length < 10)) {
+        $('.infinite-scroll-preloader.events-tab').hide()
+    } else {
+        $('.infinite-scroll-preloader.events-tab').show()
+    }
+
+    populateEventCard(data.new_data, false);
 });
 
-//DISCOVER SECTION - FILTERING
+filteredVenuesStore.onUpdated((data) => {
+    if (!data || data.new_data.length === 0) {
+        tabContainer.innerHTML = `
+            <div class="no-venues">
+                <h3>No venues found</h3>
+            </div>
+        `;
+        return
+    }
+
+    if ((totalVenuesPages == data.page) || (totalVenuesPages == 0) || (data.new_data.length < 10)) {
+        $('.infinite-scroll-preloader.venues-tab').hide()
+    } else {
+        $('.infinite-scroll-preloader.venues-tab').show()
+    }
+
+    totalEventPages = data.total_pages
+    populateVenueCard(data.new_data, false);
+});
+
 $(document).on('page:init', '.page[data-name="discover"]', function (e) {
     //Date Filters
-    calendarModal = app.calendar.create({
+    app.calendar.create({
         inputEl: '#date-from',
         openIn: 'customModal',
         header: true,
         footer: true,
     });
 
-    calendarModal = app.calendar.create({
+    app.calendar.create({
         inputEl: '#date-to',
         openIn: 'customModal',
         header: true,
@@ -291,23 +303,95 @@ $(document).on('page:init', '.page[data-name="discover"]', function (e) {
     });
 
     //Filter Date Popup
-    var FilterDatePopup = app.popup.create({
+    app.popup.create({
         el: '.filter-bydate-popup',
         swipeToClose: 'to-bottom'
     });
 
     //Filter Category Popup
-    var FilterCategoryPopup = app.popup.create({
+    app.popup.create({
         el: '.filter-bycategory-popup',
         swipeToClose: 'to-bottom'
     });
 
     //Filter Location Popup
-    var FilterLocationPopup = app.popup.create({
+    app.popup.create({
         el: '.filter-bylocation-popup',
         swipeToClose: 'to-bottom'
     });
 
+    //SEARCH BAR
+    $('.discover-search').on('mousedown', function (event) {
+        event.preventDefault();
+        app.views.discover.router.navigate('/search/');
+    });
 
+    const dateFilters = document.querySelector('#date-filters ul');
+    const locationFilters = document.querySelector('#location-filters ul');
 
+    // Event listener for checkbox selection
+    dateFilters.addEventListener('change', function (e) {
+        const targetCheckbox = e.target;
+
+        // Uncheck all checkboxes except the one that was clicked
+        if (targetCheckbox.type === "checkbox") {
+            [...dateFilters.querySelectorAll('input[type="checkbox"]')].forEach(checkbox => {
+                if (checkbox !== targetCheckbox) {
+                    checkbox.checked = false;
+                }
+            });
+        }
+    });
+
+    locationFilters.addEventListener('change', function (e) {
+        const targetCheckbox = e.target;
+
+        // Uncheck all checkboxes except the one that was clicked
+        if (targetCheckbox.type === "checkbox") {
+            [...locationFilters.querySelectorAll('input[type="checkbox"]')].forEach(checkbox => {
+                if (checkbox !== targetCheckbox) {
+                    checkbox.checked = false;
+                }
+            });
+        }
+    });
+
+    initAutocomplete();
+});
+
+$(document).on('page:init', '.page[data-name="discover"]', function (e) {
+    const infiniteScrollContent = document.querySelector('.discover-page.infinite-scroll-content')
+
+    infiniteScrollContent.addEventListener('infinite', async function () {
+        if (isFetchingPosts) return
+
+        // get active tab
+        const activeTabId = document.querySelector('.tabbar-nav .tab-link-active').getAttribute('data-id');
+
+        if (!activeTabId) return
+
+        isFetchingPosts = true
+
+        if (activeTabId === 'events') {
+            currentEventsPage++
+
+            if (currentEventsPage <= totalEventPages) {
+                await store.dispatch('filterEvents', {
+                    page: currentEventsPage,
+                    filters
+                })
+                isFetchingPosts = false
+            }
+        } else {
+            currentVenuesPage++
+
+            if (currentVenuesPage <= totalVenuesPages) {
+                await store.dispatch('filterVenues', {
+                    page: currentVenuesPage,
+                    filters
+                })
+                isFetchingPosts = false
+            }
+        }
+    })
 });

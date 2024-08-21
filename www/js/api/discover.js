@@ -63,10 +63,6 @@ export const fetchTrendingEvents = async (page, paginate = false, filters = null
             throw new Error('Session user not found');
         }
 
-        // if (filters && filters !== undefined) {
-        //     appliedFilters = JSON.parse(filters);
-        // }
-
         const response = await fetch(`${API_URL}/wp-json/app/v1/get-events-trending`, {
             method: "POST",
             headers: {
@@ -82,8 +78,6 @@ export const fetchTrendingEvents = async (page, paginate = false, filters = null
         });
 
         const data = await response.json();
-
-        console.log(data);
 
         if (!data) {
             throw new Error('Failed to fetch trending events');
@@ -102,10 +96,6 @@ export const fetchTrendingVenues = async (page, paginate = false, filters = '{}'
 
         if (!user) {
             throw new Error('Session user not found');
-        }
-
-        if (filters && filters !== undefined) {
-            filters = JSON.parse(filters);
         }
 
         const response = await fetch(`${API_URL}/wp-json/app/v1/get-venues-trending`, {

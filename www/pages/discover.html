@@ -15,7 +15,7 @@
                     <div class="header-logo"><img src="assets/img/logo-dark.png" /></div>
                 </div>
                 <div class="right">
-                    <a href="#" class="link icon-only">
+                    <a href="#" class="link icon-only open-qr-modal">
                         <i class="icon f7-icons">qrcode</i>
                     </a>
                     <a href="/notifications/" class="link icon-only">
@@ -23,15 +23,12 @@
                     </a>
                 </div>
             </div>
-
         </div>
 
-
         <!-- Page content-->
-        <div class="page-content">
-
+        <div class="page-content discover-page infinite-scroll-content" data-ptr-distance="120"
+            data-ptr-mousewheel="true">
             <div class="discovery-wrap">
-
                 <form class="searchbar">
                     <div class="searchbar-inner">
                         <div class="searchbar-input-wrap">
@@ -45,18 +42,17 @@
 
                 <div class="tabbar-nav pt-1">
                     <ul>
-                        <li><a href="#featured" class="tab-link tab-link-active">Featured</a></li>
-                        <li><a href="#events" class="tab-link">Events</a></li>
-                        <li><a href="#venues" class="tab-link">Venues</a></li>
-                        <li><a href="#users_vehicles" class="tab-link">Users & Vehicles</a></li>
-                        <!--<li><a href="#photo_locations" class="tab-link">Photo locations</a></li>
-                    <li><a href="#businesses" class="tab-link">Businesses</a></li>-->
+                        <li><a href="#featured" class="tab-link tab-link-active" data-id="featured">Featured</a></li>
+                        <li><a href="#events" class="tab-link" data-id="events">Events</a></li>
+                        <li><a href="#venues" class="tab-link" data-id="venues">Venues</a></li>
+                        <li><a href="#users_vehicles" class="tab-link" data-id="users-vehicles">Users & Vehicles</a>
+                        </li>
                     </ul>
                 </div>
 
-                <div class="tabs">
-                    <div class="tab tab-active" id="featured">
-                        <div class="container mt-15 mb-15">
+                <div class="container mt-15 mb-15">
+                    <div class="tabs">
+                        <div class="tab tab-active" id="featured">
                             <div class="featured-section">
                                 <swiper-container slides-per-view="1" loop="true">
                                     <swiper-slide>
@@ -83,163 +79,24 @@
                                     </swiper-slide>
                                 </swiper-container>
                             </div>
+
                             <div class="trending-section">
                                 <h2 class="section-title mt-3 mb-2">Trending Events</h2>
-                                <swiper-container class="event-listing" slides-per-view="2" loop="true">
-                                    <swiper-slide>
-                                        <div class="card event-item">
-                                            <div class="event-image position-relative">
-                                                <div class="image-rectangle"
-                                                    style="background-image: url('assets/img/start01.jpg');"></div>
-                                                <div class="event-dates">
-                                                    <div class="event-date-item">
-                                                        <p>Feb</p>
-                                                        <h5>18</h5>
-                                                    </div>
-                                                    <div class="event-date-item">
-                                                        <p>Feb</p>
-                                                        <h5>21</h5>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-content">
-                                                <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
-                                                <p class="event-info">Starts Thu, 18 Feb 2023</p>
-                                                <div class="event-info">NEC Birmingham</div>
-                                            </div>
-                                        </div>
-                                    </swiper-slide>
-                                    <swiper-slide>
-                                        <div class="card event-item">
-                                            <div class="event-image position-relative">
-                                                <div class="image-rectangle"
-                                                    style="background-image: url('assets/img/start01.jpg');"></div>
-                                                <div class="event-dates">
-                                                    <div class="event-date-item">
-                                                        <p>Feb</p>
-                                                        <h5>18</h5>
-                                                    </div>
-                                                    <div class="event-date-item">
-                                                        <p>Feb</p>
-                                                        <h5>21</h5>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-content">
-                                                <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
-                                                <p class="event-info">Starts Thu, 18 Feb 2023</p>
-                                                <div class="event-info">NEC Birmingham</div>
-                                            </div>
-                                        </div>
-                                    </swiper-slide>
-                                    <swiper-slide>
-                                        <div class="card event-item">
-                                            <div class="event-image position-relative">
-                                                <div class="image-rectangle"
-                                                    style="background-image: url('assets/img/start01.jpg');"></div>
-                                                <div class="event-dates">
-                                                    <div class="event-date-item">
-                                                        <p>Feb</p>
-                                                        <h5>18</h5>
-                                                    </div>
-                                                    <div class="event-date-item">
-                                                        <p>Feb</p>
-                                                        <h5>21</h5>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-content">
-                                                <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
-                                                <p class="event-info">Starts Thu, 18 Feb 2023</p>
-                                                <div class="event-info">NEC Birmingham</div>
-                                            </div>
-                                        </div>
-                                    </swiper-slide>
-                                    <swiper-slide>
-                                        <div class="card event-item">
-                                            <div class="event-image position-relative">
-                                                <div class="image-rectangle"
-                                                    style="background-image: url('assets/img/start01.jpg');"></div>
-                                                <div class="event-dates">
-                                                    <div class="event-date-item">
-                                                        <p>Feb</p>
-                                                        <h5>18</h5>
-                                                    </div>
-                                                    <div class="event-date-item">
-                                                        <p>Feb</p>
-                                                        <h5>21</h5>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-content">
-                                                <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
-                                                <p class="event-info">Starts Thu, 18 Feb 2023</p>
-                                                <div class="event-info">NEC Birmingham</div>
-                                            </div>
-                                        </div>
-                                    </swiper-slide>
+                                <swiper-container class="event-listing" slides-per-view="2" loop="true"
+                                    id="trending-events">
+
                                 </swiper-container>
                             </div>
+
                             <div class="trending-section">
                                 <h2 class="section-title mt-3 mb-2">Trending Venues</h2>
-                                <swiper-container class="event-listing" slides-per-view="2" loop="true">
-                                    <swiper-slide>
-                                        <div class="card event-item">
-                                            <div class="event-image position-relative">
-                                                <div class="image-rectangle"
-                                                    style="background-image: url('assets/img/start01.jpg');"></div>
-                                            </div>
-                                            <div class="card-content">
-                                                <h3 class="event-title">Venue Name</h3>
-                                                <div class="event-info">NEC Birmingham</div>
-                                            </div>
-                                        </div>
-                                    </swiper-slide>
-                                    <swiper-slide>
-                                        <div class="card event-item">
-                                            <div class="event-image position-relative">
-                                                <div class="image-rectangle"
-                                                    style="background-image: url('assets/img/start01.jpg');"></div>
-                                            </div>
-                                            <div class="card-content">
-                                                <h3 class="event-title">Venue Name</h3>
-                                                <div class="event-info">NEC Birmingham</div>
-                                            </div>
-                                        </div>
-                                    </swiper-slide>
-                                    <swiper-slide>
-                                        <div class="card event-item">
-                                            <div class="event-image position-relative">
-                                                <div class="image-rectangle"
-                                                    style="background-image: url('assets/img/start01.jpg');"></div>
-                                            </div>
-                                            <div class="card-content">
-                                                <h3 class="event-title">Venue Name</h3>
-                                                <div class="event-info">NEC Birmingham</div>
-                                            </div>
-                                        </div>
-                                    </swiper-slide>
-                                    <swiper-slide>
-                                        <div class="card event-item">
-                                            <div class="event-image position-relative">
-                                                <div class="image-rectangle"
-                                                    style="background-image: url('assets/img/start01.jpg');"></div>
-                                            </div>
-                                            <div class="card-content">
-                                                <h3 class="event-title">Venue Name</h3>
-                                                <div class="event-info">NEC Birmingham</div>
-                                            </div>
-                                        </div>
-                                    </swiper-slide>
+                                <swiper-container class="event-listing" slides-per-view="2" loop="true"
+                                    id="trending-venues">
                                 </swiper-container>
                             </div>
                         </div>
-                    </div>
 
-
-
-                    <div class="tab" id="events">
-                        <div class="container mt-15 mb-15">
+                        <div class="tab" id="events">
                             <div class="filter-bar mb-2">
                                 <div class="filter-item popup-open" data-popup=".filter-bydate-popup">
                                     <span>Date</span>
@@ -254,200 +111,58 @@
                                     <i class="icon f7-icons">chevron_down</i>
                                 </div>
                             </div>
+
                             <div class="trending-section">
-                                <div class="grid grid-cols-2 event-listing">
-                                    <div class="card event-item">
-                                        <div class="event-image position-relative">
-                                            <div class="image-rectangle"
-                                                style="background-image: url('assets/img/start01.jpg');"></div>
-                                            <div class="event-dates">
-                                                <div class="event-date-item">
-                                                    <p>Feb</p>
-                                                    <h5>18</h5>
-                                                </div>
-                                                <div class="event-date-item">
-                                                    <p>Feb</p>
-                                                    <h5>21</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-content">
-                                            <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
-                                            <p class="event-info">Starts Thu, 18 Feb 2023</p>
-                                            <div class="event-info">NEC Birmingham</div>
-                                        </div>
-                                    </div>
-                                    <div class="card event-item">
-                                        <div class="event-image position-relative">
-                                            <div class="image-rectangle"
-                                                style="background-image: url('assets/img/start01.jpg');"></div>
-                                            <div class="event-dates">
-                                                <div class="event-date-item">
-                                                    <p>Feb</p>
-                                                    <h5>18</h5>
-                                                </div>
-                                                <div class="event-date-item">
-                                                    <p>Feb</p>
-                                                    <h5>21</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-content">
-                                            <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
-                                            <p class="event-info">Starts Thu, 18 Feb 2023</p>
-                                            <div class="event-info">NEC Birmingham</div>
-                                        </div>
-                                    </div>
-                                    <div class="card event-item">
-                                        <div class="event-image position-relative">
-                                            <div class="image-rectangle"
-                                                style="background-image: url('assets/img/start01.jpg');"></div>
-                                            <div class="event-dates">
-                                                <div class="event-date-item">
-                                                    <p>Feb</p>
-                                                    <h5>18</h5>
-                                                </div>
-                                                <div class="event-date-item">
-                                                    <p>Feb</p>
-                                                    <h5>21</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-content">
-                                            <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
-                                            <p class="event-info">Starts Thu, 18 Feb 2023</p>
-                                            <div class="event-info">NEC Birmingham</div>
-                                        </div>
-                                    </div>
-                                    <div class="card event-item">
-                                        <div class="event-image position-relative">
-                                            <div class="image-rectangle"
-                                                style="background-image: url('assets/img/start01.jpg');"></div>
-                                            <div class="event-dates">
-                                                <div class="event-date-item">
-                                                    <p>Feb</p>
-                                                    <h5>18</h5>
-                                                </div>
-                                                <div class="event-date-item">
-                                                    <p>Feb</p>
-                                                    <h5>21</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-content">
-                                            <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
-                                            <p class="event-info">Starts Thu, 18 Feb 2023</p>
-                                            <div class="event-info">NEC Birmingham</div>
-                                        </div>
-                                    </div>
-                                    <div class="card event-item">
-                                        <div class="event-image position-relative">
-                                            <div class="image-rectangle"
-                                                style="background-image: url('assets/img/start01.jpg');"></div>
-                                            <div class="event-dates">
-                                                <div class="event-date-item">
-                                                    <p>Feb</p>
-                                                    <h5>18</h5>
-                                                </div>
-                                                <div class="event-date-item">
-                                                    <p>Feb</p>
-                                                    <h5>21</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-content">
-                                            <h3 class="event-title">Power Maxed MotoFest Coventry</h3>
-                                            <p class="event-info">Starts Thu, 18 Feb 2023</p>
-                                            <div class="event-info">NEC Birmingham</div>
-                                        </div>
-                                    </div>
+                                <div class="grid grid-cols-2 event-listing" id="filtered-events-tab">
+                                    <!-- content populates here -->
                                 </div>
                             </div>
+
+                            <br />
+
+                            <div class="infinite-scroll-preloader events-tab">
+                                <div class="preloader"></div>
+                            </div>
                         </div>
-                    </div>
 
-
-
-                    <div class="tab" id="venues">
-
-                        <div class="container mt-15 mb-15">
-
+                        <div class="tab" id="venues">
                             <div class="filter-bar mb-2">
                                 <div class="filter-item popup-open" data-popup=".filter-bylocation-popup">
                                     <span>Location </span>
                                     <i class="icon f7-icons">chevron_down</i>
                                 </div>
                             </div>
-
                             <div class="trending-section">
-                                <div class="grid grid-cols-2 event-listing">
-                                    <div class="card event-item">
-                                        <div class="event-image position-relative">
-                                            <div class="image-rectangle"
-                                                style="background-image: url('assets/img/start01.jpg');"></div>
-                                        </div>
-                                        <div class="card-content">
-                                            <h3 class="event-title">Venue Name</h3>
-                                            <div class="event-info">NEC Birmingham</div>
-                                        </div>
-                                    </div>
+                                <div class="grid grid-cols-2 event-listing" id="filtered-venues-tab">
+
                                 </div>
+                            </div>
+
+                            <br />
+                            <div class="infinite-scroll-preloader venues-tab">
+                                <div class="preloader"></div>
+                            </div>
+                        </div>
+
+                        <div class="tab" id="users_vehicles">
+                            <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
+                                <ul>
+                                    <li>
+                                        <a class="item-link search-result item-content" href="#">
+                                            <div class="item-media">
+                                                <div class="image-square image-rounded"
+                                                    style="background-image:url('assets/img/profile-001.jpg?v=1.1');">
+                                                </div>
+                                            </div>
+                                            <div class="item-inner">
+                                                <div class="item-title">Search Result</div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
-
-
-
-                    <div class="tab" id="users_vehicles">
-
-                        <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
-                            <ul>
-
-                                <!-- Search Result -->
-                                <li>
-                                    <a class="item-link search-result item-content" href="#">
-                                        <div class="item-media">
-                                            <div class="image-square image-rounded"
-                                                style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div>
-                                        </div>
-                                        <div class="item-inner">
-                                            <div class="item-title">Search Result</div>
-                                        </div>
-                                    </a>
-                                </li>
-
-                                <!-- Search Result -->
-                                <li>
-                                    <a class="item-link search-result item-content" href="#">
-                                        <div class="item-media">
-                                            <div class="image-square image-rounded"
-                                                style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div>
-                                        </div>
-                                        <div class="item-inner">
-                                            <div class="item-title">Search Result</div>
-                                        </div>
-                                    </a>
-                                </li>
-
-                                <!-- Search Result -->
-                                <li>
-                                    <a class="item-link search-result item-content" href="#">
-                                        <div class="item-media">
-                                            <div class="image-square image-rounded"
-                                                style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div>
-                                        </div>
-                                        <div class="item-inner">
-                                            <div class="item-title">Search Result</div>
-                                        </div>
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </div>
-
-                    </div>
-
-
                 </div>
             </div>
 
@@ -467,11 +182,11 @@
                         <div class="page-content">
 
                             <div class="block-title">Quick Options</div>
-                            <div class="list">
+                            <div class="list" id="date-filters">
                                 <ul>
                                     <li>
                                         <label class="item-checkbox item-content">
-                                            <input type="checkbox" name="venue1" value="1" />
+                                            <input type="checkbox" name="anytime" value="anytime" checked />
                                             <i class="icon icon-checkbox"></i>
                                             <div class="item-inner">
                                                 <div class="item-title">Anytime</div>
@@ -480,7 +195,7 @@
                                     </li>
                                     <li>
                                         <label class="item-checkbox item-content">
-                                            <input type="checkbox" name="venue1" value="1" />
+                                            <input type="checkbox" name="today" value="today" />
                                             <i class="icon icon-checkbox"></i>
                                             <div class="item-inner">
                                                 <div class="item-title">Today</div>
@@ -489,7 +204,7 @@
                                     </li>
                                     <li>
                                         <label class="item-checkbox item-content">
-                                            <input type="checkbox" name="venue1" value="1" />
+                                            <input type="checkbox" name="tomorrow" value="tomorrow" />
                                             <i class="icon icon-checkbox"></i>
                                             <div class="item-inner">
                                                 <div class="item-title">Tomorrow</div>
@@ -498,7 +213,7 @@
                                     </li>
                                     <li>
                                         <label class="item-checkbox item-content">
-                                            <input type="checkbox" name="venue1" value="1" />
+                                            <input type="checkbox" name="this_weekend" value="this-weekend" />
                                             <i class="icon icon-checkbox"></i>
                                             <div class="item-inner">
                                                 <div class="item-title">This Weekend</div>
@@ -508,13 +223,9 @@
                                 </ul>
                             </div>
 
-
                             <div class="block-title">Select Date Range</div>
-
                             <div class="list">
                                 <ul>
-
-                                    <!-- Input -->
                                     <li>
                                         <div class="item-content item-input">
                                             <div class="item-inner">
@@ -526,9 +237,6 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <!-- * Input -->
-
-                                    <!-- Input -->
                                     <li>
                                         <div class="item-content item-input">
                                             <div class="item-inner">
@@ -540,23 +248,18 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <!-- * Input -->
-
                                 </ul>
                             </div>
 
                             <div class="popup-lower-button">
-                                <button class="button button-large button-fill margin-bottom">Apply Filters</button>
+                                <button class="button button-large button-fill margin-bottom apply-filters">Apply
+                                    Filters</button>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
             </div>
             <!-- * Filter - Date - Slider -->
-
-
 
             <!-- Filter - Category - Slider -->
             <div class="popup filter-bycategory-popup three-quarter-popup">
@@ -572,52 +275,28 @@
                             </div>
                         </div>
                         <div class="page-content">
-
-                            <div class="list mt-2">
+                            <form class="list mt-2" id="category-filters">
                                 <ul>
                                     <li>
                                         <label class="item-checkbox item-content">
-                                            <input type="checkbox" name="category" value="1" />
+                                            <input type="checkbox" name="all" value="0" checked />
                                             <i class="icon icon-checkbox"></i>
                                             <div class="item-inner">
-                                                <div class="item-title">All Events</div>
+                                                <div class="item-title">All</div>
                                             </div>
                                         </label>
                                     </li>
-                                    <li>
-                                        <label class="item-checkbox item-content">
-                                            <input type="checkbox" name="category" value="1" />
-                                            <i class="icon icon-checkbox"></i>
-                                            <div class="item-inner">
-                                                <div class="item-title">Sports & Supercar Events</div>
-                                            </div>
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label class="item-checkbox item-content">
-                                            <input type="checkbox" name="category" value="1" />
-                                            <i class="icon icon-checkbox"></i>
-                                            <div class="item-inner">
-                                                <div class="item-title">Modded & JDM Events</div>
-                                            </div>
-                                        </label>
-                                    </li>
-
                                 </ul>
-                            </div>
-
+                            </form>
                             <div class="popup-lower-button">
-                                <button class="button button-large button-fill margin-bottom">Apply Filters</button>
+                                <button class="button button-large button-fill margin-bottom apply-filters">Apply
+                                    Filters</button>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
             <!-- * Filter - Category - Slider -->
-
-
-
 
             <!-- Filter - Location - Slider -->
             <div class="popup filter-bylocation-popup three-quarter-popup">
@@ -633,17 +312,18 @@
                             </div>
                         </div>
                         <div class="page-content">
-
                             <div class="block location-field">
                                 <p>Location</p>
-                                <input type="text" placeholder="Enter Location" />
+                                <input type="text" placeholder="Enter Location" id="autocomplete" />
+                                <input type="hidden" id="lat" />
+                                <input type="hidden" id="lng" />
                             </div>
 
-                            <div class="list mt2">
+                            <div class="list mt2" id="location-filters">
                                 <ul>
                                     <li>
                                         <label class="item-radio item-radio-icon-start item-content">
-                                            <input type="radio" name="location" value="1" checked />
+                                            <input type="radio" name="location" value="national" checked />
                                             <i class="icon icon-radio"></i>
                                             <div class="item-inner">
                                                 <div class="item-title">National</div>
@@ -652,7 +332,7 @@
                                     </li>
                                     <li>
                                         <label class="item-radio item-radio-icon-start item-content">
-                                            <input type="radio" name="location" value="1" />
+                                            <input type="radio" name="location" value="near-me" />
                                             <i class="icon icon-radio"></i>
                                             <div class="item-inner">
                                                 <div class="item-title">Nearby</div>
@@ -661,7 +341,7 @@
                                     </li>
                                     <li>
                                         <label class="item-radio item-radio-icon-start item-content">
-                                            <input type="radio" name="location" value="1" />
+                                            <input type="radio" name="location" value="25-miles" />
                                             <i class="icon icon-radio"></i>
                                             <div class="item-inner">
                                                 <div class="item-title">25 Miles</div>
@@ -670,7 +350,7 @@
                                     </li>
                                     <li>
                                         <label class="item-radio item-radio-icon-start item-content">
-                                            <input type="radio" name="location" value="1" />
+                                            <input type="radio" name="location" value="50-miles" />
                                             <i class="icon icon-radio"></i>
                                             <div class="item-inner">
                                                 <div class="item-title">50 Miles</div>
@@ -679,7 +359,7 @@
                                     </li>
                                     <li>
                                         <label class="item-radio item-radio-icon-start item-content">
-                                            <input type="radio" name="location" value="1" />
+                                            <input type="radio" name="location" value="100-miles" />
                                             <i class="icon icon-radio"></i>
                                             <div class="item-inner">
                                                 <div class="item-title">100 Miles</div>
@@ -692,16 +372,14 @@
                             </div>
 
                             <div class="popup-lower-button">
-                                <button class="button button-large button-fill margin-bottom">Apply Filters</button>
+                                <button class="button button-large button-fill margin-bottom apply-filters">Apply
+                                    Filters</button>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
             <!-- * Filter - Location - Slider -->
-
         </div>
-        <!-- Page content-->
     </div>
 </template>

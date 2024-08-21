@@ -198,3 +198,7 @@
 .media-post-readmore{
     display: inline !important;
 }
+
+.pac-container {
+    z-index: 9999 !important;
+}

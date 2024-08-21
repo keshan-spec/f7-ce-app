@@ -46,6 +46,10 @@ export function displayProfile(user) {
   const profileImage = document.querySelector('.profile-head .profile-image')
   profileImage.style.backgroundImage = `url('${user.profile_image || 'assets/img/profile-placeholder.jpg'}')`
 
+  if (user.cover_image) {
+    $('.profile-background').css('background-image', `url('${user.cover_image}')`)
+  }
+
   // Profile Links
   const profileLinks = user.profile_links
 
