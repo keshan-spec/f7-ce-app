@@ -19,6 +19,33 @@ import {
 
 var createStore = Framework7.createStore
 
+const DEFAULT_SEARCH_RESULTS = {
+  events: {
+    data: [],
+    total_pages: 0,
+    page: 1,
+    limit: 10,
+  },
+  users: {
+    data: [],
+    total_pages: 0,
+    page: 1,
+    limit: 10,
+  },
+  venues: {
+    data: [],
+    total_pages: 0,
+    page: 1,
+    limit: 10,
+  },
+  top_results: {
+    events: [],
+    users: [],
+    venues: [],
+  },
+  success: false,
+}
+
 const store = createStore({
   state: {
     user: null,
@@ -91,8 +118,21 @@ const store = createStore({
       page: 1,
       limit: 10,
     },
+    discoverSearchData: {
+      data: [],
+      total_pages: 0,
+      page: 1,
+      limit: 10,
+    },
+    // Search results
+    searchResults: DEFAULT_SEARCH_RESULTS,
   },
   getters: {
+    getSearchResults({
+      state
+    }) {
+      return state.searchResults
+    },
     getFilteredEvents({
       state
     }) {
@@ -200,6 +240,11 @@ const store = createStore({
     },
   },
   actions: {
+    setSearchResults({
+      state
+    }, payload) {
+      state.searchResults = payload
+    },
     async filterEvents({
       state
     }, {

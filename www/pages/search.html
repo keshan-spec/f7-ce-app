@@ -1,214 +1,86 @@
 <template>
   <div class="page" data-name="search">
-
-
     <!-- Top Navbar -->
-          <div class="navbar">
-            <div class="navbar-bg"></div>
-            <div class="navbar-inner">
-              <div class="left">
-                <a class="link back">
-                  <i class="icon icon-back"></i>
-                </a>
-              </div>
-              <div class="middle">
-                <div class="header-logo"><img src="assets/img/logo-dark.png"/></div>
-            </div>
-              <div class="right">
-                <a href="#" class="link icon-only">
-                  <i class="icon f7-icons">qrcode</i>
-                </a>
-                <a href="#" class="link icon-only">
-                  <i class="icon f7-icons">bell</i>
-                </a>
-              </div>
-            </div>
+    <div class="navbar">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner">
+        <div class="left">
+          <a class="link back">
+            <i class="icon icon-back"></i>
+          </a>
+        </div>
+        <div class="middle">
+          <div class="header-logo"><img src="assets/img/logo-dark.png" /></div>
+        </div>
+        <div class="right">
+          <a href="#" class="link icon-only">
+            <i class="icon f7-icons">qrcode</i>
+          </a>
+          <a href="#" class="link icon-only">
+            <i class="icon f7-icons">bell</i>
+          </a>
+        </div>
+      </div>
+    </div>
 
+    <!-- Page content-->
+    <div class="page-content infinite-scroll-content">
+      <div class="discovery-wrap">
+        <div class="searchbar">
+          <div class="searchbar-inner">
+            <div class="searchbar-input-wrap">
+              <input type="search" placeholder="Search" class="discover-search" id="discover-search" />
+              <i class="searchbar-icon"></i>
+              <!-- <span class="input-clear-button"></span> -->
+            </div>
+            <span class="searchbar-disable-button if-not-aurora">Cancel</span>
+          </div>
+        </div>
+
+        <div class="tabbar-nav pt-1">
+          <ul>
+            <li><a href="#top-results" class="tab-link tab-link-active" data-type="all">Top</a></li>
+            <li><a href="#events-results" class="tab-link" data-type="events">Events</a></li>
+            <li><a href="#venues-results" class="tab-link" data-type="venues">Venues</a></li>
+            <li><a href="#users_vehicles-results" class="tab-link" data-type="users">Users & Vehicles</a></li>
+          </ul>
+        </div>
+
+        <div class="tabs">
+          <!-- Tab - Top Results -->
+          <div class="tab tab-active" id="top-results">
+            <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
+
+            </div>
+          </div>
+
+          <!-- Tab - Events -->
+          <div class="tab" id="events-results">
+            <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
+              <ul>
+              </ul>
+            </div>
           </div>
 
 
-      <!-- Page content-->
-      <div class="page-content">
-
-        <div class="discovery-wrap">
-
-            <form class="searchbar">
-                <div class="searchbar-inner">
-                    <div class="searchbar-input-wrap">
-                        <input type="search" placeholder="Search" class="discover-search" />
-                        <i class="searchbar-icon"></i>
-                        <!-- <span class="input-clear-button"></span> -->
-                    </div>
-                    <span class="searchbar-disable-button if-not-aurora">Cancel</span>
-                </div>
-            </form>
-
-            <div class="tabbar-nav pt-1"> 
-                <ul>
-                    <li><a href="#top" class="tab-link tab-link-active">Top</a></li>
-                    <li><a href="#events" class="tab-link">Events</a></li>
-                    <li><a href="#venues" class="tab-link">Venues</a></li>
-                    <li><a href="#users_vehicles" class="tab-link">Users & Vehicles</a></li>
-                    <!--<li><a href="#photo_locations" class="tab-link">Photo locations</a></li>
-                    <li><a href="#businesses" class="tab-link">Businesses</a></li>-->
-                </ul>
+          <!-- Tab - Venues -->
+          <div class="tab" id="venues-results">
+            <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
+              <ul>
+              </ul>
             </div>
+          </div>
 
-             <div class="tabs">
-                    
-                    <!-- Tab - Top Results -->
-                    <div class="tab tab-active" id="top">
-
-                        <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
-                          <ul>
-
-                            <!-- Search Result -->
-                            <li>
-                              <a class="item-link search-result item-content" href="#">
-                                <div class="item-media"><div class="image-square image-rounded" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div></div>
-                                <div class="item-inner">
-                                  <div class="item-title">Search Result</div>
-                                </div>
-                              </a>
-                            </li>
-
-                            <!-- Search Result -->
-                            <li>
-                              <a class="item-link search-result item-content" href="#">
-                                <div class="item-media"><div class="image-square image-rounded" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div></div>
-                                <div class="item-inner">
-                                  <div class="item-title">Search Result</div>
-                                </div>
-                              </a>
-                            </li>
-
-                            <!-- Search Result -->
-                            <li>
-                              <a class="item-link search-result item-content" href="#">
-                                <div class="item-media"><div class="image-square image-rounded" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div></div>
-                                <div class="item-inner">
-                                  <div class="item-title">Search Result</div>
-                                </div>
-                              </a>
-                            </li>
-
-                          </ul>
-                        </div>
-
-                    </div>
-
-                    <!-- Tab - Events -->
-                    <div class="tab" id="events">
-
-                        <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
-                          <ul>
-
-                            <!-- Search Result -->
-                            <li>
-                              <a class="item-link search-result item-content" href="#">
-                                <div class="item-media"><div class="image-square image-rounded" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div></div>
-                                <div class="item-inner">
-                                  <div class="item-title">Search Result</div>
-                                </div>
-                              </a>
-                            </li>
-
-                            <!-- Search Result -->
-                            <li>
-                              <a class="item-link search-result item-content" href="#">
-                                <div class="item-media"><div class="image-square image-rounded" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div></div>
-                                <div class="item-inner">
-                                  <div class="item-title">Search Result</div>
-                                </div>
-                              </a>
-                            </li>
-
-                          </ul>
-                        </div>
-
-                    </div>
-
-
-                    <!-- Tab - Venues -->
-                    <div class="tab" id="venues">
-
-                        <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
-                          <ul>
-
-                            <!-- Search Result -->
-                            <li>
-                              <a class="item-link search-result item-content" href="#">
-                                <div class="item-media"><div class="image-square image-rounded" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div></div>
-                                <div class="item-inner">
-                                  <div class="item-title">Search Result</div>
-                                </div>
-                              </a>
-                            </li>
-
-                            <!-- Search Result -->
-                            <li>
-                              <a class="item-link search-result item-content" href="#">
-                                <div class="item-media"><div class="image-square image-rounded" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div></div>
-                                <div class="item-inner">
-                                  <div class="item-title">Search Result</div>
-                                </div>
-                              </a>
-                            </li>
-
-                            <!-- Search Result -->
-                            <li>
-                              <a class="item-link search-result item-content" href="#">
-                                <div class="item-media"><div class="image-square image-rounded" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div></div>
-                                <div class="item-inner">
-                                  <div class="item-title">Search Result</div>
-                                </div>
-                              </a>
-                            </li>
-
-                          </ul>
-                        </div>
-
-                    </div>
-
-
-                    <!-- Tab - Users / Vehicles -->
-                    <div class="tab" id="users_vehicles">
-
-                        <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
-                          <ul>
-
-                            <!-- Search Result -->
-                            <li>
-                              <a class="item-link search-result item-content" href="#">
-                                <div class="item-media"><div class="image-square image-rounded" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div></div>
-                                <div class="item-inner">
-                                  <div class="item-title">Search Result</div>
-                                </div>
-                              </a>
-                            </li>
-
-                            <!-- Search Result -->
-                            <li>
-                              <a class="item-link search-result item-content" href="#">
-                                <div class="item-media"><div class="image-square image-rounded" style="background-image:url('assets/img/profile-001.jpg?v=1.1');"></div></div>
-                                <div class="item-inner">
-                                  <div class="item-title">Search Result</div>
-                                </div>
-                              </a>
-                            </li>
-
-                          </ul>
-                        </div>
-
-                    </div>
-
-
-
-
-                </div>
+          <!-- Tab - Users / Vehicles -->
+          <div class="tab" id="users_vehicles-results">
+            <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
+              <ul>
+              </ul>
+            </div>
+          </div>
 
         </div>
-
+      </div>
     </div>
     <!-- Page content-->
   </div>

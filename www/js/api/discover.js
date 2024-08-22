@@ -5,11 +5,18 @@ import {
     API_URL
 } from "./consts.js";
 
-export const getDiscoverData = async (search, type, page) => {
+/**
+ * Fetches the discover data
+ * 
+ * @param {string} search
+ * @param {'users' | 'events' | 'venues' | 'all'} type 
+ * @param {number} page default 1
+ * 
+ */
+export const getDiscoverData = async (search, type, page = 1, signal) => {
     const user = await getSessionUser();
 
     const response = await fetch(`${API_URL}/wp-json/app/v1/discover-search`, {
-        cache: "no-cache",
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -21,6 +28,7 @@ export const getDiscoverData = async (search, type, page) => {
             type,
             per_page: 10
         }),
+        signal
     });
 
     const data = await response.json();
