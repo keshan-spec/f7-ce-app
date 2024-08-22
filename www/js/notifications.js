@@ -10,9 +10,9 @@ var $ = Dom7
 var notificationsStore = store.getters.getNotifications
 
 $(document).on('page:init', '.page[data-name="notifications"]', async function (e) {
-    $('.init-loader').show()
+    $('.init-loader.light').show()
     await store.dispatch('fetchNotifications')
-    $('.init-loader').hide()
+    $('.init-loader.light').hide()
 })
 
 notificationsStore.onUpdated(async (data) => {
@@ -23,11 +23,22 @@ notificationsStore.onUpdated(async (data) => {
 
     const notifications = data.data
 
-
     const recentContainer = document.getElementById('recent');
     const thisWeekContainer = document.getElementById('this-week');
 
+    document.querySelectorAll('.notification-title').forEach(elem => {
+        elem.innerHTML = elem.getAttribute('data-title')
+    })
+
     var user = await getSessionUser()
+
+    if (!notifications.recent.length) {
+        recentContainer.innerHTML = '<p class="text-center">No recent notifications</p>';
+    }
+
+    if (!notifications.last_week.length) {
+        thisWeekContainer.innerHTML = '<p class="text-center">No notifications from this week</p>';
+    }
 
     notifications.recent.forEach(notification => {
         const notificationItem = createNotificationItem(notification, user);

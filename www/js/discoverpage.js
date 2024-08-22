@@ -43,11 +43,15 @@ function fillInAddress() {
 
 function populateEventCard(data = [], isSwiper = true) {
     const swiperContainer = document.querySelector('#trending-events');
+    if (isSwiper) swiperContainer.innerHTML = '';
+
     const eventsTabContainer = document.querySelector('#filtered-events-tab');
 
     data.forEach(event => {
-        const startDate = new Date(event.dates[0].start_date);
-        const endDate = new Date(event.dates[0].end_date);
+        const startDate = new Date(event.start_date);
+        const endDate = new Date(event.end_date);
+        // const startDate = new Date(event.dates[0].start_date);
+        // const endDate = new Date(event.dates[0].end_date);
 
         let endDateString = '';
 
@@ -94,6 +98,9 @@ function populateEventCard(data = [], isSwiper = true) {
 
 function populateVenueCard(data = [], isSwiper = true) {
     const swiperContainer = document.querySelector('#trending-venues');
+
+    if (isSwiper) swiperContainer.innerHTML = '';
+
     const eventsTabContainer = document.querySelector('#filtered-venues-tab');
 
     data.forEach(event => {
@@ -246,7 +253,8 @@ trendingEventsStore.onUpdated((data) => {
 });
 
 filteredEventsStore.onUpdated((data) => {
-    if (!data || data.new_data.length === 0) {
+    const eventsTabContainer = document.querySelector('#filtered-events-tab');
+    if (!data || data.data.length === 0) {
         eventsTabContainer.innerHTML = `
             <div class="no-events">
                 <h3>No events found</h3>
@@ -267,7 +275,9 @@ filteredEventsStore.onUpdated((data) => {
 });
 
 filteredVenuesStore.onUpdated((data) => {
-    if (!data || data.new_data.length === 0) {
+    const tabContainer = document.querySelector('#filtered-venues-tab');
+
+    if (!data || data.data.length === 0) {
         tabContainer.innerHTML = `
             <div class="no-venues">
                 <h3>No venues found</h3>
@@ -382,7 +392,7 @@ $(document).on('page:init', '.page[data-name="discover"]', function (e) {
                 })
                 isFetchingPosts = false
             }
-        } else {
+        } else if (activeTabId === 'venues') {
             currentVenuesPage++
 
             if (currentVenuesPage <= totalVenuesPages) {

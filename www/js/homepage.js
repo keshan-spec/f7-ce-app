@@ -11,6 +11,9 @@ import {
   addComment,
   deletePost
 } from './api/posts.js'
+import {
+  getSessionUser
+} from "./api/auth.js"
 
 var $ = Dom7
 var currentPostsPage = 1
@@ -112,7 +115,6 @@ export function detectDoubleTapClosure(callback) {
 
 // event listener for tab change
 $('.tab-link').on('click', async function (e) {
-  currentPage = 1
   const type = this.getAttribute('data-type')
   activeTab = type
 })
@@ -142,10 +144,10 @@ infiniteScrollContent.addEventListener('infinite', async function () {
   isFetchingPosts = false
 })
 
-function displayPosts(posts, following = false) {
+async function displayPosts(posts, following = false) {
   const postsContainer = $(following ? '#tab-following .data' : '#tab-latest .data');
 
-  const user = store.getters.user.value;
+  const user = await getSessionUser()
 
   posts.forEach(post => {
     let post_actions = `
@@ -575,8 +577,8 @@ $(document).on('click', '.comment-reply', function () {
 })
 
 $(document).on('page:afterin', '.page[data-name="home"]', function (e) {
-  store.dispatch('getPosts', currentPage)
-  store.dispatch('getFollowingPosts', currentPage)
+  store.dispatch('getPosts', 1)
+  store.dispatch('getFollowingPosts', 1)
 })
 
 $(document).on('click', '.comment-username a', function (e) {
