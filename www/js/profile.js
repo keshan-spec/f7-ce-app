@@ -750,10 +750,7 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
   }
 })
 
-
 $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', async function (e) {
-  var view = app.views.current
-
   const toggleOwnedToDatePicker = (e) => {
     const ownedToInput = document.querySelector('input[name="vehicle_owned_to"]')
     const ownedToBContainer = document.querySelector('#owned-to-block')
@@ -782,103 +779,105 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', asy
 
     reader.readAsDataURL(file)
   })
+})
 
-  $(document).on('click', '#submit-add-vehicle-form', async function (e) {
-    const form = $('form#addVehicleForm')
+$(document).on('click', '#submit-add-vehicle-form', async function (e) {
+  var view = app.views.current
 
-    // values
-    const make = form.find('select[name="vehicle_make"]').val()
-    const model = form.find('input[name="vehicle_model"]').val()
-    const variant = form.find('input[name="vehicle_variant"]').val()
-    const reg = form.find('input[name="vehicle_reg"]').val()
-    const colour = form.find('input[name="vehicle_colour"]').val()
+  const form = $('form#addVehicleForm')
 
-    const owned_from = form.find('input[name="vehicle_owned_from"]').val()
-    const owned_to = form.find('input[name="vehicle_owned_to"]').val()
+  // values
+  const make = form.find('select[name="vehicle_make"]').val()
+  const model = form.find('input[name="vehicle_model"]').val()
+  const variant = form.find('input[name="vehicle_variant"]').val()
+  const reg = form.find('input[name="vehicle_reg"]').val()
+  const colour = form.find('input[name="vehicle_colour"]').val()
 
-    const primary_car = form.find('select[name="vehicle_ownership"]').val()
-    const allow_tagging = form.find('input[name="vehicle_tagging"]').is(':checked') ? 1 : 0
+  const owned_from = form.find('input[name="vehicle_owned_from"]').val()
+  const owned_to = form.find('input[name="vehicle_owned_to"]').val()
 
-    const cover_image = form.find('input[name="vehicle_image"]').prop('files')[0]
+  const primary_car = form.find('select[name="vehicle_ownership"]').val()
+  const allow_tagging = form.find('input[name="vehicle_tagging"]').is(':checked') ? 1 : 0
 
-    if (!make || make === "0") {
-      app.dialog.alert('Please select a vehicle make')
-      return
+  const cover_image = form.find('input[name="vehicle_image"]').prop('files')[0]
+
+  if (!make || make === "0") {
+    app.dialog.alert('Please select a vehicle make')
+    return
+  }
+
+  if (!model) {
+    app.dialog.alert('Please enter a vehicle model')
+    return
+  }
+
+  // if (!reg) {
+  //   app.dialog.alert('Please enter a vehicle registration number')
+  //   return
+  // }
+
+  if (!owned_from) {
+    app.dialog.alert('Please enter the date you owned the vehicle from')
+    return
+  }
+
+  // if primary_car is past, owned_to is required
+  if (primary_car === "past" && !owned_to) {
+    app.dialog.alert('Please enter the date you owned the vehicle to')
+    return
+  }
+
+  if (!cover_image) {
+    app.dialog.alert('Please upload a cover image')
+    return
+  }
+
+  let base64 = null
+
+  if (cover_image) {
+    // Wrap the FileReader in a Promise to wait for it to complete
+    base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(cover_image)
+
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = () => reject(new Error('Failed to read image as base64'))
+    })
+  }
+
+  try {
+    app.preloader.show()
+
+    const response = await addVehicleToGarage({
+      make,
+      model,
+      variant,
+      registration: reg,
+      colour,
+      ownedFrom: owned_from,
+      ownedTo: owned_to,
+      primary_car,
+      allow_tagging,
+      cover_photo: base64,
+      vehicle_period: primary_car
+    })
+
+    if (!response || !response.success) {
+      throw new Error('Failed to update vehicle')
     }
 
-    if (!model) {
-      app.dialog.alert('Please enter a vehicle model')
-      return
-    }
+    app.preloader.hide()
 
-    // if (!reg) {
-    //   app.dialog.alert('Please enter a vehicle registration number')
-    //   return
-    // }
+    store.dispatch('getMyGarage')
+    app.dialog.alert('Vehicle added successfully')
 
-    if (!owned_from) {
-      app.dialog.alert('Please enter the date you owned the vehicle from')
-      return
-    }
+    // redirect to garage
+    view.router.back(`/profile-garage-vehicle-view/${response.id}`, {
+      force: true
+    })
+  } catch (error) {
+    app.preloader.hide()
 
-    // if primary_car is past, owned_to is required
-    if (primary_car === "past" && !owned_to) {
-      app.dialog.alert('Please enter the date you owned the vehicle to')
-      return
-    }
-
-    if (!cover_image) {
-      app.dialog.alert('Please upload a cover image')
-      return
-    }
-
-    let base64 = null
-
-    if (cover_image) {
-      // Wrap the FileReader in a Promise to wait for it to complete
-      base64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.readAsDataURL(cover_image)
-
-        reader.onload = () => resolve(reader.result)
-        reader.onerror = () => reject(new Error('Failed to read image as base64'))
-      })
-    }
-
-    try {
-      app.preloader.show()
-
-      const response = await addVehicleToGarage({
-        make,
-        model,
-        variant,
-        registration: reg,
-        colour,
-        ownedFrom: owned_from,
-        ownedTo: owned_to,
-        primary_car,
-        allow_tagging,
-        cover_photo: base64,
-        vehicle_period: primary_car
-      })
-
-      if (!response || !response.success) {
-        throw new Error('Failed to update vehicle')
-      }
-
-      app.preloader.hide()
-
-      store.dispatch('getMyGarage')
-      app.dialog.alert('Vehicle added successfully')
-
-      // redirect to garage
-      view.router.back(`/profile-garage-vehicle-view/${response.id}`, {
-        force: true
-      })
-    } catch (error) {
-      app.preloader.hide()
-
-      app.dialog.alert('Failed to update vehicle')
-    }
-  })
+    app.dialog.alert('Failed to update vehicle')
+  }
 })
