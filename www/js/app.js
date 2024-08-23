@@ -1,5 +1,6 @@
 //------------------------------------------ CORE ------------------------------------------//
 import {
+  getSessionUser,
   handleSignUp,
   updateAboutUserIds,
   updateContentIds,
@@ -15,6 +16,9 @@ import {
 import {
   getIDFromQrCode
 } from './api/scanner.js'
+import {
+  openQRModal
+} from './qr.js'
 
 
 var $ = Dom7
@@ -205,15 +209,22 @@ var actionSheet = app.actions.create({
     [{
         text: '<div class="actions-grid-item">Add Post</div>',
         icon: '<img src="assets/img/icon-add-post.svg" width="48" style="max-width: 100%"/>',
-        onClick: function () {
-          app.dialog.alert('Button 1 clicked');
+        onClick: async function () {
+          const user = await getSessionUser()
+          if (user) {
+            sendRNMessage({
+              type: "createPost",
+              user_id: user.id,
+              page: 'create-post',
+            })
+          }
         }
       },
       {
         text: '<div class="actions-grid-item">Scan QR Code</div>',
         icon: '<img src="assets/img/icon-qr-code.svg" width="48" style="max-width: 100%;"/>',
         onClick: function () {
-          app.dialog.alert('Button 2 clicked');
+          openQRModal()
         }
       },
       {

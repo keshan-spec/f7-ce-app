@@ -118,7 +118,7 @@ $(document).on('click', '#unlink-profile', async function () {
     }
 })
 
-$(document).on('click', '.open-qr-modal', function () {
+export function openQRModal() {
     openModal()
 
     html5QrCode = new Html5Qrcode("reader")
@@ -130,6 +130,10 @@ $(document).on('click', '.open-qr-modal', function () {
         onScanSuccess,
         onScanFailure
     )
+}
+
+$(document).on('click', '.open-qr-modal', function () {
+    openQRModal()
 })
 
 store.getters.scannedData.onUpdated((data) => {
