@@ -434,11 +434,14 @@ const store = createStore({
 
         window.localStorage.setItem('token', token)
         state.user = userDetails.user
-        sendRNMessage({
-          type: "authData",
-          user_id: userDetails.user.id,
-          page: 'auth',
-        })
+
+        setTimeout(() => {
+          sendRNMessage({
+            type: "authData",
+            user_id: userDetails.user.id,
+            page: 'auth',
+          })
+        }, 1000)
       } catch (error) {
         console.error('Login failed', error)
       }
