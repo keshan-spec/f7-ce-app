@@ -436,7 +436,7 @@ const store = createStore({
         state.user = userDetails.user
         sendRNMessage({
           type: "authData",
-          user_id: userDetails.id,
+          user_id: userDetails.user.id,
           page: 'auth',
         })
       } catch (error) {
