@@ -308,7 +308,7 @@ body {
 /*************** Home - Social ***************/
 
 .social-content {
-	padding-top: calc(100px + env(safe-area-inset-top) );
+	padding-top: calc(110px + env(safe-area-inset-top) );
 }
 
 .social-tabs {
@@ -316,14 +316,16 @@ body {
 	margin-top: 0px;
 	z-index: 99;
 	position: absolute;
-	top:calc(55px + env(safe-area-inset-top) );
+	top:calc(54px + env(safe-area-inset-top) );
 	left: 0;
 	width: 100%;
-	height: 40px !important;
+	height: 50px !important;
 }
 .social-tabs .toolbar-inner {
 	font-size: 13px;
-	padding: 0px 5px 10px 5px;
+	padding: 10px 5px 10px 5px;
+	position: relative;
+	height: 50px;
 }
 .social-tabs a {
 	margin: 0 3px;
@@ -334,7 +336,6 @@ body {
 	background-color: #ae9159 !important;
 	color: #fff !important;
 }
-
 
 
 
