@@ -110,6 +110,30 @@ var app = new Framework7({
   routes: routes,
 })
 
+//RESET TAB NAVIGATION ON CLICK
+$(document).on('click', '#app > .views > .toolbar .tab-link', function () {
+  var $link = $(this).attr('href');
+  var $viewEl = $($link);
+
+  if ($(this).hasClass('tab-link-active')) {
+
+    var view = app.views.get($viewEl[0]); // Pass the DOM element, not a Dom7 object
+
+    if (view.history.length > 1) {
+
+      view.router.back({
+        url: view.history[0],
+        history: true, // Update the history stack correctly
+        animate: true, // Optional: enable animation if you want
+        reloadCurrent: true // Optional: force reload of the current page if needed
+
+      });
+
+    }
+  }
+
+});
+
 // Function to parse query parameters from the URL
 function getQueryParameter(name) {
   const urlParams = new URLSearchParams(window.location.search)
