@@ -178,7 +178,6 @@ window.onAppBackKey = onBackKeyDown
 
 const renderResult = (result) => {
   const user = store.getters.user.value
-  console.log('Result', user)
 
   if (!result || result.status === 'error') {
     return `<h2 class="text-center">Sorry, this QR code is not valid</h2>`

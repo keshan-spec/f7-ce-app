@@ -1,4 +1,6 @@
-import { verifyScan } from "./api/scanner.js"
+import {
+    verifyScan
+} from "./api/scanner.js"
 import store from "./store.js"
 
 export const onScanSuccess = async (decodedText) => {
@@ -21,7 +23,8 @@ export const onScanSuccess = async (decodedText) => {
                 store.dispatch('setScanningQrCode', false)
             }
         } else {
-            throw new Error('Invalid QR Code')
+            store.dispatch('setScannedData', null)
+            store.dispatch('setScanningQrCode', false)
         }
     } catch (error) {
         console.log('error', error)
