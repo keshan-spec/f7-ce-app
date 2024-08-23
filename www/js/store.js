@@ -4,6 +4,9 @@ import {
   getUserNotifications
 } from './api/auth.js'
 import {
+  sendRNMessage
+} from './api/consts.js'
+import {
   fetchTrendingEvents,
   fetchTrendingVenues,
   getEventCategories
@@ -431,6 +434,11 @@ const store = createStore({
 
         window.localStorage.setItem('token', token)
         state.user = userDetails.user
+        sendRNMessage({
+          type: "authData",
+          user_id: userDetails.id,
+          page: 'auth',
+        })
       } catch (error) {
         console.error('Login failed', error)
       }
