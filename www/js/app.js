@@ -19,6 +19,9 @@ import {
 import {
   openQRModal
 } from './qr.js'
+import {
+  sendRNMessage
+} from './api/consts.js'
 
 
 var $ = Dom7
