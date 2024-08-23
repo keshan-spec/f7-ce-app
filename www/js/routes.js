@@ -1,4 +1,3 @@
-// var v = 3.1;
 var v = Date.now()
 
 var routes = [{

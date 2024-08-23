@@ -1,6 +1,5 @@
 //------------------------------------------ CORE ------------------------------------------//
 import {
-  getSessionUser,
   handleSignUp,
   updateAboutUserIds,
   updateContentIds,
@@ -14,22 +13,13 @@ import {
   displayProfile
 } from './profile.js'
 import {
-  sendRNMessage
-} from './api/consts.js'
-import {
-  onScanFailure,
-  onScanSuccess
-} from './qr-scanner.js'
-import {
-  handleLink,
-  handleUnlink
+  getIDFromQrCode
 } from './api/scanner.js'
+
 
 var $ = Dom7
 var userStore = store.getters.user
 var toolbarEl = $('.footer')[0]
-
-var html5QrCode
 
 var app = new Framework7({
   initOnDeviceReady: true,
@@ -73,6 +63,11 @@ var app = new Framework7({
         // remove the query parameter from the URL
         window.history.pushState({}, document.title, window.location.pathname)
       }
+
+      const qrCode = getQueryParameter('qr')
+      if (qrCode) {
+        maybeRedirectToProfile(qrCode)
+      }
     },
     pageInit: function (page) {
       if (page.name === 'profile') {
@@ -109,6 +104,27 @@ var app = new Framework7({
   store: store,
   routes: routes,
 })
+
+async function maybeRedirectToProfile(qrCode) {
+  try {
+    $('.init-loader').show()
+    const response = await getIDFromQrCode(qrCode)
+
+    const id = response?.data?.linked_to;
+
+    if (id) {
+      app.views.main.router.navigate(`/profile-view/${id}`)
+      // remove the query parameter from the URL
+      window.history.pushState({}, document.title, window.location.pathname)
+      $('.init-loader').hide()
+    }
+  } catch (error) {
+    console.log(error);
+    window.history.pushState({}, document.title, window.location.pathname)
+    app.dialog.alert('Oops, Unable to find the profile linked to this QR code.')
+    $('.init-loader').hide()
+  }
+}
 
 // //RESET TAB NAVIGATION ON CLICK
 // $(document).on('click', '#app > .views > .toolbar .tab-link', function () {
@@ -174,135 +190,9 @@ export function onBackKeyDown() {
     return false
   }
 }
+
 window.onAppBackKey = onBackKeyDown
 
-const renderResult = (result) => {
-  const user = store.getters.user.value
-
-  if (!result || result.status === 'error') {
-    return `<h2 class="text-center">Sorry, this QR code is not valid</h2>`
-  }
-
-  if (result.available) {
-    return (
-      `<h2 class="text-center">Congrats! This QR code is up for grabs</h2>
-        <button id="link-profile">
-          Link Profile
-        </button>`
-    )
-  }
-
-  if (!result.available) {
-    return (
-      `
-        <h2 class="text-center">Sorry, this QR code is already linked</h2>
-        ${result.data && result.data.linked_to == user?.id ? (
-        `<button id="unlink-profile"
-          onClick={handleUnlink}
-        >
-          Unlink Profile
-        </button>`
-      ) : '  '}
-      `
-    )
-  }
-}
-
-// Function to create and open the modal with default content
-function openModal() {
-  const myModal = app.dialog.create({
-    title: 'Scan QR Code',
-    content: `
-      <div id="custom-modal-content">
-        <div id="reader" width="600px"></div>
-      </div>
-    `,
-    buttons: [{
-      text: 'Close',
-      onClick: function () {
-        try {
-          if (html5QrCode) {
-            html5QrCode.stop()
-          }
-
-          store.dispatch('setScannedData', null)
-        } catch (error) {
-          console.error('Error stopping qr code', error)
-        }
-      }
-    }]
-  })
-
-  // Open the modal
-  myModal.open()
-}
-
-let defaultConfig = {
-  qrbox: {
-    width: 250,
-    height: 250
-  },
-  fps: 60,
-  showTorchButtonIfSupported: true,
-  showZoomSliderIfSupported: true,
-  // aspectRatio: 1.7777778
-}
-
-// on link profile
-$(document).on('click', '#link-profile', async function () {
-  const result = store.getters.scannedData.value
-  // close the modal
-  app.dialog.close()
-
-  if (result) {
-    const response = await handleLink(result)
-    if (response.type === 'success') {
-      app.dialog.alert(response.text)
-    }
-
-    // reset the scanned data
-    store.dispatch('setScannedData', null)
-  }
-})
-
-// unlink profile
-$(document).on('click', '#unlink-profile', async function () {
-  const result = store.getters.scannedData.value
-  // close the modal
-  app.dialog.close()
-
-  if (result) {
-    const response = await handleUnlink(result)
-    if (response.type === 'success') {
-      app.dialog.alert(response.text)
-    }
-
-    // reset the scanned data
-    store.dispatch('setScannedData', null)
-  }
-})
-
-$(document).on('click', '.open-qr-modal', function () {
-  openModal()
-
-  html5QrCode = new Html5Qrcode("reader")
-
-  html5QrCode?.start({
-      facingMode: "environment"
-    },
-    defaultConfig,
-    onScanSuccess,
-    onScanFailure
-  )
-})
-
-store.getters.scannedData.onUpdated((data) => {
-  if (data && html5QrCode) {
-    html5QrCode.stop()
-
-    document.getElementById('custom-modal-content').innerHTML = renderResult(data)
-  }
-})
 
 userStore.onUpdated((data) => {
   store.dispatch('getPosts')
