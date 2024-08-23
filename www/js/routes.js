@@ -4,6 +4,12 @@ var v = Date.now()
 var routes = [{
     path: '/',
     url: './index.html',
+    name: 'home',
+    on: {
+      pageAfterIn(e, page) {
+        page.router.clearPreviousHistory();
+      },
+    },
   },
   {
     path: '/notifications/',

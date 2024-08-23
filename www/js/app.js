@@ -110,29 +110,29 @@ var app = new Framework7({
   routes: routes,
 })
 
-//RESET TAB NAVIGATION ON CLICK
-$(document).on('click', '#app > .views > .toolbar .tab-link', function () {
-  var $link = $(this).attr('href');
-  var $viewEl = $($link);
+// //RESET TAB NAVIGATION ON CLICK
+// $(document).on('click', '#app > .views > .toolbar .tab-link', function () {
+//   var $link = $(this).attr('href');
+//   var $viewEl = $($link);
 
-  if ($(this).hasClass('tab-link-active')) {
+//   if ($(this).hasClass('tab-link-active')) {
 
-    var view = app.views.get($viewEl[0]); // Pass the DOM element, not a Dom7 object
+//     var view = app.views.get($viewEl[0]); // Pass the DOM element, not a Dom7 object
 
-    if (view.history.length > 1) {
+//     if (view.history.length > 1) {
 
-      view.router.back({
-        url: view.history[0],
-        history: true, // Update the history stack correctly
-        animate: true, // Optional: enable animation if you want
-        reloadCurrent: true // Optional: force reload of the current page if needed
+//       view.router.back({
+//         url: view.history[0],
+//         history: true, // Update the history stack correctly
+//         animate: true, // Optional: enable animation if you want
+//         reloadCurrent: true // Optional: force reload of the current page if needed
 
-      });
+//       });
 
-    }
-  }
+//     }
+//   }
 
-});
+// });
 
 // Function to parse query parameters from the URL
 function getQueryParameter(name) {
@@ -314,35 +314,28 @@ var actionSheet = app.actions.create({
   buttons: [
     [{
         text: '<div class="actions-grid-item">Add Post</div>',
-        icon: '<img src="assets/img/actionsheet-img1.jpg" width="48" style="max-width: 100%; border-radius: 8px"/>',
-        onClick: async function () {
-          const user = await getSessionUser()
-          if (user) {
-            sendRNMessage({
-              type: "createPost",
-              user_id: user.id,
-              page: 'create-post',
-            })
-          }
+        icon: '<img src="assets/img/icon-add-post.svg" width="48" style="max-width: 100%"/>',
+        onClick: function () {
+          app.dialog.alert('Button 1 clicked');
         }
       },
       {
         text: '<div class="actions-grid-item">Scan QR Code</div>',
-        icon: '<img src="assets/img/actionsheet-img1.jpg" width="48" style="max-width: 100%; border-radius: 8px"/>',
+        icon: '<img src="assets/img/icon-qr-code.svg" width="48" style="max-width: 100%;"/>',
         onClick: function () {
-          app.dialog.alert('Button 2 clicked')
+          app.dialog.alert('Button 2 clicked');
         }
       },
       {
         text: '<div class="actions-grid-item">Add Vehicle</div>',
-        icon: '<img src="assets/img/actionsheet-img1.jpg" width="48" style="max-width: 100%; border-radius: 8px"/>',
+        icon: '<img src="assets/img/icon-vehicle-add.svg" width="48" style="max-width: 100%;"/>',
         onClick: function () {
-          app.dialog.alert('Button 3 clicked')
+          app.views.main.router.navigate('/profile-garage-vehicle-add/');
         }
       }
     ],
   ]
-})
+});
 
 // Init slider
 var swiper = new Swiper('.swiper-container', {
@@ -444,12 +437,6 @@ $(document).on('click', '.toggle-password', function () {
 // Step 1
 $(document).on('submit', 'form#sign-up-step1', async function (e) {
   e.preventDefault()
-  // app.views.main.router.navigate('/signup-step2/')
-  // store.dispatch('setRegisterData', {
-  //   username: 'test',
-  //   user_id: 65251
-  // })
-  // return
 
   var firstName = $(this).find('input[name="first_name"]').val().trim()
   var lastName = $(this).find('input[name="last_name"]').val().trim()
@@ -578,6 +565,19 @@ $(document).on('submit', 'form#sign-up-step2', async function (e) {
 
   if (!username) {
     app.dialog.alert('Username is required')
+    return
+  }
+
+  // username can only have letters, numbers, and underscores
+  var usernamePattern = /^[a-zA-Z0-9_]+$/
+  if (!usernamePattern.test(username)) {
+    app.dialog.alert('Username can only contain letters, numbers, and underscores')
+    return
+  }
+
+  // username must be at least 3 characters long
+  if (username.length < 3) {
+    app.dialog.alert('Username must be at least 3 characters long')
     return
   }
 

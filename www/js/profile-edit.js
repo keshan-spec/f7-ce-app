@@ -220,9 +220,24 @@ $(document).on('click', '#save-username', async function () {
         app.dialog.alert('Please enter a username', 'Error')
         return
     }
+
+    // username can only have letters, numbers, and underscores
+    var usernamePattern = /^[a-zA-Z0-9_]+$/
+    if (!usernamePattern.test(username)) {
+        app.dialog.alert('Username can only contain letters, numbers, and underscores')
+        return
+    }
+
+    // username must be at least 3 characters long
+    if (username.length < 3) {
+        app.dialog.alert('Username must be at least 3 characters long')
+        return
+    }
+
     app.preloader.show()
 
     const response = await updateUsername(username)
+
     app.preloader.hide()
 
     if (response && response.success) {
