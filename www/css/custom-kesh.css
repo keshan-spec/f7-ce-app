@@ -237,3 +237,7 @@
     min-height: 50px;
     position: relative;
 }
+
+.skeleton-block{
+    border-radius: 12px;
+}

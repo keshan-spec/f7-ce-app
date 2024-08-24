@@ -1332,6 +1332,11 @@ body {
     border-color: #ae9159 !important;
     color: #ffffff !important;
 }
+.btn-secondary {
+    background: #e3e3e3 !important;
+    border-color: #e3e3e3 !important;
+    color: #000 !important;
+}
 * {
     box-sizing: border-box;
 }
@@ -1399,6 +1404,7 @@ body {
     position: relative;
     overflow: hidden;
     margin: 0px;
+    display: block;
 }
 .event-listing .card .card-content {
     padding: 10px 10px;
@@ -1620,5 +1626,135 @@ swiper-container.event-listing{
 .p-2{
     padding: 16px;
 }
+
+
+
+
+
+/* For Event Detail Page Start */
+.discover-view-event .event-detail-img-box {
+  width: 100%;
+  display: block;
+  overflow: hidden;
+}
+.discover-view-event .event-detail{
+    text-align: left;
+    padding: 26px 0 20px 0;
+    display: block;
+    width: 100%;
+}
+.discover-view-event .event-detail-title {
+    font-size: 22px;
+    color: #333333;
+    line-height: 34px;
+    font-weight: 500;
+}
+.discover-view-event .event-time-address{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 10px;
+}
+.discover-view-event .event-time-address + .event-time-address{
+    margin-top: 10px;
+}
+.discover-view-event .event-time-address i{
+    color: #ae9159;
+    font-size: 24px;
+}
+.discover-view-event .event-time-address span{
+    font-size: 14px;
+    color: #333333;
+}
+.discover-view-event .share-btn{
+    height: auto;
+    background: #f1f1f1;
+    padding: 10px 10px;
+    color: #333333;
+    display: inline-block;
+    font-weight: 400;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+.discover-view-event .share-btn i{
+    font-size: 15px;
+    margin-right: 4px;
+}
+.discover-view-event .event-list-btn{
+    gap: 4px;
+}
+.discover-view-event .event-list-btn .btn{
+    color: #fff;
+    font-weight: 400;
+    height: 37px;
+    margin: 0 auto 10px auto;
+}
+.discover-view-event .event-list-btn .btn i{
+    font-size: 14px;
+    margin-right: 5px;
+}
+.discover-view-event .btn.bg-dark{
+    background-color: #2e2e2e;
+}
+.discover-view-event .event-detail-tabs .social-tabs , 
+.discover-view-event .event-detail-tabs .toolbar-inner{
+    position: static;
+    padding: 0;
+}
+.discover-view-event .event-detail-tabs .social-tabs{
+    height: 30px !important;
+}
+.discover-view-event .event-detail-tabs .social-tabs .tab-link{
+    border-radius: 50px !important;
+    color: #131313;
+    font-weight: 500;
+}
+.discover-view-event .event-des-wrap p{
+    color: #333333;
+    font-size: 13px;
+    line-height: 26px;
+}
+.discover-view-event .event-detail-tabs .tabbar{
+    background: transparent !important;
+}
+.discover-view-event .swiper-container {
+	background-image: url('../assets/img/slider-bg.jpg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+.discover-view-event .swiper-image {
+	display: block;
+	width: 100%;
+	padding-bottom: 60%;
+	position: relative;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+.discover-view-event .listing-tabs {
+	margin: 5px auto 5px auto;
+	padding: 0;
+	border-top: 1px solid #E1E1E1;
+    border-bottom: 1px solid #E1E1E1;
+    display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+.discover-view-event .listing-tabs .tab-link {
+	display: flex;
+	padding: 8px 30px 10px 30px;
+	flex: 1;
+	justify-content: center;
+	align-items: center;
+	color: #4F5050;
+	border-bottom: 2px transparent solid;
+}
+.discover-view-event .listing-tabs .tab-link.tab-link-active {
+	color: #ae9159;
+	border-bottom: 2px #ae9159 solid;
+}
+
+/* For Event Detail Page End */
 
 

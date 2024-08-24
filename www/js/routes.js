@@ -58,6 +58,13 @@ var routes = [{
     componentUrl: './pages/discover.html?' + v,
   },
   {
+    path: '/discover-view-event/:id',
+    componentUrl: './pages/discover-view-event.html?' + v,
+  }, {
+    path: '/discover-view-venue/:id',
+    componentUrl: './pages/discover-view-venue.html?' + v,
+  },
+  {
     path: '/store/',
     componentUrl: './pages/store.html?' + v,
   },

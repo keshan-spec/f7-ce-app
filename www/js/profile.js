@@ -222,7 +222,6 @@ function addEmptyGridItems(count) {
 garageStore.onUpdated((garage) => {
   // clear path data
   store.dispatch('clearPathData')
-  console.log('garage', garage);
   createGarageContent(garage, '.current-vehicles-list', '.past-vehicles-list')
 })
 

@@ -49,7 +49,6 @@ followingPostsStore.onUpdated((data) => {
   totalFPostPages = data.total_pages
 
   if ((data.page == data.total_pages) || (data.new_data.length == 0)) {
-    console.log('No more following posts');
     $('.infinite-scroll-preloader.home-following-posts').hide()
     if (data.data.length == 0) {
       $('#tab-following .data').html('<p class="text-center">No posts</p>')

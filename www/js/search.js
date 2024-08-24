@@ -112,7 +112,7 @@ function renderSearchResults(searchResults) {
     // Render events
     if (searchResults.events) {
         renderList(eventsContainer, searchResults.events.data, event => `
-            <a class="item-link search-result item-content" href="#">
+            <a class="item-link search-result item-content" href="/discover-view-event/${event.id}">
                 <div class="item-media">
                     <div class="image-square image-rounded" style="background-image:url('${event.thumbnail}')"></div>
                 </div>
@@ -152,7 +152,7 @@ function renderSearchResults(searchResults) {
     // Render venues
     if (searchResults.venues) {
         renderList(venuesContainer, searchResults.venues.data, venue => `
-            <a class="item-link search-result item-content" href="#">
+            <a class="item-link search-result item-content" href="/discover-view-venue/${venue.id}">
                 <div class="item-media">
                     <div class="image-square image-rounded" style="background-image:url('${venue.thumbnail}')"></div>
                 </div>
@@ -178,7 +178,7 @@ function renderSearchResults(searchResults) {
             topContainer.appendChild(eventSubList);
 
             renderList(eventSubList, searchResults.top_results.events, event => `
-                <a class="item-link search-result item-content" href="#">
+                <a class="item-link search-result item-content" href="/discover-view-event/${event.id}">
                     <div class="item-media">
                         <div class="image-square image-rounded" style="background-image:url('${event.thumbnail}')"></div>
                     </div>
@@ -237,7 +237,7 @@ function renderSearchResults(searchResults) {
             topContainer.appendChild(venueSubList);
 
             renderList(venueSubList, searchResults.top_results.venues, venue => `
-                <a class="item-link search-result item-content" href="#">
+                <a class="item-link search-result item-content" href="/discover-view-venue/${venue.id}">
                     <div class="item-media">
                         <div class="image-square image-rounded" style="background-image:url('${venue.thumbnail}')"></div>
                     </div>

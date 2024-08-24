@@ -704,4 +704,21 @@ $(document).on('click', '.logout-button', async function (e) {
   app.views.current.router.navigate('/auth/')
 })
 
+//DISCOVER - VIEW EVENT
+$(document).on('page:init', '.page[data-name="discover-view-event"]', function (e) {
+  // Init slider
+  var swiper = new Swiper('.swiper-container', {
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+    // other parameters
+  });
+
+  var ShareListingPopup = app.popup.create({
+    el: '.share-listing-popup',
+    swipeToClose: 'to-bottom'
+  });
+});
+
 export default app

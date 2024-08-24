@@ -138,3 +138,26 @@ export const getEventCategories = async () => {
     const data = await response.json();
     return data;
 };
+
+export const maybeFavoriteEvent = async (eventId) => {
+    const user = await getSessionUser();
+
+    if (!user || !user.id) {
+        return null;
+    }
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/favourite-event`, {
+        cache: "no-cache",
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            event_id: eventId,
+            user_id: user.id
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+};
