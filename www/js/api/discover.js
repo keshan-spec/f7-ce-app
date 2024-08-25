@@ -161,3 +161,49 @@ export const maybeFavoriteEvent = async (eventId) => {
     const data = await response.json();
     return data;
 };
+
+export const maybeFollowVenue = async (venueId) => {
+    const user = await getSessionUser();
+
+    if (!user || !user.id) {
+        return null;
+    }
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/follow-venue`, {
+        cache: "no-cache",
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            venue_id: venueId,
+            user_id: user.id
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+}
+
+export const fetchVenue = async (venueId) => {
+    const user = await getSessionUser();
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/get-venue`, {
+        cache: "no-cache",
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            venue_id: venueId,
+            user_id: user?.id
+        }),
+    });
+
+    const data = await response.json();
+    if (response.status !== 200) {
+        throw new Error(data.message);
+    }
+
+    return data;
+}
