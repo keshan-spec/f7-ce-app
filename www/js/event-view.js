@@ -36,6 +36,7 @@ $(document).on('page:afterin', '.page[data-name="discover-view-event"]', async f
 
     // Populating the Event Description in "About" Tab
     mainContainer.find('#tab-about .event-des-wrap').html(`<p>${eventData.description}</p>`);
+    mainContainer.find('#tab-entry-details .event-des-wrap').html(`<p>${eventData.entry_details}</p>`);
 
     if (eventData.has_tickets) {
         // Populating the Ticket Button URL
