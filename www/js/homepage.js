@@ -38,7 +38,6 @@ postsStore.onUpdated((data) => {
     if (data.data.length == 0) {
       $('#tab-latest .data').html('<p class="text-center">No posts</p>')
     }
-    return;
   }
 
 
@@ -144,6 +143,7 @@ infiniteScrollContent.addEventListener('infinite', async function () {
 })
 
 async function displayPosts(posts, following = false) {
+
   const postsContainer = $(following ? '#tab-following .data' : '#tab-latest .data');
 
   const user = await getSessionUser()
