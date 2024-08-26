@@ -1,4 +1,4 @@
-export const API_URL = 'https://carevents.com/uk'
+export const API_URL = 'https://www.carevents.com/uk'
 
 export const sendRNMessage = ({
     page,
