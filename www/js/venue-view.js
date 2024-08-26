@@ -1,5 +1,6 @@
 import {
-    fetchVenue
+    fetchVenue,
+    maybeFollowVenue
 } from "./api/discover.js";
 import app from "./app.js";
 
@@ -51,7 +52,7 @@ $(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async f
     if (venueData.events.length > 0) {
         venueData.events.forEach(event => {
             const eventItem = `
-            <a href="#" class="card event-item">
+            <a href="/discover-view-event/${event.id}" class="card event-item">
                 <div class="event-image position-relative">
                     <div class="image-rectangle" style="background-image: url('${event.image_url}');"></div>
                     <div class="event-dates">
@@ -77,6 +78,22 @@ $(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async f
     } else {
         eventsContainer.html('<div class="text-align-center">No upcoming events</div>');
     }
+
+    // follow button
+    const is_following = venueData.is_following
+
+    if (is_following) {
+        mainContainer.find('.venue-follow-btn').text('Following')
+    }
+
+    mainContainer.find('.venue-follow-btn').on('click', async function () {
+        const followButton = $(this);
+        const isFollowing = followButton.text() === 'Following';
+
+        // change the button text
+        followButton.text(isFollowing ? 'Follow' : 'Following');
+        const response = await maybeFollowVenue(venueId)
+    });
 })
 
 $(document).on('click', '#copy-venue-link', function () {

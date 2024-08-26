@@ -5,6 +5,9 @@ import {
 import {
     getUserGarage
 } from "./api/garage.js"
+import {
+    maybeFollowUser
+} from "./api/profile.js"
 import app from "./app.js"
 import {
     createGarageContent,
@@ -26,11 +29,11 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
     var view = app.views.current
     var userId = e.detail.route.params.id
 
-    // const sessionUser = await getSessionUser()
-    // if (sessionUser.id == userId) {
-    //     $('.tab-link[href="#view-profile"]').click()
-    //     return
-    // }
+    const sessionUser = await getSessionUser()
+    if (sessionUser.id == userId) {
+        $('.tab-link[href="#view-profile"]').click()
+        return
+    }
 
     // Infinite Scroll
     const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content.view-page')
@@ -77,7 +80,6 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
         })
         return
     }
-
 
     displayProfile(data.user)
     const garage = await getUserGarage(userId)
@@ -133,4 +135,28 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
         }
     })
 
+    // Follow button
+    const followButton = $('.user-follow-btn')
+    const sessionFollowings = sessionUser.following;
+
+    if (sessionFollowings.includes(`${userId}`)) {
+        followButton.text('Following')
+    } else {
+        followButton.text('Follow')
+    }
+
+    followButton.attr('data-user-id', userId)
+})
+
+$(document).on('click', '.user-follow-btn', async function () {
+    const followButton = $(this)
+    const isFollowing = followButton.text() === 'Following'
+
+    // change the button text
+    followButton.text(isFollowing ? 'Follow' : 'Following')
+    const response = await maybeFollowUser(followButton.attr('data-user-id'))
+
+    if (response && response.success) {
+        store.dispatch('updateUserDetails')
+    }
 })

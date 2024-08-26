@@ -241,3 +241,12 @@
 .skeleton-block{
     border-radius: 12px;
 }
+
+ .btn.bg-dark {
+        background-color: #2e2e2e;
+        color: white;
+ }
+
+ .w-70 {
+    width: 70%;
+}
