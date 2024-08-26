@@ -34,6 +34,10 @@ var app = new Framework7({
     pushState: true,
     stackPages: true
   },
+  toast: {
+    closeTimeout: 3000,
+    closeButton: true,
+  },
   name: 'DriveLife',
   theme: 'ios',
   //theme: 'auto',
@@ -111,6 +115,14 @@ var app = new Framework7({
   store: store,
   routes: routes,
 })
+
+export function showToast(message, position = 'top') {
+  app.toast.create({
+    text: message,
+    position: position,
+    closeTimeout: 3000,
+  }).open()
+}
 
 async function maybeRedirectToProfile(qrCode) {
   try {

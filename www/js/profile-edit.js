@@ -11,7 +11,9 @@ import {
     updateProfileImage,
     updateSocialLinks
 } from "./api/profile.js"
-import app from "./app.js"
+import app, {
+    showToast
+} from "./app.js"
 import store from "./store.js"
 
 var $ = Dom7
@@ -110,11 +112,11 @@ $(document).on('click', '#save-details', async function () {
 
 
         if (response && response.success) {
-            app.dialog.alert('Details updated successfully', 'Success');
+            // app.dialog.alert('Details updated successfully', 'Success');
+            showToast('Details updated successfully')
             store.dispatch('updateUserDetails')
             return;
         }
-
 
         throw new Error(response.message);
     } catch (error) {
@@ -175,7 +177,9 @@ $(document).on('click', '#update_password', async function () {
         app.preloader.hide()
 
         if (response && response.success) {
-            app.dialog.alert('Password updated successfully', 'Success');
+            showToast('Password updated successfully')
+
+            // app.dialog.alert('Password updated successfully', 'Success');
             return;
         }
 
