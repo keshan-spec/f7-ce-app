@@ -259,7 +259,11 @@ $(document).on('click', '.media-post-readmore', function () {
 
 $(document).on('click', '.media-post-like i', (e) => {
   const postId = e.target.getAttribute('data-post-id')
-  togglePostLike(postId)
+
+  const parent = e.target.closest('.media-post')
+  const isSingle = parent.classList.contains('single') ? true : false
+
+  togglePostLike(postId, isSingle)
 })
 
 // media-post-edit click

@@ -94,28 +94,20 @@ function displayPost(post) {
           </div>`
 
   postsContainer.insertAdjacentHTML('beforeend', postItem)
-
-  // Add click event listener for liking a post
-  const likeButton = document.querySelector('.media-post-like.single i')
-  likeButton.addEventListener('click', (event) => {
-    const postId = event.currentTarget.getAttribute('data-post-id')
-    togglePostLike(postId, true)
-  })
-
-  $('.media-single-post-content img, .media-single-post-content video').on('touchstart', detectDoubleTapClosure((e) => {
-    const parent = e.closest('.media-post')
-    const postId = parent.getAttribute('data-post-id')
-    const isLiked = parent.getAttribute('data-is-liked') === 'true'
-
-    if (isLiked) {
-      return
-    }
-
-    togglePostLike(postId, true)
-  }), {
-    passive: false
-  })
 }
+$(document).on('touchstart', '.media-single-post-content .swiper-wrapper', detectDoubleTapClosure((e) => {
+  const parent = e.closest('.media-post')
+  const postId = parent.getAttribute('data-post-id')
+  const isLiked = parent.getAttribute('data-is-liked') === 'true'
+
+  if (isLiked) {
+    return
+  }
+
+  togglePostLike(postId, true)
+}), {
+  passive: false
+})
 
 $(document).on('page:afterin', '.page[data-name="post-view"]', async function (e) {
   var postId = e.detail.route.params.id
