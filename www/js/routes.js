@@ -1,4 +1,5 @@
-var v = Date.now()
+// var v = Date.now()
+var v = 1
 
 var routes = [{
     path: '/',

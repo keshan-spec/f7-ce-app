@@ -1,5 +1,7 @@
 import store from "./store.js"
-import app from "./app.js"
+import app, {
+  showToast
+} from "./app.js"
 import {
   addVehicleToGarage,
   deleteVehicleFromGarage,
@@ -40,7 +42,6 @@ export function displayProfile(user, container = 'profile') {
   if (!user) return
 
   const containerElem = $(`.page[data-name="${container}"]`)
-  console.log(containerElem);
 
   // Profile Head
   document.querySelector('.profile-head .profile-username').textContent = `@${user.username}`
@@ -259,7 +260,7 @@ myTagsStore.onUpdated((data) => {
   }
 })
 
-$(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
+$(document).on('page:init', '.page[data-name="profile"]', function (e) {
   // Infinite Scroll
   const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content')
 
@@ -635,7 +636,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
 
         app.preloader.hide()
 
-        app.dialog.alert('Vehicle deleted successfully')
+        showToast('Vehicle deleted successfully')
 
         await store.dispatch('getMyGarage')
         view.router.back('/profile-garage-edit/', {
@@ -645,7 +646,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
       } catch (error) {
         console.log(error);
         app.preloader.hide()
-        app.dialog.alert('Failed to delete vehicle')
+        showToast('Failed to delete vehicle')
       }
     })
   })
@@ -676,12 +677,12 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
   const cover_image = form.find('input[name="vehicle_image"]').prop('files')[0]
 
   if (!make || make === "0") {
-    app.dialog.alert('Please select a vehicle make')
+    showToast('Please select a vehicle make')
     return
   }
 
   if (!model) {
-    app.dialog.alert('Please enter a vehicle model')
+    showToast('Please enter a vehicle model')
     return
   }
 
@@ -691,13 +692,13 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
   // }
 
   if (!owned_from) {
-    app.dialog.alert('Please enter the date you owned the vehicle from')
+    showToast('Please enter the date you owned the vehicle from')
     return
   }
 
   // if primary_car is past, owned_to is required
   if (primary_car === "past" && !owned_to) {
-    app.dialog.alert('Please enter the date you owned the vehicle to')
+    showToast('Please enter the date you owned the vehicle to')
     return
   }
 
@@ -738,7 +739,7 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
     }
 
     app.preloader.hide()
-    app.dialog.alert('Vehicle updated successfully')
+    showToast('Vehicle updated successfully')
 
     // refresh garage
     await store.dispatch('getMyGarage')
@@ -749,7 +750,7 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
   } catch (error) {
     console.log(error);
     app.preloader.hide()
-    app.dialog.alert('Failed to update vehicle')
+    showToast('Failed to update vehicle')
   }
 })
 
