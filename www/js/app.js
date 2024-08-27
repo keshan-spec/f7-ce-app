@@ -83,8 +83,8 @@ var app = new Framework7({
     pageInit: function (page) {
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
-          if (data && data.id) {
-            displayProfile(data)
+          if (data && data.id && !data.external_refresh) {
+            displayProfile(data, 'profile')
             store.dispatch('getMyGarage')
           }
 
@@ -116,7 +116,7 @@ var app = new Framework7({
   routes: routes,
 })
 
-export function showToast(message, position = 'top') {
+export function showToast(message, position = 'bottom') {
   app.toast.create({
     text: message,
     position: position,
@@ -146,28 +146,24 @@ async function maybeRedirectToProfile(qrCode) {
 }
 
 // //RESET TAB NAVIGATION ON CLICK
-// $(document).on('click', '#app > .views > .toolbar .tab-link', function () {
-//   var $link = $(this).attr('href');
-//   var $viewEl = $($link);
+$(document).on('click', '#app > .views > .toolbar .tab-link', function () {
+  var $link = $(this).attr('href');
+  var $viewEl = $($link);
 
-//   if ($(this).hasClass('tab-link-active')) {
+  if ($(this).hasClass('tab-link-active')) {
+    var view = app.views.get($viewEl[0]); // Pass the DOM element, not a Dom7 object
 
-//     var view = app.views.get($viewEl[0]); // Pass the DOM element, not a Dom7 object
+    if (view.history.length > 1) {
 
-//     if (view.history.length > 1) {
-
-//       view.router.back({
-//         url: view.history[0],
-//         history: true, // Update the history stack correctly
-//         animate: true, // Optional: enable animation if you want
-//         reloadCurrent: true // Optional: force reload of the current page if needed
-
-//       });
-
-//     }
-//   }
-
-// });
+      view.router.back({
+        url: view.history[0],
+        history: true, // Update the history stack correctly
+        animate: true, // Optional: enable animation if you want
+        reloadCurrent: true // Optional: force reload of the current page if needed
+      });
+    }
+  }
+});
 
 // Function to parse query parameters from the URL
 function getQueryParameter(name) {
@@ -211,7 +207,6 @@ export function onBackKeyDown() {
 }
 
 window.onAppBackKey = onBackKeyDown
-
 
 userStore.onUpdated((data) => {
   store.dispatch('getPosts')

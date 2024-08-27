@@ -36,8 +36,12 @@ var currentGaragePostPage = 1
 var totalGarageTagPages = 1
 var currentGarageTagPage = 1
 
-export function displayProfile(user) {
+export function displayProfile(user, container = 'profile') {
   if (!user) return
+
+  const containerElem = $(`.page[data-name="${container}"]`)
+  console.log(containerElem);
+
   // Profile Head
   document.querySelector('.profile-head .profile-username').textContent = `@${user.username}`
   document.querySelector('.profile-head .profile-name').textContent = `${user.first_name} ${user.last_name}`

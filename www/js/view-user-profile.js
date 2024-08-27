@@ -81,7 +81,7 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
         return
     }
 
-    displayProfile(data.user)
+    displayProfile(data.user, 'profile-view')
     const garage = await getUserGarage(userId)
     if (garage) {
         createGarageContent(garage, '.current-vehicles-list', '.past-vehicles-list')
@@ -157,6 +157,8 @@ $(document).on('click', '.user-follow-btn', async function () {
     const response = await maybeFollowUser(followButton.attr('data-user-id'))
 
     if (response && response.success) {
-        store.dispatch('updateUserDetails')
+        store.dispatch('updateUserDetails', {
+            external: true
+        })
     }
 })

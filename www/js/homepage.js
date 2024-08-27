@@ -37,6 +37,7 @@ postsStore.onUpdated((data) => {
 
     if (data.data.length == 0) {
       $('#tab-latest .data').html('<p class="text-center">No posts</p>')
+      return;
     }
   }
 
@@ -62,14 +63,15 @@ followingPostsStore.onUpdated((data) => {
 // Pull to refresh content
 const ptrContent = document.querySelector('.ptr-content')
 ptrContent.addEventListener('ptr:refresh', async function (e) {
-  const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
+  // const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
   const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
-  const currentPage = activeTab === 'following' ? currentFollowingPostsPage : currentPostsPage
+  // const currentPage = activeTab === 'following' ? currentFollowingPostsPage : currentPostsPage
 
-  if (currentPage >= totalPages) {
-    app.infiniteScroll.destroy(infiniteScrollContent)
-    return
-  }
+  // if (currentPage >= totalPages) {
+  //   app.infiniteScroll.destroy(infiniteScrollContent)
+  //   app.ptr.done()
+  //   return
+  // }
 
   if (isFetchingPosts) return
 
@@ -81,7 +83,7 @@ ptrContent.addEventListener('ptr:refresh', async function (e) {
     currentPostsPage++
   }
 
-  await store.dispatch(storeName, currentPage)
+  await store.dispatch(storeName, 1)
 
   isFetchingPosts = false
   app.ptr.done()

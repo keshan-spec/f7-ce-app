@@ -454,6 +454,8 @@ const store = createStore({
     },
     async updateUserDetails({
       state
+    }, {
+      external = false
     }) {
       const token = window.localStorage.getItem('token')
 
@@ -472,7 +474,8 @@ const store = createStore({
         window.localStorage.setItem('token', token)
         state.user = {
           ...userDetails.user,
-          refreshed: true
+          refreshed: true,
+          external_refresh: external,
         }
       } catch (error) {
         console.error('Login failed', error)
