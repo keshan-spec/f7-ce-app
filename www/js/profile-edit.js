@@ -33,7 +33,7 @@ $(document).on('page:init', '.page[data-name="profile-edit-mydetails"]', async f
     document.querySelector('input[name="email"]').value = user.email || '';
     document.querySelector('input[name="first_name"]').value = user.first_name || '';
     document.querySelector('input[name="last_name"]').value = user.last_name || '';
-    document.querySelector('input[name="tel_no"]').value = user.billing_info.phone || '';
+    document.querySelector('input[name="tel_no"]').value = user.billing_info?.phone || '';
 })
 
 $(document).on('click', '#save-details', async function () {
@@ -420,7 +420,7 @@ $(document).on('page:init', '.page[data-name="profile-edit-socials"]', async fun
     // .social-other-links ul
     const externalLinksContainer = $('.social-other-links ul')[0];
 
-    externalLinks.external_links.forEach(linkObj => {
+    externalLinks.external_links?.forEach(linkObj => {
         const listItem = document.createElement('li');
 
 
