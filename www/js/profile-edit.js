@@ -17,10 +17,11 @@ import app, {
 import store from "./store.js"
 
 var $ = Dom7
-var view = app.views.current
 
 // --------------- Edit Profile Page ---------------
 $(document).on('page:init', '.page[data-name="profile-edit-mydetails"]', async function (e) {
+    var view = app.views.current
+
     const user = await getSessionUser()
 
     if (!user) {
@@ -36,6 +37,8 @@ $(document).on('page:init', '.page[data-name="profile-edit-mydetails"]', async f
 })
 
 $(document).on('click', '#save-details', async function () {
+    var view = app.views.current
+
     const user = await getSessionUser()
 
     // Get the values from the input fields
@@ -46,30 +49,30 @@ $(document).on('click', '#save-details', async function () {
 
     // Validate the input fields
     if (firstName === '') {
-        app.dialog.alert('Please enter your first name', 'Error');
+        showToast('Please enter your first name', 'Error');
         return;
     }
 
     if (lastName === '') {
-        app.dialog.alert('Please enter your last name', 'Error');
+        showToast('Please enter your last name', 'Error');
         return;
     }
 
     if (email === '') {
-        app.dialog.alert('Please enter your email', 'Error');
+        showToast('Please enter your email', 'Error');
         return;
     }
 
     // Simple email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
-        app.dialog.alert('Please enter a valid email address', 'Error');
+        showToast('Please enter a valid email address', 'Error');
         return;
     }
 
     // // phone validation
     // if (telNo === '') {
-    //     app.dialog.alert('Please enter a valid phone number', 'Error');
+    //     showToast('Please enter a valid phone number', 'Error');
     //     return
     // }
 
@@ -112,8 +115,9 @@ $(document).on('click', '#save-details', async function () {
 
 
         if (response && response.success) {
-            // app.dialog.alert('Details updated successfully', 'Success');
+            // showToast('Details updated successfully', 'Success');
             showToast('Details updated successfully')
+            view.router.navigate('/profile/')
             store.dispatch('updateUserDetails')
             return;
         }
@@ -121,51 +125,53 @@ $(document).on('click', '#save-details', async function () {
         throw new Error(response.message);
     } catch (error) {
         app.preloader.hide()
-        app.dialog.alert(error.message, 'Error');
+        showToast(error.message, 'Error');
     }
 });
 
 $(document).on('click', '#update_password', async function () {
+    var view = app.views.current
+
     // Get the values from the password input fields
     const password = $('input[name="password"]').val().trim();
     const current_password = $('input[name="current_password"]').val().trim();
     const confirmPassword = $('input[name="confirm_password"]').val().trim();
 
     if (current_password === '') {
-        app.dialog.alert('Please enter your current password', 'Error');
+        showToast('Please enter your current password', 'Error');
         return
     }
 
     if (password.length < 8) {
-        app.dialog.alert('Password must be at least 8 characters long.')
+        showToast('Password must be at least 8 characters long.')
         return
     }
 
     // Check if password contains at least one lowercase letter
     if (!/[a-z]/.test(password)) {
-        app.dialog.alert('Password must contain at least one lowercase letter.')
+        showToast('Password must contain at least one lowercase letter.')
         return
     }
 
     // Check if password contains at least one uppercase letter
     if (!/[A-Z]/.test(password)) {
-        app.dialog.alert('Password must contain at least one uppercase letter.')
+        showToast('Password must contain at least one uppercase letter.')
         return
     }
 
     // Check if password contains at least one number
     if (!/\d/.test(password)) {
-        app.dialog.alert('Password must contain at least one number.')
+        showToast('Password must contain at least one number.')
         return
     }
 
     if (confirmPassword === '') {
-        app.dialog.alert('Please confirm your password', 'Error');
+        showToast('Please confirm your password', 'Error');
         return;
     }
 
     if (password !== confirmPassword) {
-        app.dialog.alert('Passwords do not match', 'Error');
+        showToast('Passwords do not match', 'Error');
         return;
     }
 
@@ -178,15 +184,14 @@ $(document).on('click', '#update_password', async function () {
 
         if (response && response.success) {
             showToast('Password updated successfully')
-
-            // app.dialog.alert('Password updated successfully', 'Success');
+            view.router.navigate('/profile/')
             return;
         }
 
         throw new Error(response.message);
     } catch (error) {
         app.preloader.hide()
-        app.dialog.alert(error.message || 'Failed to update password', 'Error');
+        showToast(error.message || 'Failed to update password', 'Error');
     }
 })
 // --------------- End Edit Profile Page ---------------
@@ -194,6 +199,8 @@ $(document).on('click', '#update_password', async function () {
 
 // --------------- Edit Username Page ---------------
 $(document).on('page:init', '.page[data-name="profile-edit-username"]', async function (e) {
+    var view = app.views.current
+
     const user = await getSessionUser()
 
     if (!user) {
@@ -212,6 +219,8 @@ $(document).on('page:init', '.page[data-name="profile-edit-username"]', async fu
 })
 
 $(document).on('click', '#save-username', async function () {
+    var view = app.views.current
+
     const user = await getSessionUser()
 
     if (!user.can_update_username) {
@@ -221,20 +230,20 @@ $(document).on('click', '#save-username', async function () {
     const username = $('input[name="username"]').val()
 
     if (username === '') {
-        app.dialog.alert('Please enter a username', 'Error')
+        showToast('Please enter a username', 'Error')
         return
     }
 
     // username can only have letters, numbers, and underscores
     var usernamePattern = /^[a-zA-Z0-9_]+$/
     if (!usernamePattern.test(username)) {
-        app.dialog.alert('Username can only contain letters, numbers, and underscores')
+        showToast('Username can only contain letters, numbers, and underscores')
         return
     }
 
     // username must be at least 3 characters long
     if (username.length < 3) {
-        app.dialog.alert('Username must be at least 3 characters long')
+        showToast('Username must be at least 3 characters long')
         return
     }
 
@@ -245,10 +254,12 @@ $(document).on('click', '#save-username', async function () {
     app.preloader.hide()
 
     if (response && response.success) {
-        app.dialog.alert('Username updated successfully', 'Success')
+        showToast('Username updated successfully', 'Success')
+        view.router.navigate('/profile/')
+
         store.dispatch('updateUserDetails')
     } else {
-        app.dialog.alert('Failed to update username', 'Error')
+        showToast('Failed to update username', 'Error')
     }
 })
 // --------------- End Edit Username Page ---------------
@@ -256,8 +267,9 @@ $(document).on('click', '#save-username', async function () {
 
 // --------------- Edit Profile images Page ---------------
 $(document).on('page:init', '.page[data-name="profile-edit-images"]', async function (e) {
+    var view = app.views.current
+
     const user = await getSessionUser()
-    console.log(user);
 
     if (!user) {
         view.router.navigate('/login')
@@ -279,6 +291,7 @@ $(document).on('page:init', '.page[data-name="profile-edit-images"]', async func
 })
 
 $(document).on('click', '#save-profile-images', async function () {
+    var view = app.views.current
 
     const cover_image = $('input[name="cover_image"]').prop('files')[0]
     const profile_image = $('input[name="profile_image"]').prop('files')[0]
@@ -330,7 +343,9 @@ $(document).on('click', '#save-profile-images', async function () {
         app.preloader.hide()
 
         if (responses.every(response => response && response.success)) {
-            app.dialog.alert('Images updated successfully', 'Success')
+            showToast('Images updated successfully', 'Success')
+            view.router.navigate('/profile/')
+
             store.dispatch('updateUserDetails')
             return
         }
@@ -339,7 +354,7 @@ $(document).on('click', '#save-profile-images', async function () {
             throw new Error('Failed to update images')
         }
     } catch (error) {
-        app.dialog.alert('Failed to update images', 'Error')
+        showToast('Failed to update images', 'Error')
     }
 })
 
@@ -383,6 +398,8 @@ $(document).on('change', 'input[name="profile_image"]', function (e) {
 
 // --------------- Edit Socials Page ---------------
 $(document).on('page:init', '.page[data-name="profile-edit-socials"]', async function (e) {
+    var view = app.views.current
+
     const user = await getSessionUser()
 
     if (!user) {
@@ -423,24 +440,26 @@ $(document).on('page:init', '.page[data-name="profile-edit-socials"]', async fun
 
 // Add event listener for the Save button
 $(document).on('click', '#add-link-btn', async function () {
+    var view = app.views.current
+
     const linkTitle = $('input[name="custom_link_title"]').val();
     const linkUrl = $('input[name="custom_link_url"]').val();
 
     // Validate the inputs
     if (linkTitle === '') {
-        app.dialog.alert('Please enter a link title.', 'Error');
+        showToast('Please enter a link title.', 'Error');
         return;
     }
 
     if (linkUrl === '') {
-        app.dialog.alert('Please enter a link URL.', 'Error');
+        showToast('Please enter a link URL.', 'Error');
         return;
     }
 
     // Simple URL validation (basic check)
     const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([/\w \.-]*)*\/?$/;
     if (!urlPattern.test(linkUrl)) {
-        app.dialog.alert('Please enter a valid URL.', 'Error');
+        showToast('Please enter a valid URL.', 'Error');
         return;
     }
 
@@ -460,7 +479,7 @@ $(document).on('click', '#add-link-btn', async function () {
     })
 
     if (response && response.success) {
-        app.dialog.alert('Link added successfully', 'Success');
+        showToast('Link added successfully', 'Success');
 
         // Add the new link to the list
         const listItem = document.createElement('li');
@@ -484,6 +503,8 @@ $(document).on('click', '#add-link-btn', async function () {
 
 // Save social links
 $(document).on('click', '#save-profile-socials', async function () {
+    var view = app.views.current
+
     const user = await getSessionUser()
 
     const instagram = $('input[name="social_instagram"]').val();
@@ -522,13 +543,15 @@ $(document).on('click', '#save-profile-socials', async function () {
 
     const response = await updateSocialLinks(links);
 
+
     app.preloader.hide()
 
     if (response && response.success) {
-        app.dialog.alert('Social links updated successfully', 'Success');
+        showToast('Social links updated successfully', 'Success');
         store.dispatch('updateUserDetails')
+        view.router.navigate('/profile/')
     } else {
-        app.dialog.alert('Failed to update social links', 'Error');
+        showToast('Failed to update social links', 'Error');
     }
 })
 
@@ -545,13 +568,13 @@ $(document).on('click', '.delete-external-link', async function (e) {
         app.preloader.hide()
 
         if (response) {
-            app.dialog.alert('Link deleted successfully', 'Success')
+            showToast('Link deleted successfully', 'Success')
             // remove the link from the list
             e.target.closest('.item-link').remove();
             store.dispatch('updateUserDetails')
 
         } else {
-            app.dialog.alert('Failed to delete link', 'Error')
+            showToast('Failed to delete link', 'Error')
         }
     })
 })

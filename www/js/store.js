@@ -454,9 +454,7 @@ const store = createStore({
     },
     async updateUserDetails({
       state
-    }, {
-      external = false
-    }) {
+    }, external = false) {
       const token = window.localStorage.getItem('token')
 
       if (!token) {

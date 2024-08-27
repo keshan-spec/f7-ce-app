@@ -116,7 +116,7 @@ var app = new Framework7({
   routes: routes,
 })
 
-export function showToast(message, position = 'bottom') {
+export function showToast(message, type = 'Message', position = 'bottom') {
   app.toast.create({
     text: message,
     position: position,
