@@ -582,6 +582,7 @@ $(document).on('click', '.comment-reply', function () {
 })
 
 $(document).on('page:afterin', '.page[data-name="home"]', function (e) {
+  console.log('Home page after in');
   store.dispatch('getPosts', 1)
   store.dispatch('getFollowingPosts', 1)
 })
