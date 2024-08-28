@@ -207,3 +207,33 @@ export const fetchVenue = async (venueId) => {
 
     return data;
 }
+
+
+export const fetchTrendingUsers = async (page) => {
+    try {
+        const user = await getSessionUser();
+
+        if (!user) {
+            throw new Error('Session user not found');
+        }
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/popular-users-cars`, {
+            method: "POST",
+            cache: "force-cache",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                page,
+                per_page: 10,
+            }),
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};

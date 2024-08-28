@@ -9,8 +9,6 @@ var $ = Dom7;
 //DISCOVER - VIEW EVENT
 $(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async function (e) {
     var venueId = e.detail.route.params.id
-    console.log(venueId);
-
     const venueData = await fetchVenue(venueId);
     console.log(venueData);
 
@@ -51,18 +49,30 @@ $(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async f
 
     if (venueData.events.length > 0) {
         venueData.events.forEach(event => {
+            const startDate = new Date(event.start_date);
+            const endDate = new Date(event.end_date);
+
+            const startMonth = startDate.toLocaleString('default', {
+                month: 'short'
+            });
+            const startDay = startDate.getDate();
+            const endMonth = endDate.toLocaleString('default', {
+                month: 'short'
+            });
+            const endDay = endDate.getDate();
+
             const eventItem = `
             <a href="/discover-view-event/${event.id}" class="card event-item">
                 <div class="event-image position-relative">
-                    <div class="image-rectangle" style="background-image: url('${event.image_url}');"></div>
+                    <div class="image-rectangle" style="background-image: url('${event.thumbnail}');"></div>
                     <div class="event-dates">
                         <div class="event-date-item">
-                            <p>${event.start_date_month}</p>
-                            <h5>${event.start_date_day}</h5>
+                            <p>${startMonth}</p>
+                            <h5>${startDay}</h5>
                         </div>
                         <div class="event-date-item">
-                            <p>${event.end_date_month}</p>
-                            <h5>${event.end_date_day}</h5>
+                            <p>${endMonth}</p>
+                            <h5>${endDay}</h5>
                         </div>
                     </div>
                 </div>

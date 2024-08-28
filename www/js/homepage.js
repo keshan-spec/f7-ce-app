@@ -54,9 +54,8 @@ followingPostsStore.onUpdated((data) => {
     $('.infinite-scroll-preloader.home-following-posts').hide()
     if (data.data.length == 0) {
       $('#tab-following .data').html('<p class="text-center">No posts</p>')
+      return;
     }
-
-    return;
   }
 
   displayPosts(data.new_data, true)

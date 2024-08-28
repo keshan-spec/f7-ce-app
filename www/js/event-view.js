@@ -66,6 +66,12 @@ $(document).on('page:afterin', '.page[data-name="discover-view-event"]', async f
         swiperWrapper.append(slide);
     });
 
+    mainContainer.find('.event-des-wrap a').on('click', function (e) {
+        console.log('clicked');
+        e.preventDefault();
+        window.open($(this).attr('href'), '_blank');
+    });
+
     $('#copy-event-link').attr('data-event-id', eventId)
 
     // set the event id to the favourite button

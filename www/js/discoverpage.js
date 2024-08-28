@@ -7,13 +7,16 @@ var trendingVenuesStore = store.getters.getTrendingVenues;
 var eventCategories = store.getters.getEventCategories;
 var filteredEventsStore = store.getters.getFilteredEvents;
 var filteredVenuesStore = store.getters.getFilteredVenues;
+var trendingUsersStore = store.getters.getTrendingUsers;
 
 var isFetchingPosts = false
 var currentEventsPage = 1
 var currentVenuesPage = 1
+var currentUsersPage = 1
 
 var totalEventPages = 1
 var totalVenuesPages = 1
+var totalUsersPages = 1
 
 var autocomplete;
 var filters = {};
@@ -138,6 +141,43 @@ function populateVenueCard(data = [], isSwiper = true) {
 
 }
 
+function populateUsersCard(data = []) {
+    const tabContainer = document.querySelector('#users-vehicles-tab');
+
+    data.forEach(user => {
+        let linkTo = user.type === 'user' ? `/profile-view/${user.id}` : `/profile-garage-vehicle-view/${user.id}`;
+        let title;
+
+        if (user.type === 'user') {
+            title = user.name;
+        }
+
+        if (user.type === 'vehicle') {
+            const userName = user.owner.name;
+            const vehicleName = user.title;
+
+            title = `<b>${vehicleName}</b> by ${userName}`;
+        }
+
+
+        const card = `
+        <li>
+            <a class="item-link search-result item-content" href="${linkTo}">
+                <div class="item-media">
+                    <div class="image-square image-rounded"
+                        style="background-image:url('${user.thumbnail}')">
+                    </div>
+                </div>
+                <div class="item-inner">
+                    <div class="item-title">${title}</div>
+                </div>
+            </a>
+        </li>
+        `;
+        tabContainer.innerHTML += card;
+    });
+}
+
 // Event listener for the submit button
 $(document).on('click', '.apply-filters', function (e) {
     const dateFilters = document.querySelector('#date-filters ul');
@@ -250,7 +290,6 @@ trendingVenuesStore.onUpdated((data) => {
 });
 
 trendingEventsStore.onUpdated((data) => {
-
     totalEventPages = data.total_pages
 
     populateEventCard(data.data);
@@ -276,6 +315,28 @@ filteredEventsStore.onUpdated((data) => {
     }
 
     populateEventCard(data.new_data, false);
+});
+
+trendingUsersStore.onUpdated((data) => {
+    const tabContainer = document.querySelector('#users-vehicles-tab');
+    if (!data || data.data.length === 0) {
+        tabContainer.innerHTML = `
+            <div class="no-events">
+                <h3>No trending users found for you</h3>
+            </div>
+        `;
+        return
+    }
+
+    totalUsersPages = data.total_pages
+
+    if ((totalUsersPages == data.page) || (totalUsersPages == 0) || (data.new_data.length < 10)) {
+        $('.infinite-scroll-preloader.users-tab').hide()
+    } else {
+        $('.infinite-scroll-preloader.users-tab').show()
+    }
+
+    populateUsersCard(data.new_data);
 });
 
 filteredVenuesStore.onUpdated((data) => {

@@ -8,6 +8,7 @@ import {
 } from './api/consts.js'
 import {
   fetchTrendingEvents,
+  fetchTrendingUsers,
   fetchTrendingVenues,
   getEventCategories
 } from './api/discover.js'
@@ -47,6 +48,14 @@ const DEFAULT_SEARCH_RESULTS = {
     venues: [],
   },
   success: false,
+}
+
+const DEFAULT_PAGINATED_DATA = {
+  data: [],
+  new_data: [],
+  total_pages: 0,
+  page: 1,
+  limit: 10,
 }
 
 const store = createStore({
@@ -121,16 +130,17 @@ const store = createStore({
       page: 1,
       limit: 10,
     },
-    discoverSearchData: {
-      data: [],
-      total_pages: 0,
-      page: 1,
-      limit: 10,
-    },
+    discoverSearchData: DEFAULT_SEARCH_RESULTS,
+    trendingUsers: DEFAULT_PAGINATED_DATA,
     // Search results
     searchResults: DEFAULT_SEARCH_RESULTS,
   },
   getters: {
+    getTrendingUsers({
+      state
+    }) {
+      return state.trendingUsers
+    },
     getSearchResults({
       state
     }) {
@@ -272,6 +282,35 @@ const store = createStore({
       } catch (error) {
         console.error('Failed to filter events', error)
         state.filteredEvents = {
+          new_data: [],
+          data: [],
+          total_pages: 0,
+          page: 1,
+          limit: 10,
+        }
+      }
+    },
+    async filterTrendingUsers({
+      state
+    }, page = 1) {
+      try {
+        const response = await fetchTrendingUsers(page)
+
+        const data = {
+          new_data: response.data,
+          data: [
+            ...state.trendingUsers.data,
+            ...response.data,
+          ],
+          total_pages: response.total_pages,
+          page: page,
+          limit: response.limit,
+        }
+
+        state.trendingUsers = data
+      } catch (error) {
+        console.log('Failed to fetch trending users', error);
+        state.trendingUsers = {
           new_data: [],
           data: [],
           total_pages: 0,

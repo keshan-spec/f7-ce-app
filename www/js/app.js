@@ -100,6 +100,7 @@ var app = new Framework7({
         userStore.onUpdated((data) => {
           store.dispatch('getTrendingEvents')
           store.dispatch('getTrendingVenues')
+          store.dispatch('filterTrendingUsers')
           store.dispatch('fetchEventCategories')
         })
       }
@@ -295,12 +296,12 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
   var password = $(this).find('input[name="password"]').val()
 
   if (!username) {
-    app.dialog.alert('Username is required')
+    showToast('Username is required')
     return
   }
 
   if (!password) {
-    app.dialog.alert('Password is required')
+    showToast('Password is required')
     return
   }
 
@@ -320,7 +321,7 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
     }
 
     if (response.success) {
-      app.dialog.alert('Login successful')
+      showToast('Login successful')
       await store.dispatch('login', {
         token: response.token
       })
@@ -358,77 +359,77 @@ $(document).on('submit', 'form#sign-up-step1', async function (e) {
   var agreePrivacy = $(this).find('input[name="agree_privacy"]').is(':checked')
 
   if (!firstName) {
-    app.dialog.alert('First name is required')
+    showToast('First name is required')
     return
   }
 
   if (!lastName) {
-    app.dialog.alert('Last name is required')
+    showToast('Last name is required')
     return
   }
 
   if (!email) {
-    app.dialog.alert('Email is required')
+    showToast('Email is required')
     return
   }
 
   var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailPattern.test(email)) {
-    app.dialog.alert('Please enter a valid email address')
+    showToast('Please enter a valid email address')
     return
   }
 
   if (!password) {
-    app.dialog.alert('Password is required')
+    showToast('Password is required')
     return
   }
 
   // Check if password has at least 8 characters
   if (password.length < 8) {
-    app.dialog.alert('Password must be at least 8 characters long.')
+    showToast('Password must be at least 8 characters long.')
     return
   }
 
   // Check if password contains at least one lowercase letter
   if (!/[a-z]/.test(password)) {
-    app.dialog.alert('Password must contain at least one lowercase letter.')
+    showToast('Password must contain at least one lowercase letter.')
     return
   }
 
   // Check if password contains at least one uppercase letter
   if (!/[A-Z]/.test(password)) {
-    app.dialog.alert('Password must contain at least one uppercase letter.')
+    showToast('Password must contain at least one uppercase letter.')
     return
   }
 
   // Check if password contains at least one number
   if (!/\d/.test(password)) {
-    app.dialog.alert('Password must contain at least one number.')
+    showToast('Password must contain at least one number.')
     return
   }
 
   if (password.length < 8) {
-    app.dialog.alert('Password must be at least 8 characters long')
+    showToast('Password must be at least 8 characters long')
     return
   }
 
   if (!confirmPassword) {
-    app.dialog.alert('Please confirm your password')
+    showToast('Please confirm your password')
     return
   }
 
   if (password !== confirmPassword) {
-    app.dialog.alert('Passwords do not match')
+    showToast('Passwords do not match')
     return
   }
 
   if (!agreeTerms) {
-    app.dialog.alert('You must agree to the Terms & Conditions')
+    showToast('You must agree to the Terms & Conditions')
     return
   }
 
   if (!agreePrivacy) {
-    app.dialog.alert('You must agree to the Privacy Policy')
+    showToast('You must agree to the Privacy Policy')
     return
   }
 
@@ -475,20 +476,20 @@ $(document).on('submit', 'form#sign-up-step2', async function (e) {
   var username = $(this).find('input[name="username"]').val().trim()
 
   if (!username) {
-    app.dialog.alert('Username is required')
+    showToast('Username is required')
     return
   }
 
   // username can only have letters, numbers, and underscores
   var usernamePattern = /^[a-zA-Z0-9_]+$/
   if (!usernamePattern.test(username)) {
-    app.dialog.alert('Username can only contain letters, numbers, and underscores')
+    showToast('Username can only contain letters, numbers, and underscores')
     return
   }
 
   // username must be at least 3 characters long
   if (username.length < 3) {
-    app.dialog.alert('Username must be at least 3 characters long')
+    showToast('Username must be at least 3 characters long')
     return
   }
 
@@ -541,7 +542,7 @@ $(document).on('submit', '#car-selection-form', async function (e) {
 
   // Check if at least one checkbox is selected
   if (selectedCarTypes.length === 0) {
-    app.dialog.alert('Please select at least one car type')
+    showToast('Please select at least one car type')
     return
   }
 
@@ -580,7 +581,7 @@ $(document).on('submit', '#interest-selection-form', async function (e) {
 
   // Check if at least one checkbox is selected
   if (selectedInterests.length === 0) {
-    app.dialog.alert('Please select at least one interest')
+    showToast('Please select at least one interest')
     return
   }
 
