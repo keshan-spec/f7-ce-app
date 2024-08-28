@@ -156,7 +156,7 @@ function populateUsersCard(data = []) {
             const userName = user.owner.name;
             const vehicleName = user.title;
 
-            title = `<b>${vehicleName}</b> by ${userName}`;
+            title = `${vehicleName} <br/> Owner ${userName}`;
         }
 
 
