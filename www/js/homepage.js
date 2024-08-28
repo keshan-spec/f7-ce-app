@@ -28,9 +28,11 @@ var totalFPostPages = 0
 // Infinite Scroll Event
 var isFetchingPosts = false
 var activeTab = 'latest'
+var refreshed = false
 
 postsStore.onUpdated((data) => {
   totalPostPages = data.total_pages
+
 
   if ((data.page == data.total_pages) || (data.new_data.length == 0)) {
     $('.infinite-scroll-preloader.home-posts').hide()
@@ -63,6 +65,7 @@ followingPostsStore.onUpdated((data) => {
 // Pull to refresh content
 const ptrContent = document.querySelector('.ptr-content')
 ptrContent.addEventListener('ptr:refresh', async function (e) {
+  refreshed = true
   // const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
   const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
   // const currentPage = activeTab === 'following' ? currentFollowingPostsPage : currentPostsPage
@@ -145,8 +148,12 @@ infiniteScrollContent.addEventListener('infinite', async function () {
 })
 
 async function displayPosts(posts, following = false) {
-
   const postsContainer = $(following ? '#tab-following .data' : '#tab-latest .data');
+
+  if (refreshed) {
+    postsContainer.html('')
+    refreshed = false
+  }
 
   const user = await getSessionUser()
 
