@@ -72,6 +72,18 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
         }
     })
 
+    // Follow button
+    const followButton = $('.user-follow-btn')
+    const sessionFollowings = sessionUser.following;
+
+    if (sessionFollowings.includes(`${userId}`)) {
+        followButton.text('Following')
+    } else {
+        followButton.text('Follow')
+    }
+
+    followButton.attr('data-user-id', userId)
+
     const data = await getUserById(userId)
     if (!data || data.error) {
         app.dialog.alert('User not found', 'Error')
@@ -80,6 +92,7 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
         })
         return
     }
+
 
     displayProfile(data.user, 'profile-view')
     const garage = await getUserGarage(userId)
@@ -137,18 +150,6 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
             }
         }
     })
-
-    // Follow button
-    const followButton = $('.user-follow-btn')
-    const sessionFollowings = sessionUser.following;
-
-    if (sessionFollowings.includes(`${userId}`)) {
-        followButton.text('Following')
-    } else {
-        followButton.text('Follow')
-    }
-
-    followButton.attr('data-user-id', userId)
 })
 
 $(document).on('click', '.user-follow-btn', async function () {
