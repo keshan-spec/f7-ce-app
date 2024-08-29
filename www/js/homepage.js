@@ -43,7 +43,6 @@ postsStore.onUpdated((data) => {
     }
   }
 
-
   displayPosts(data.new_data)
 })
 
@@ -62,8 +61,10 @@ followingPostsStore.onUpdated((data) => {
 })
 
 // Pull to refresh content
-const ptrContent = document.querySelector('.ptr-content')
-ptrContent.addEventListener('ptr:refresh', async function (e) {
+// const ptrContent = document.querySelector('.ptr-content')
+const ptrContent = app.ptr.get('.ptr-content')
+// ptrContent.addEventListener('ptr:refresh', async function (e) {
+ptrContent.on('refresh', async function () {
   refreshed = true
   // const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
   const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'

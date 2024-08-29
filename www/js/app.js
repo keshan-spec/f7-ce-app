@@ -62,7 +62,7 @@ var app = new Framework7({
 
       setTimeout(() => {
         $('.init-loader').hide()
-      }, 200)
+      }, 300)
 
       const deeplink = getQueryParameter('deeplink')
       if (deeplink) {
