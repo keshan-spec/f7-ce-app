@@ -213,6 +213,30 @@ userStore.onUpdated((data) => {
   store.dispatch('getPosts')
 })
 
+$(document).on('click', '.footer-links', function () {
+  var view = app.views.current
+
+  console.log(view.history);
+
+  if (view.history.length > 1) {
+    const authRoutes = ['auth', 'login', 'signup-step1', 'signup-step2', 'signup-step3', 'signup-step4', 'signup-complete'];
+
+    // Check if any item in the view.history array contains any of the authRoutes
+    if (view.history.some(historyItem => authRoutes.some(route => historyItem.includes(`/${route}/`)))) {
+      app.views.main.router.navigate('/');
+      return;
+    }
+
+
+    view.router.back({
+      url: view.history[0],
+      history: true, // Update the history stack correctly
+      animate: true, // Optional: enable animation if you want
+      reloadCurrent: true // Optional: force reload of the current page if needed
+    });
+  }
+})
+
 // Action Sheet with Grid Layout
 var actionSheet = app.actions.create({
   grid: true,

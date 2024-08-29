@@ -38,64 +38,144 @@ var currentGaragePostPage = 1
 var totalGarageTagPages = 1
 var currentGarageTagPage = 1
 
-export function displayProfile(user, container = 'profile') {
-  if (!user) return
+// export function displayProfile(user, container = 'profile') {
+//   if (!user) return
 
-  const containerElem = $(`.page[data-name="${container}"]`)
+//   const containerElem = $(`.page[data-name="${container}"]`)
+
+//   // Profile Head
+//   document.querySelector('.profile-head .profile-username').textContent = `@${user.username}`
+//   document.querySelector('.profile-head .profile-name').textContent = `${user.first_name} ${user.last_name}`
+
+//   // Profile Image
+//   const profileImage = document.querySelector('.profile-head .profile-image')
+//   profileImage.style.backgroundImage = `url('${user.profile_image || 'assets/img/profile-placeholder.jpg'}')`
+
+//   if (user.cover_image) {
+//     $('.profile-background').css('background-image', `url('${user.cover_image}')`)
+//   }
+
+//   // Profile Links
+//   const profileLinks = user.profile_links
+
+//   if (profileLinks.instagram) {
+//     document.querySelector('#instagram').setAttribute('href', `https://www.instagram.com/${profileLinks.instagram}`)
+//   }
+
+//   if (profileLinks.facebook) {
+//     document.querySelector('#facebook').setAttribute('href', `https://www.facebook.com/${profileLinks.facebook}`)
+//   }
+
+//   if (profileLinks.tiktok) {
+//     document.querySelector('#tiktok').setAttribute('href', `https://www.tiktok.com/${profileLinks.tiktok}`)
+//   }
+
+//   if (profileLinks.youtube) {
+//     document.querySelector('#youtube').setAttribute('href', `https://www.youtube.com/${profileLinks.youtube}`)
+//   }
+
+//   // Display External Links
+//   const externalLinks = profileLinks.external_links // Assuming this is an array like the example you provided
+//   const linksList = document.querySelector('.profile-external-links ul')
+//   linksList.innerHTML = '' // Clear any existing links
+
+//   if (externalLinks && externalLinks.length > 0) {
+//     externalLinks.forEach(linkObj => {
+//       const listItem = document.createElement('li')
+//       const link = document.createElement('a')
+//       link.href = linkObj.link.url
+//       link.target = '_blank'
+//       link.textContent = linkObj.link.label
+//       listItem.appendChild(link)
+//       linksList.appendChild(listItem)
+//     })
+//   } else {
+//     // Optionally handle the case where there are no external links
+//     const noLinksItem = document.createElement('li')
+//     noLinksItem.textContent = 'No external links available'
+//     linksList.appendChild(noLinksItem)
+//   }
+// }
+
+export function displayProfile(user, container = 'profile') {
+  if (!user) return;
+
+  // Select the container element
+  const containerElem = document.querySelector(`.page[data-name="${container}"]`);
+  if (!containerElem) {
+    console.error(`Container element with data-name="${container}" not found.`);
+    return;
+  }
 
   // Profile Head
-  document.querySelector('.profile-head .profile-username').textContent = `@${user.username}`
-  document.querySelector('.profile-head .profile-name').textContent = `${user.first_name} ${user.last_name}`
+  const usernameElem = containerElem.querySelector('.profile-head .profile-username');
+  const nameElem = containerElem.querySelector('.profile-head .profile-name');
+  if (usernameElem) usernameElem.textContent = `@${user.username}`;
+  if (nameElem) nameElem.textContent = `${user.first_name} ${user.last_name}`;
 
   // Profile Image
-  const profileImage = document.querySelector('.profile-head .profile-image')
-  profileImage.style.backgroundImage = `url('${user.profile_image || 'assets/img/profile-placeholder.jpg'}')`
+  const profileImageElem = containerElem.querySelector('.profile-head .profile-image');
+  if (profileImageElem) {
+    profileImageElem.style.backgroundImage = `url('${user.profile_image || 'assets/img/profile-placeholder.jpg'}')`;
+  }
 
+  // Cover Image
   if (user.cover_image) {
-    $('.profile-background').css('background-image', `url('${user.cover_image}')`)
+    const profileBackgroundElem = containerElem.querySelector('.profile-background');
+    if (profileBackgroundElem) {
+      profileBackgroundElem.style.backgroundImage = `url('${user.cover_image}')`;
+    }
   }
 
   // Profile Links
-  const profileLinks = user.profile_links
+  const profileLinks = user.profile_links || {};
+
+  const setLinkHref = (selector, url) => {
+    const linkElem = containerElem.querySelector(selector);
+    if (linkElem) linkElem.setAttribute('href', url);
+  };
 
   if (profileLinks.instagram) {
-    document.querySelector('#instagram').setAttribute('href', `https://www.instagram.com/${profileLinks.instagram}`)
+    setLinkHref('#instagram', `https://www.instagram.com/${profileLinks.instagram}`);
   }
 
   if (profileLinks.facebook) {
-    document.querySelector('#facebook').setAttribute('href', `https://www.facebook.com/${profileLinks.facebook}`)
+    setLinkHref('#facebook', `https://www.facebook.com/${profileLinks.facebook}`);
   }
 
   if (profileLinks.tiktok) {
-    document.querySelector('#tiktok').setAttribute('href', `https://www.tiktok.com/${profileLinks.tiktok}`)
+    setLinkHref('#tiktok', `https://www.tiktok.com/${profileLinks.tiktok}`);
   }
 
   if (profileLinks.youtube) {
-    document.querySelector('#youtube').setAttribute('href', `https://www.youtube.com/${profileLinks.youtube}`)
+    setLinkHref('#youtube', `https://www.youtube.com/${profileLinks.youtube}`);
   }
 
   // Display External Links
-  const externalLinks = profileLinks.external_links // Assuming this is an array like the example you provided
-  const linksList = document.querySelector('.profile-external-links ul')
-  linksList.innerHTML = '' // Clear any existing links
+  const externalLinks = profileLinks.external_links || []; // Assuming this is an array
+  const linksList = containerElem.querySelector('.profile-external-links ul');
+  if (linksList) {
+    linksList.innerHTML = ''; // Clear any existing links
 
-  if (externalLinks && externalLinks.length > 0) {
-    externalLinks.forEach(linkObj => {
-      const listItem = document.createElement('li')
-      const link = document.createElement('a')
-      link.href = linkObj.link.url
-      link.target = '_blank'
-      link.textContent = linkObj.link.label
-      listItem.appendChild(link)
-      linksList.appendChild(listItem)
-    })
-  } else {
-    // Optionally handle the case where there are no external links
-    const noLinksItem = document.createElement('li')
-    noLinksItem.textContent = 'No external links available'
-    linksList.appendChild(noLinksItem)
+    if (externalLinks.length > 0) {
+      externalLinks.forEach(linkObj => {
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = linkObj.link.url;
+        link.target = '_blank';
+        link.textContent = linkObj.link.label;
+        listItem.appendChild(link);
+        linksList.appendChild(listItem);
+      });
+    } else {
+      // Optionally handle the case where there are no external links
+      const noLinksItem = document.createElement('li');
+      noLinksItem.textContent = 'No external links available';
+      linksList.appendChild(noLinksItem);
+    }
   }
 }
+
 
 export function displayGarage(garage) {
   if (!garage) return
@@ -109,7 +189,10 @@ export function createGarageContent(garages, currentList, pastList) {
   const currentVehiclesList = document.querySelector(currentList)
   const pastVehiclesList = document.querySelector(pastList)
 
-  if (!currentVehiclesList || !pastVehiclesList) return
+  if (!currentVehiclesList || !pastVehiclesList) {
+    console.log('Invalid elements provided for current and past vehicles');
+    return
+  }
 
   currentVehiclesList.innerHTML = '' // Clear the list before adding new vehicles
   pastVehiclesList.innerHTML = '' // Clear the list before adding new vehicles

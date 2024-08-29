@@ -103,33 +103,36 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
 
             // Handle posts
             if (data[postsKey]) {
+                totalPostPages = data[postsKey].total_pages || 0
+
                 // Only update the DOM if there are new posts
                 if (data[postsKey].new_data && data[postsKey].new_data.length > 0) {
                     fillGridWithPosts(data[postsKey].new_data, 'profile-grid-posts')
                     // Clear new_data after processing to avoid re-rendering
 
-                    totalPostPages = data[postsKey].total_pages
                     data[postsKey].new_data = []
-                    if ((data[postsKey].page === totalPostPages) || (totalPostPages == 0)) {
-                        // hide preloader
-                        $('.infinite-scroll-preloader.posts-tab.view-profile').hide()
-                    }
+                }
+
+                if ((data[postsKey].page === totalPostPages) || (totalPostPages == 0)) {
+                    // hide preloader
+                    $('.infinite-scroll-preloader.posts-tab.view-profile').hide()
                 }
             }
 
             // Handle tags
             if (data[tagsKey]) {
+                totalFPostPages = data[tagsKey].total_pages || 0
+
                 // Only update the DOM if there are new tags
                 if (data[tagsKey].new_data && data[tagsKey].new_data.length > 0) {
                     fillGridWithPosts(data[tagsKey].new_data, 'profile-grid-tags')
                     // Clear new_data after processing to avoid re-rendering
                     data[tagsKey].new_data = []
-                    totalFPostPages = data[tagsKey].total_pages
+                }
 
-                    if ((data[tagsKey].page === totalFPostPages) || (totalFPostPages == 0)) {
-                        // hide preloader
-                        $('.infinite-scroll-preloader.tags-tab.view-profile').hide()
-                    }
+                if ((data[tagsKey].page === totalFPostPages) || (totalFPostPages == 0)) {
+                    // hide preloader
+                    $('.infinite-scroll-preloader.tags-tab.view-profile').hide()
                 }
             }
         }
