@@ -266,11 +266,13 @@ function generatePostGridItem(post) {
 }
 
 // Calculate the number of posts and decide if we need to add empty items
-export function fillGridWithPosts(posts, profileGridID) {
+export function fillGridWithPosts(posts, profileGridID, reset = false) {
   // Select the container where the posts will be displayed
   const profileGrid = document.getElementById(profileGridID)
 
-  // profileGrid.innerHTML = '' // Clear the grid before adding new posts
+  if (reset) {
+    profileGrid.innerHTML = '' // Clear the grid before adding new posts
+  }
 
   const gridColumns = 3 // Assuming a 3-column grid
   const gridSize = posts.filter(post => post.media && post.media.length > 0).length
@@ -344,6 +346,7 @@ myTagsStore.onUpdated((data) => {
 })
 
 $(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
+
   // Infinite Scroll
   const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content')
 
@@ -384,7 +387,7 @@ $(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
     displayProfile(userStore.value)
   }
 
-  if (myPostsStore.value && myPostsStore.value.data) {
+  if (myPostsStore.value) {
     const posts = myPostsStore.value.data
     totalPostPages = myPostsStore.value.total_pages
 
@@ -394,20 +397,20 @@ $(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
     }
 
     // Call the function to fill the grid
-    fillGridWithPosts(posts, 'profile-grid-posts')
+    fillGridWithPosts(posts, 'profile-grid-posts', true)
   }
 
-  if (myTagsStore.value && myTagsStore.value.data) {
+  if (myTagsStore.value) {
     const posts = myTagsStore.value.data
-    totalFPostPages = myTagsStore.value.total_pages
+    totalFPostPages = myTagsStore.value.total_pages || 0
 
-    if ((myTagsStore.value.page === myTagsStore.value.total_pages) || (myTagsStore.value.total_pages == 0)) {
+    if ((myTagsStore.value.page === totalFPostPages) || (totalFPostPages == 0)) {
       // hide preloader
       $('.infinite-scroll-preloader.tags-tab').hide()
     }
 
     // Call the function to fill the grid
-    fillGridWithPosts(posts, 'profile-grid-tags')
+    fillGridWithPosts(posts, 'profile-grid-tags', true)
   }
 })
 

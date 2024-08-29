@@ -97,7 +97,7 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
     displayProfile(data.user, 'profile-view')
     const garage = await getUserGarage(userId)
     if (garage) {
-        createGarageContent(garage, '.current-vehicles-list', '.past-vehicles-list')
+        createGarageContent(garage, '.pview-current-vehicles-list', '.pview-past-vehicles-list')
     }
 
     store.dispatch('getUserPosts', {
@@ -120,7 +120,7 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
 
                 // Only update the DOM if there are new posts
                 if (data[postsKey].new_data && data[postsKey].new_data.length > 0) {
-                    fillGridWithPosts(data[postsKey].new_data, 'profile-grid-posts')
+                    fillGridWithPosts(data[postsKey].new_data, 'profile-view-grid-posts')
                     // Clear new_data after processing to avoid re-rendering
 
                     data[postsKey].new_data = []
@@ -138,7 +138,7 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
 
                 // Only update the DOM if there are new tags
                 if (data[tagsKey].new_data && data[tagsKey].new_data.length > 0) {
-                    fillGridWithPosts(data[tagsKey].new_data, 'profile-grid-tags')
+                    fillGridWithPosts(data[tagsKey].new_data, 'profile-view-grid-tags')
                     // Clear new_data after processing to avoid re-rendering
                     data[tagsKey].new_data = []
                 }
