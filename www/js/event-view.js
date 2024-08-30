@@ -13,7 +13,7 @@ $(document).on('page:afterin', '.page[data-name="discover-view-event"]', async f
     const eventData = await fetchEvent(eventId)
     console.log(eventData);
 
-    const mainContainer = $('.discover-view-event');
+    const mainContainer = $('.discover-view-event.view-event');
 
     if (!eventData) {
         mainContainer.html('<div class="text-align-center">No event found</div>');

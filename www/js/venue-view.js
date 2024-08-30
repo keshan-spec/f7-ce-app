@@ -10,7 +10,6 @@ var $ = Dom7;
 $(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async function (e) {
     var venueId = e.detail.route.params.id
     const venueData = await fetchVenue(venueId);
-    console.log(venueData);
 
     $('#copy-venue-link').attr('data-venue-id', venueId);
 
@@ -56,10 +55,17 @@ $(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async f
                 month: 'short'
             });
             const startDay = startDate.getDate();
-            const endMonth = endDate.toLocaleString('default', {
-                month: 'short'
-            });
-            const endDay = endDate.getDate();
+
+            let endDateString = '';
+
+            if (startDate.getDate() !== endDate.getDate()) {
+                endDateString = `
+            <div class="event-date-item">
+                <p>${endDate.toLocaleString('default', { month: 'short' })}</p>
+                <h5>${endDate.getDate()}</h5>
+            </div>
+            `
+            }
 
             const eventItem = `
             <a href="/discover-view-event/${event.id}" class="card event-item">
@@ -70,10 +76,7 @@ $(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async f
                             <p>${startMonth}</p>
                             <h5>${startDay}</h5>
                         </div>
-                        <div class="event-date-item">
-                            <p>${endMonth}</p>
-                            <h5>${endDay}</h5>
-                        </div>
+                        ${endDateString}
                     </div>
                 </div>
                 <div class="card-content">

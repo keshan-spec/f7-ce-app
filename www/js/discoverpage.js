@@ -178,6 +178,26 @@ function populateUsersCard(data = []) {
     });
 }
 
+function addCategoryOptions(categories) {
+    const categoryFilters = document.querySelector('#category-filters ul');
+
+    categories.forEach(category => {
+        const listItem = document.createElement('li');
+
+        listItem.innerHTML = `
+            <label class="item-checkbox item-content">
+                <input type="checkbox" name="${category.slug}" value="${category.id}" />
+                <i class="icon icon-checkbox"></i>
+                <div class="item-inner">
+                    <div class="item-title">${category.name}</div>
+                </div>
+            </label>
+        `;
+
+        categoryFilters.appendChild(listItem);
+    });
+}
+
 // Event listener for the submit button
 $(document).on('click', '.apply-filters', function (e) {
     const dateFilters = document.querySelector('#date-filters ul');
@@ -232,58 +252,40 @@ $(document).on('click', '.apply-filters', function (e) {
 });
 
 eventCategories.onUpdated((data) => {
-    const categoryFilters = document.querySelector('#category-filters ul');
-
-    data.forEach(category => {
-        const listItem = document.createElement('li');
-
-        listItem.innerHTML = `
-            <label class="item-checkbox item-content">
-                <input type="checkbox" name="${category.slug}" value="${category.id}" />
-                <i class="icon icon-checkbox"></i>
-                <div class="item-inner">
-                    <div class="item-title">${category.name}</div>
-                </div>
-            </label>
-        `;
-
-        categoryFilters.appendChild(listItem);
-    });
-
-
-    var allCheckbox = categoryFilters.querySelector('input[name="all"]');
-
-    // Event listeners for checkboxes
-    categoryFilters.addEventListener('change', function (e) {
-        const targetCheckbox = e.target;
-
-        if (targetCheckbox.name !== "all") {
-            // If any other checkbox is selected, uncheck "All"
-            if (targetCheckbox.checked) {
-                allCheckbox.checked = false;
-            } else {
-                // If all other checkboxes are unchecked, check "All"
-                const allUnchecked = [...categoryFilters.querySelectorAll('input[type="checkbox"]')]
-                    .filter(cb => cb.name !== "all")
-                    .every(cb => !cb.checked);
-
-                if (allUnchecked) {
-                    allCheckbox.checked = true;
-                }
-            }
-        } else {
-            // If "All" is selected, uncheck all other checkboxes
-            if (targetCheckbox.checked) {
-                [...categoryFilters.querySelectorAll('input[type="checkbox"]')]
-                .filter(cb => cb.name !== "all")
-                    .forEach(cb => cb.checked = false);
-            }
-        }
-    });
+    addCategoryOptions(data);
 })
 
-trendingVenuesStore.onUpdated((data) => {
+$(document).on('change', '#category-filters ul', function (e) {
+    const categoryFilters = document.querySelector('#category-filters ul');
+    var allCheckbox = categoryFilters.querySelector('input[name="all"]');
 
+    const targetCheckbox = e.target;
+
+    if (targetCheckbox.name !== "all") {
+        // If any other checkbox is selected, uncheck "All"
+        if (targetCheckbox.checked) {
+            allCheckbox.checked = false;
+        } else {
+            // If all other checkboxes are unchecked, check "All"
+            const allUnchecked = [...categoryFilters.querySelectorAll('input[type="checkbox"]')]
+                .filter(cb => cb.name !== "all")
+                .every(cb => !cb.checked);
+
+            if (allUnchecked) {
+                allCheckbox.checked = true;
+            }
+        }
+    } else {
+        // If "All" is selected, uncheck all other checkboxes
+        if (targetCheckbox.checked) {
+            [...categoryFilters.querySelectorAll('input[type="checkbox"]')]
+            .filter(cb => cb.name !== "all")
+                .forEach(cb => cb.checked = false);
+        }
+    }
+});
+
+trendingVenuesStore.onUpdated((data) => {
     totalVenuesPages = data.total_pages
 
     populateVenueCard(data.data);
@@ -434,7 +436,7 @@ $(document).on('page:init', '.page[data-name="discover"]', function (e) {
     initAutocomplete();
 });
 
-$(document).on('page:init', '.page[data-name="discover"]', function (e) {
+$(document).on('page:afterin', '.page[data-name="discover"]', function (e) {
     const infiniteScrollContent = document.querySelector('.discover-page.infinite-scroll-content')
 
     infiniteScrollContent.addEventListener('infinite', async function () {
@@ -469,4 +471,36 @@ $(document).on('page:init', '.page[data-name="discover"]', function (e) {
             }
         }
     })
+
+    const eventCats = eventCategories.value
+    const trendingEvents = trendingEventsStore.value
+    const trendingVenues = trendingVenuesStore.value
+    const trendingUsers = trendingUsersStore.value
+
+    if (!eventCats || eventCats.length === 0) {
+        store.dispatch('fetchEventCategories')
+    } else {
+        addCategoryOptions(eventCats);
+    }
+
+    if (!trendingEvents || trendingEvents.length === 0) {
+        store.dispatch('fetchTrendingEvents')
+    } else {
+        totalEventPages = trendingEvents.total_pages
+        populateEventCard(trendingEvents.data);
+    }
+
+    if (!trendingVenues || trendingVenues.length === 0) {
+        store.dispatch('fetchTrendingVenues')
+    } else {
+        totalVenuesPages = trendingVenues.total_pages
+        populateVenueCard(trendingVenues.data);
+    }
+
+    if (!trendingUsers || trendingUsers.length === 0) {
+        store.dispatch('fetchTrendingUsers')
+    } else {
+        totalUsersPages = trendingUsers.total_pages
+        populateUsersCard(trendingUsers.data);
+    }
 });
