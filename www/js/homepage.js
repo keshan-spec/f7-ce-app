@@ -511,6 +511,14 @@ $(document).on('click', '.media-post-share', function () {
   $('#copy-link').attr('data-clipboard-text', `${window.location.origin}/post-view/${postId}`)
 })
 
+$(document).on('click', '#share-post-email', function () {
+  const postId = $(this).closest('.popup').attr('data-post-id')
+  const postLink = `${window.location.origin}/post-view/${postId}`
+
+  // open the email composer
+  window.open(`mailto:?subject=Check out this post&body=${postLink}`)
+})
+
 // data-clipboard-text click
 $(document).on('click', '#copy-link', function () {
   const copyText = $(this).attr('data-clipboard-text')

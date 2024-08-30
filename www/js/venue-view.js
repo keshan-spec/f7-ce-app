@@ -12,6 +12,7 @@ $(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async f
     const venueData = await fetchVenue(venueId);
 
     $('#copy-venue-link').attr('data-venue-id', venueId);
+    $('#share-email-venue-link').attr('data-venue-id', venueId);
 
     const mainContainer = $('.discover-view-event');
 
@@ -119,4 +120,12 @@ $(document).on('click', '#copy-venue-link', function () {
         text: 'Link copied to clipboard',
         closeTimeout: 2000
     }).open()
+});
+
+// #share-email-venue-link click event
+$(document).on('click', '#share-email-venue-link', function () {
+    const venueId = $(this).attr('data-venue-id');
+    const eventLink = `${window.location.origin}/discover-view-venue/${venueId}`;
+
+    window.open(`mailto:?subject=Check out this venue&body=${eventLink}`);
 });

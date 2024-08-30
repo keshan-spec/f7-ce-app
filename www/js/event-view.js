@@ -11,7 +11,6 @@ $(document).on('page:afterin', '.page[data-name="discover-view-event"]', async f
     var eventId = e.detail.route.params.id
 
     const eventData = await fetchEvent(eventId)
-    console.log(eventData);
 
     const mainContainer = $('.discover-view-event.view-event');
 
@@ -73,6 +72,7 @@ $(document).on('page:afterin', '.page[data-name="discover-view-event"]', async f
     });
 
     $('#copy-event-link').attr('data-event-id', eventId)
+    $('#share-email-event-link').attr('data-event-id', eventId)
 
     // set the event id to the favourite button
     const faveBtn = $('#favourite_event')
@@ -116,4 +116,11 @@ $(document).on('click', '#copy-event-link', function () {
         text: 'Link copied to clipboard',
         closeTimeout: 2000
     }).open()
+});
+
+$(document).on('click', '#share-email-event-link', function () {
+    const eventId = $(this).attr('data-event-id');
+    const eventLink = `${window.location.origin}/discover-view-event/${eventId}`;
+
+    window.open(`mailto:?subject=Event Link&body=${eventLink}`, '_blank');
 });
