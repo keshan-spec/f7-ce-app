@@ -345,7 +345,7 @@ myTagsStore.onUpdated((data) => {
   }
 })
 
-$(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
+$(document).on('page:beforein', '.page[data-name="profile"]', function (e) {
   // Infinite Scroll
   const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content')
 

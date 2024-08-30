@@ -195,7 +195,6 @@ userStore.onUpdated((data) => {
 
 $(document).on('click', '.footer-links', function () {
   var view = app.views.current
-  console.log(view.history);
 
   if (view.history[0] == '/profile') {
     return;
