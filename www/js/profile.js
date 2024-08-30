@@ -346,7 +346,6 @@ myTagsStore.onUpdated((data) => {
 })
 
 $(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
-
   // Infinite Scroll
   const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content')
 
@@ -379,9 +378,7 @@ $(document).on('page:afterin', '.page[data-name="profile"]', function (e) {
     }
   })
 
-  if (garageStore.value && garageStore.value.length > 0) {
-    createGarageContent(garageStore.value, '.current-vehicles-list', '.past-vehicles-list')
-  }
+  createGarageContent(garageStore.value, '.current-vehicles-list', '.past-vehicles-list')
 
   if (userStore.value) {
     displayProfile(userStore.value)
