@@ -24,10 +24,14 @@ var currentPostPage = 1
 var currentFPostPage = 1
 
 var isFetchingPosts = false
+var refreshed = false;
+
+var userId = null
 
 $(document).on('page:afterin', '.page[data-name="profile-view"]', async function (e) {
+    var pathStore = store.getters.getPathData
     var view = app.views.current
-    var userId = e.detail.route.params.id
+    userId = e.detail.route.params.id
 
     const sessionUser = await getSessionUser()
     if (sessionUser.id == userId) {
@@ -72,6 +76,25 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
         }
     })
 
+    const ptrContent = app.ptr.get('.profile-landing-page.ptr-content')
+    ptrContent.on('refresh', async function () {
+        refreshed = true
+
+        store.dispatch('removePathData', `/user/${userId}`)
+
+        await renderProfileData(null, userId)
+
+        store.dispatch('getUserPosts', {
+            user_id: userId
+        })
+
+        store.dispatch('getUserTags', {
+            user_id: userId
+        })
+
+        ptrContent.done()
+    })
+
     // Follow button
     const followButton = $('.user-follow-btn')
     const sessionFollowings = sessionUser.following;
@@ -84,26 +107,16 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
 
     followButton.attr('data-user-id', userId)
 
-
-    $('.loading-fullscreen').show()
-
-    const data = await getUserById(userId)
-
-    $('.loading-fullscreen').hide()
-    if (!data || data.error) {
-        app.dialog.alert('User not found', 'Error')
-        view.router.back(view.history[0], {
-            force: true
-        })
-        return
+    let cachedData = null
+    try {
+        if (pathStore && pathStore.value[`/user/${userId}`]) {
+            cachedData = pathStore.value[`/user/${userId}`]
+        }
+    } catch (error) {
+        console.error('Error fetching cached data:', error)
     }
 
-
-    displayProfile(data.user, 'profile-view')
-    const garage = await getUserGarage(userId)
-    if (garage) {
-        createGarageContent(garage, '.pview-current-vehicles-list', '.pview-past-vehicles-list')
-    }
+    await renderProfileData(cachedData, userId)
 
     store.dispatch('getUserPosts', {
         user_id: userId
@@ -111,50 +124,101 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
     store.dispatch('getUserTags', {
         user_id: userId
     })
+})
 
-    store.getters.getUserPathUpdated.onUpdated(() => {
-        const data = store.getters.getUserPathData.value
+async function renderProfileData(cachedData, userId) {
+    if (!refreshed && !cachedData) {
+        $('.loading-fullscreen').show()
+    }
 
-        if (data) {
-            const postsKey = `user-${userId}-posts`
-            const tagsKey = `user-${userId}-tags`
+    // refreshed = false
 
-            // Handle posts
-            if (data[postsKey]) {
-                totalPostPages = data[postsKey].total_pages || 0
+    if (!cachedData) {
+        const data = await getUserById(userId)
 
-                // Only update the DOM if there are new posts
-                if (data[postsKey].new_data && data[postsKey].new_data.length > 0) {
-                    fillGridWithPosts(data[postsKey].new_data, 'profile-view-grid-posts')
-                    // Clear new_data after processing to avoid re-rendering
+        if (!data || data.error) {
+            $('.loading-fullscreen').hide()
+            app.dialog.alert('User not found', 'Error')
+            view.router.back(view.history[0], {
+                force: true
+            })
+            return
+        }
 
-                    data[postsKey].new_data = []
-                }
+        const garage = await getUserGarage(userId)
 
-                if ((data[postsKey].page === totalPostPages) || (totalPostPages == 0)) {
-                    // hide preloader
-                    $('.infinite-scroll-preloader.posts-tab.view-profile').hide()
-                }
+        if (garage) {
+            createGarageContent(garage, '.pview-current-vehicles-list', '.pview-past-vehicles-list')
+        }
+
+        // Assuming `path` is a dynamic path like '/garage/2'
+        store.dispatch('setPathData', {
+            path: `/user/${userId}`,
+            data: {
+                user: data.user,
+                garage: garage,
+            },
+        })
+
+        displayProfile(data.user, 'profile-view')
+    } else {
+
+        console.log('cachedData:', cachedData);
+
+        displayProfile(cachedData.user, 'profile-view')
+
+        if (cachedData.garage) {
+            createGarageContent(cachedData.garage, '.pview-current-vehicles-list', '.pview-past-vehicles-list')
+        }
+    }
+
+    $('.loading-fullscreen').hide()
+}
+
+
+
+store.getters.getUserPathUpdated.onUpdated(() => {
+    const data = store.getters.getUserPathData.value
+
+    if (data) {
+        const postsKey = `user-${userId}-posts`
+        const tagsKey = `user-${userId}-tags`
+
+        // Handle posts
+        if (data[postsKey]) {
+            totalPostPages = data[postsKey].total_pages || 0
+
+            // Only update the DOM if there are new posts
+            if (data[postsKey].new_data && data[postsKey].new_data.length > 0) {
+                fillGridWithPosts(data[postsKey].new_data, 'profile-view-grid-posts', refreshed)
+                // Clear new_data after processing to avoid re-rendering
+
+                data[postsKey].new_data = []
             }
 
-            // Handle tags
-            if (data[tagsKey]) {
-                totalFPostPages = data[tagsKey].total_pages || 0
-
-                // Only update the DOM if there are new tags
-                if (data[tagsKey].new_data && data[tagsKey].new_data.length > 0) {
-                    fillGridWithPosts(data[tagsKey].new_data, 'profile-view-grid-tags')
-                    // Clear new_data after processing to avoid re-rendering
-                    data[tagsKey].new_data = []
-                }
-
-                if ((data[tagsKey].page === totalFPostPages) || (totalFPostPages == 0)) {
-                    // hide preloader
-                    $('.infinite-scroll-preloader.tags-tab.view-profile').hide()
-                }
+            if ((data[postsKey].page === totalPostPages) || (totalPostPages == 0)) {
+                // hide preloader
+                $('.infinite-scroll-preloader.posts-tab.view-profile').hide()
             }
         }
-    })
+
+        // Handle tags
+        if (data[tagsKey]) {
+            totalFPostPages = data[tagsKey].total_pages || 0
+
+            // Only update the DOM if there are new tags
+            if (data[tagsKey].new_data && data[tagsKey].new_data.length > 0) {
+                fillGridWithPosts(data[tagsKey].new_data, 'profile-view-grid-tags', refreshed)
+                // Clear new_data after processing to avoid re-rendering
+                data[tagsKey].new_data = []
+            }
+
+            if ((data[tagsKey].page === totalFPostPages) || (totalFPostPages == 0)) {
+                // hide preloader
+                $('.infinite-scroll-preloader.tags-tab.view-profile').hide()
+            }
+        }
+    }
 })
 
 $(document).on('click', '.user-follow-btn', async function () {

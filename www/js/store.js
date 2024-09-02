@@ -458,6 +458,13 @@ const store = createStore({
         ...data,
       }
     },
+    removePathData({
+      state
+    }, path) {
+      if (state.paths[path]) {
+        delete state.paths[path]
+      }
+    },
     async login({
       state
     }, {

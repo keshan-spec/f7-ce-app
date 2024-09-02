@@ -63,6 +63,8 @@ followingPostsStore.onUpdated((data) => {
 // Pull to refresh content
 const ptrContent = app.ptr.get('.ptr-content')
 ptrContent.on('refresh', async function () {
+  console.log('refreshed home');
+
   refreshed = true
   const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
 
