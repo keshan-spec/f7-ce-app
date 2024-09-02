@@ -21,6 +21,7 @@ var myPostsStore = store.getters.myPosts
 var myTagsStore = store.getters.myTags
 var pathStore = store.getters.getPathData
 var userStore = store.getters.user
+var refreshed = false;
 
 var isFetchingPosts = false
 var totalPostPages = 1
@@ -326,7 +327,7 @@ myPostsStore.onUpdated((data) => {
     }
 
     // Call the function to fill the grid
-    fillGridWithPosts(posts, 'profile-grid-posts')
+    fillGridWithPosts(posts, 'profile-grid-posts', refreshed)
   }
 })
 
@@ -341,7 +342,7 @@ myTagsStore.onUpdated((data) => {
     }
 
     // Call the function to fill the grid
-    fillGridWithPosts(posts, 'profile-grid-tags')
+    fillGridWithPosts(posts, 'profile-grid-tags', refreshed)
   }
 })
 
@@ -350,6 +351,8 @@ $(document).on('page:beforein', '.page[data-name="profile"]', function (e) {
   const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content')
 
   infiniteScrollContent.addEventListener('infinite', async function () {
+    refreshed = false
+
     if (isFetchingPosts) return
 
     const activeTab = document.querySelector('.profile-tabs .tab-link-active')
@@ -376,6 +379,23 @@ $(document).on('page:beforein', '.page[data-name="profile"]', function (e) {
         isFetchingPosts = false
       }
     }
+  })
+
+  const ptrContent = app.ptr.get('.profile-landing-page.ptr-content')
+  ptrContent.on('refresh', async function () {
+    refreshed = true
+
+    try {
+      store.dispatch('clearPathData')
+
+      await store.dispatch('getMyGarage')
+      await store.dispatch('getMyPosts')
+      await store.dispatch('getMyTags')
+    } catch (error) {
+      console.log(error);
+    }
+
+    ptrContent.done()
   })
 
   createGarageContent(garageStore.value, '.current-vehicles-list', '.past-vehicles-list')
@@ -428,38 +448,6 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', as
   } catch (error) {
     console.error('Error fetching cached data:', error)
   }
-
-  // Infinite Scroll
-  const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content')
-
-  infiniteScrollContent.addEventListener('infinite', async function () {
-    if (isFetchingPosts) return
-
-    const activeTab = document.querySelector('.profile-tabs .tab-link-active')
-    const activeTabId = activeTab.id
-
-    if (!activeTabId) return
-
-    const getterFunc = activeTabId === 'garage-posts' ? 'setGarageViewPosts' : 'setGarageViewTags'
-
-    isFetchingPosts = true
-
-    if (activeTabId === 'garage-posts') {
-      currentGaragePostPage++
-
-      if (currentGaragePostPage <= totalGaragePostPages) {
-        await store.dispatch(getterFunc, garageId, currentGaragePostPage)
-        isFetchingPosts = false
-      }
-    } else {
-      currentGarageTagPage++
-
-      if (currentGarageTagPage <= totalGarageTagPages) {
-        await store.dispatch(getterFunc, garageId, currentGarageTagPage)
-        isFetchingPosts = false
-      }
-    }
-  })
 
   if (cachedData) {
     store.dispatch('setGarageViewPosts', garageId, 1)

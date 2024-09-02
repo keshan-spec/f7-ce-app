@@ -8,8 +8,12 @@ var $ = Dom7;
 
 //DISCOVER - VIEW EVENT
 $(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async function (e) {
+    $('.loading-fullscreen').show()
+
     var venueId = e.detail.route.params.id
     const venueData = await fetchVenue(venueId);
+
+    $('.loading-fullscreen').hide()
 
     $('#copy-venue-link').attr('data-venue-id', venueId);
     $('#share-email-venue-link').attr('data-venue-id', venueId);

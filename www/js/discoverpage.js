@@ -13,6 +13,7 @@ var isFetchingPosts = false
 var currentEventsPage = 1
 var currentVenuesPage = 1
 var currentUsersPage = 1
+var refreshed = false
 
 var totalEventPages = 1
 var totalVenuesPages = 1
@@ -470,6 +471,22 @@ $(document).on('page:afterin', '.page[data-name="discover"]', function (e) {
                 isFetchingPosts = false
             }
         }
+    })
+
+    const ptrContent = app.ptr.get('.discover-page.ptr-content')
+    ptrContent.on('refresh', async function () {
+        refreshed = true
+
+        try {
+            await store.dispatch('getTrendingEvents')
+            await store.dispatch('getTrendingVenues')
+            await store.dispatch('filterTrendingUsers')
+            await store.dispatch('fetchEventCategories')
+        } catch (error) {
+            console.log(error);
+        }
+
+        ptrContent.done()
     })
 
     const eventCats = eventCategories.value

@@ -175,8 +175,6 @@ async function renderProfileData(cachedData, userId) {
     $('.loading-fullscreen').hide()
 }
 
-
-
 store.getters.getUserPathUpdated.onUpdated(() => {
     const data = store.getters.getUserPathData.value
 
