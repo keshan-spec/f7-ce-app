@@ -450,18 +450,25 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', as
   }
 
   if (cachedData) {
+    $('.loading-fullscreen').hide()
     store.dispatch('setGarageViewPosts', garageId, 1)
     store.dispatch('setGarageViewTags', garageId, 1)
     updateProfilePage(cachedData)
     return
   }
 
+  $('.loading-fullscreen').show()
+
   const garage = await getGargeById(garageId)
   if (!garage) {
+    $('.loading-fullscreen').hide()
+
     app.dialog.alert('Garage not found')
     app.views.main.router.back()
     return
   }
+
+  $('.loading-fullscreen').hide()
 
   // Assuming `path` is a dynamic path like '/garage/2'
   store.dispatch('setPathData', {
@@ -611,6 +618,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
   }
 
   if (!data) {
+    $('.loading-fullscreen').show()
     const garage = await getGargeById(garageId)
 
     if (!garage) {
@@ -628,6 +636,8 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
       data: data,
     })
   }
+
+  $('.loading-fullscreen').hide()
 
   // check if user is the owner of the garage
   const user = await getSessionUser()
