@@ -84,7 +84,12 @@ $(document).on('page:afterin', '.page[data-name="profile-view"]', async function
 
     followButton.attr('data-user-id', userId)
 
+
+    $('.loading-fullscreen').show()
+
     const data = await getUserById(userId)
+
+    $('.loading-fullscreen').hide()
     if (!data || data.error) {
         app.dialog.alert('User not found', 'Error')
         view.router.back(view.history[0], {
