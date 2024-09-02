@@ -28,7 +28,7 @@ var refreshed = false;
 
 var userId = null
 
-$(document).on('page:afterin', '.page[data-name="profile-view"]', async function (e) {
+$(document).on('page:beforein', '.page[data-name="profile-view"]', async function (e) {
     var pathStore = store.getters.getPathData
     var view = app.views.current
     userId = e.detail.route.params.id

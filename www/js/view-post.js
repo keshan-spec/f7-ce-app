@@ -95,6 +95,7 @@ function displayPost(post) {
 
   postsContainer.insertAdjacentHTML('beforeend', postItem)
 }
+
 $(document).on('touchstart', '.media-single-post-content .swiper-wrapper', detectDoubleTapClosure((e) => {
   const parent = e.closest('.media-post')
   const postId = parent.getAttribute('data-post-id')
@@ -109,13 +110,38 @@ $(document).on('touchstart', '.media-single-post-content .swiper-wrapper', detec
   passive: false
 })
 
-$(document).on('page:afterin', '.page[data-name="post-view"]', async function (e) {
+$(document).on('page:beforein', '.page[data-name="post-view"]', async function (e) {
+  var pathStore = store.getters.getPathData
+
   var postId = e.detail.route.params.id
-  const post = await getPostById(postId)
-  if (!post) {
-    app.dialog.alert('Post not found', 'Error')
-    return
+
+  let cachedData = null
+  try {
+    if (pathStore && pathStore.value[`/post/${postId}`]) {
+      cachedData = pathStore.value[`/post/${postId}`]
+    }
+  } catch (error) {
+    console.error('Error fetching cached data:', error)
   }
 
-  displayPost(post)
+  if (!cachedData) {
+    $('.loading-fullscreen').show()
+
+    const post = await getPostById(postId)
+    if (!post) {
+      app.dialog.alert('Post not found', 'Error')
+      return
+    }
+
+    store.dispatch('setPathData', {
+      path: `/post/${postId}`,
+      data: post,
+    })
+
+    cachedData = post
+  } else {
+    $('.loading-fullscreen').hide()
+  }
+
+  displayPost(cachedData)
 })
