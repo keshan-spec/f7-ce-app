@@ -8,9 +8,13 @@ var $ = Dom7;
 
 //DISCOVER - VIEW EVENT
 $(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async function (e) {
-    $('.loading-fullscreen').show()
-
     var venueId = e.detail.route.params.id
+
+    if (!venueId || venueId === '-1') {
+        return;
+    }
+
+    $('.loading-fullscreen').show()
     const venueData = await fetchVenue(venueId);
 
     $('.loading-fullscreen').hide()

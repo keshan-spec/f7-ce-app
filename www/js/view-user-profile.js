@@ -34,6 +34,11 @@ $(document).on('page:beforein', '.page[data-name="profile-view"]', async functio
     userId = e.detail.route.params.id
 
     const sessionUser = await getSessionUser()
+
+    if (!sessionUser || !sessionUser.id) {
+        return;
+    }
+
     if (sessionUser.id == userId) {
         $('.tab-link[href="#view-profile"]').click()
         return

@@ -8,9 +8,15 @@ var $ = Dom7;
 
 //DISCOVER - VIEW EVENT
 $(document).on('page:afterin', '.page[data-name="discover-view-event"]', async function (e) {
-    $('.loading-fullscreen').show()
 
     var eventId = e.detail.route.params.id
+
+    if (!eventId || eventId === '-1') {
+        return;
+    }
+
+
+    $('.loading-fullscreen').show()
 
     const eventData = await fetchEvent(eventId)
     $('.loading-fullscreen').hide()

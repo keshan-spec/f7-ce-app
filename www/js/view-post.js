@@ -115,7 +115,12 @@ $(document).on('page:beforein', '.page[data-name="post-view"]', async function (
 
   var postId = e.detail.route.params.id
 
+  if (!postId || postId === '-1') {
+    return
+  }
+
   let cachedData = null
+
   try {
     if (pathStore && pathStore.value[`/post/${postId}`]) {
       cachedData = pathStore.value[`/post/${postId}`]
