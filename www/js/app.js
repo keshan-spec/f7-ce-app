@@ -28,11 +28,44 @@ var $ = Dom7
 var userStore = store.getters.user
 var toolbarEl = $('.footer')[0]
 
+function preloadPages() {
+  let pages = [
+    "../pages/profile-edit-images.html",
+    "../pages/profile-edit-mydetails.html",
+    "../pages/profile-edit-socials.html",
+    "../pages/profile-edit-username.html",
+    "../pages/profile-garage-edit.html",
+    "../pages/profile-garage-vehicle-add.html",
+  ];
+
+  for (var i = 0; i < pages.length; i++) {
+    (function (pageIndex) {
+      fetch(pages[pageIndex])
+        .then(function (response) {
+          console.log("Preloaded: " + pages[pageIndex]);
+          return response.text();
+        })
+        .then(function (content) {
+          let xhrEntry = {
+            url: pages[pageIndex],
+            time: Date.now(),
+            content: content,
+          };
+          app.router.cache.xhr.push(xhrEntry);
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+    })(i);
+  }
+}
+
 var app = new Framework7({
   initOnDeviceReady: true,
   view: {
     pushState: true,
-    stackPages: true
+    stackPages: true,
+    xhrCache: true,
   },
   toast: {
     closeTimeout: 3000,
@@ -81,6 +114,8 @@ var app = new Framework7({
       }
     },
     pageInit: function (page) {
+      console.log('Page initialized', page.name);
+
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
           if (data && data.id && !data.external_refresh) {
@@ -116,6 +151,8 @@ var app = new Framework7({
   store: store,
   routes: routes,
 })
+
+// preloadPages();
 
 export function showToast(message, type = 'Message', position = 'bottom') {
   app.toast.create({
