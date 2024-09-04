@@ -462,12 +462,12 @@ $(document).on('click', '#add-link-btn', async function () {
     //     return;
     // }
 
-    const urlPattern = /^(https?:\/\/)[\da-z\.-]+\.[a-z]{2,6}\/?$/;
+
+    const urlPattern = /^(https?:\/\/|www\.)[\da-z\.-]+\.[a-z]{2,6}\/?$/;
     if (!urlPattern.test(linkUrl)) {
         showToast('Please enter a valid URL.', 'Error');
         return;
     }
-
 
     // Mock API request (POST request)
     const requestData = {
