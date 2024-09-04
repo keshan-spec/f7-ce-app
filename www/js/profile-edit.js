@@ -440,13 +440,12 @@ $(document).on('page:init', '.page[data-name="profile-edit-socials"]', async fun
 
 // Add event listener for the Save button
 $(document).on('click', '#add-link-btn', async function () {
-    var view = app.views.current
-
     const linkTitle = $('input[name="custom_link_title"]').val();
     const linkUrl = $('input[name="custom_link_url"]').val();
 
     // Validate the inputs
     if (linkTitle === '') {
+        console.log('Please enter a link title.', $('input[name="custom_link_title"]'));
         showToast('Please enter a link title.', 'Error');
         return;
     }
@@ -527,8 +526,6 @@ $(document).on('click', '#save-profile-socials', async function () {
     let dirtied = false;
 
     for (const key in links) {
-        console.log(links[key], user.profile_links[key]);
-
         if (links[key] !== user.profile_links[key]) {
             dirtied = true
             break;

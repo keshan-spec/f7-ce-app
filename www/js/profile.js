@@ -163,6 +163,7 @@ export function displayProfile(user, container = 'profile') {
         const listItem = document.createElement('li');
         const link = document.createElement('a');
         link.href = linkObj.link.url;
+
         link.target = '_blank';
         link.textContent = linkObj.link.label;
         listItem.appendChild(link);
@@ -177,6 +178,12 @@ export function displayProfile(user, container = 'profile') {
   }
 }
 
+
+$(document).on('click', '.profile-external-links ul li a', function (e) {
+  e.preventDefault()
+  const url = $(this).attr('href')
+  window.open(url, '_blank')
+})
 
 export function displayGarage(garage) {
   if (!garage) return

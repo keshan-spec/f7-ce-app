@@ -114,8 +114,6 @@ var app = new Framework7({
       }
     },
     pageInit: function (page) {
-      console.log('Page initialized', page.name);
-
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
           if (data && data.id && !data.external_refresh) {
