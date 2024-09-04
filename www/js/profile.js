@@ -30,7 +30,6 @@ var totalFPostPages = 1
 var currentPostPage = 1
 var currentFPostPage = 1
 
-
 // Garage posts
 var totalGaragePostPages = 1
 var currentGaragePostPage = 1
@@ -38,65 +37,6 @@ var currentGaragePostPage = 1
 // Garage tags
 var totalGarageTagPages = 1
 var currentGarageTagPage = 1
-
-// export function displayProfile(user, container = 'profile') {
-//   if (!user) return
-
-//   const containerElem = $(`.page[data-name="${container}"]`)
-
-//   // Profile Head
-//   document.querySelector('.profile-head .profile-username').textContent = `@${user.username}`
-//   document.querySelector('.profile-head .profile-name').textContent = `${user.first_name} ${user.last_name}`
-
-//   // Profile Image
-//   const profileImage = document.querySelector('.profile-head .profile-image')
-//   profileImage.style.backgroundImage = `url('${user.profile_image || 'assets/img/profile-placeholder.jpg'}')`
-
-//   if (user.cover_image) {
-//     $('.profile-background').css('background-image', `url('${user.cover_image}')`)
-//   }
-
-//   // Profile Links
-//   const profileLinks = user.profile_links
-
-//   if (profileLinks.instagram) {
-//     document.querySelector('#instagram').setAttribute('href', `https://www.instagram.com/${profileLinks.instagram}`)
-//   }
-
-//   if (profileLinks.facebook) {
-//     document.querySelector('#facebook').setAttribute('href', `https://www.facebook.com/${profileLinks.facebook}`)
-//   }
-
-//   if (profileLinks.tiktok) {
-//     document.querySelector('#tiktok').setAttribute('href', `https://www.tiktok.com/${profileLinks.tiktok}`)
-//   }
-
-//   if (profileLinks.youtube) {
-//     document.querySelector('#youtube').setAttribute('href', `https://www.youtube.com/${profileLinks.youtube}`)
-//   }
-
-//   // Display External Links
-//   const externalLinks = profileLinks.external_links // Assuming this is an array like the example you provided
-//   const linksList = document.querySelector('.profile-external-links ul')
-//   linksList.innerHTML = '' // Clear any existing links
-
-//   if (externalLinks && externalLinks.length > 0) {
-//     externalLinks.forEach(linkObj => {
-//       const listItem = document.createElement('li')
-//       const link = document.createElement('a')
-//       link.href = linkObj.link.url
-//       link.target = '_blank'
-//       link.textContent = linkObj.link.label
-//       listItem.appendChild(link)
-//       linksList.appendChild(listItem)
-//     })
-//   } else {
-//     // Optionally handle the case where there are no external links
-//     const noLinksItem = document.createElement('li')
-//     noLinksItem.textContent = 'No external links available'
-//     linksList.appendChild(noLinksItem)
-//   }
-// }
 
 export function displayProfile(user, container = 'profile') {
   if (!user) return;
@@ -209,7 +149,6 @@ export function displayProfile(user, container = 'profile') {
     }
   }
 }
-
 
 $(document).on('click', '.profile-external-links ul li a', function (e) {
   e.preventDefault()
@@ -773,6 +712,11 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
   })
 })
 
+function parseDate(dateString) {
+  const parts = dateString.split('/');
+  return new Date(parts[2], parts[1] - 1, parts[0]); // YYYY, MM, DD
+}
+
 // submit-vehicle-form
 $(document).on('click', '#submit-vehicle-form', async function (e) {
   var view = app.views.current
@@ -821,6 +765,21 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
   if (primary_car === "past" && !owned_to) {
     showToast('Please enter the date you owned the vehicle to')
     return
+  }
+
+  if (owned_to) {
+    const ownedFromDate = parseDate(owned_from.trim());
+    const ownedToDate = parseDate(owned_to.trim());
+
+    if (isNaN(ownedFromDate) || isNaN(ownedToDate)) {
+      showToast('One or both of the dates are invalid.');
+      return;
+    }
+
+    if (ownedToDate < ownedFromDate) {
+      showToast('Owned to date cannot be less than owned from date');
+      return;
+    }
   }
 
   let base64 = null
@@ -944,6 +903,21 @@ $(document).on('click', '#submit-add-vehicle-form', async function (e) {
   if (!owned_from) {
     app.dialog.alert('Please enter the date you owned the vehicle from')
     return
+  }
+
+  if (owned_to) {
+    const ownedFromDate = parseDate(owned_from.trim());
+    const ownedToDate = parseDate(owned_to.trim());
+
+    if (isNaN(ownedFromDate) || isNaN(ownedToDate)) {
+      showToast('One or both of the dates are invalid.');
+      return;
+    }
+
+    if (ownedToDate < ownedFromDate) {
+      showToast('Owned to date cannot be less than owned from date');
+      return;
+    }
   }
 
   // if primary_car is past, owned_to is required

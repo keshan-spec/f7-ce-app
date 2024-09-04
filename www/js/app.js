@@ -702,7 +702,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', fun
     header: true,
     footer: true,
     dateFormat: 'dd/mm/yyyy',
-    minDate: new Date()
+    // minDate: new Date()
   })
 })
 
@@ -712,7 +712,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', fu
     openIn: 'customModal',
     header: true,
     footer: true,
-    dateFormat: 'yyyy-mm-dd',
+    dateFormat: 'dd/mm/yyyy',
     maxDate: new Date()
   })
 
@@ -721,8 +721,8 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', fu
     openIn: 'customModal',
     header: true,
     footer: true,
-    dateFormat: 'yyyy-mm-dd',
-    minDate: new Date()
+    dateFormat: 'dd/mm/yyyy',
+    // minDate: new Date()
   })
 })
 
