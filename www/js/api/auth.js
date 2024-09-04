@@ -196,7 +196,7 @@ export const updateUserDetails = async (details, email_changed) => {
 
 export const getUserById = async (id) => {
     try {
-        let url = `${API_URL}/wp-json/app/v1/get-user-profile`
+        let url = `${API_URL}/wp-json/app/v1/get-user-profile-next`
         let response = await fetch(url, {
             method: "POST",
             headers: {
