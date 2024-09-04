@@ -61,11 +61,13 @@ var app = new Framework7({
       if (!isAuthenticated) {
         toolbarEl.style.display = 'none'
         this.views.main.router.navigate('/auth/')
+      } else {
+        $('.init-loader').hide()
       }
 
-      setTimeout(() => {
-        $('.init-loader').hide()
-      }, 300)
+      // setTimeout(() => {
+      //   $('.init-loader').hide()
+      // }, 300)
 
       const deeplink = getQueryParameter('deeplink')
       if (deeplink) {
@@ -193,8 +195,10 @@ export function onBackKeyDown() {
 window.onAppBackKey = onBackKeyDown
 
 userStore.onUpdated((data) => {
-  store.dispatch('getPosts')
-  store.dispatch('notificationCount')
+  if (data && data.id) {
+    store.dispatch('getPosts')
+    store.dispatch('notificationCount')
+  }
 })
 
 notificationCountStore.onUpdated((data) => {
@@ -703,6 +707,13 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', fu
 })
 
 //PROFILE SECTION
+$(document).on('page:afterin', '.page[data-name="auth"]', function (e) {
+  console.log('DOMContentLoaded');
+  setTimeout(() => {
+    $('.init-loader').hide()
+  }, 300)
+});
+
 $(document).on('page:init', '.page[data-name="profile"]', function (e) {
   app.popup.create({
     el: '.links-popup',

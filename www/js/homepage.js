@@ -1,4 +1,6 @@
-import app from "./app.js"
+import app, {
+  showToast
+} from "./app.js"
 import store from "./store.js"
 
 import {
@@ -234,7 +236,7 @@ async function displayPosts(posts, following = false) {
           ${post_actions}
           <div class="media-post-likecount" data-like-count="${post.likes_count}">${post.likes_count} likes</div>
           <div class="media-post-description">
-            <strong>${post.username}</strong> • <span class="post-caption">${shortDescription}</span>
+            <strong>${post.username}</strong> <br/> <span class="post-caption">${shortDescription}</span>
             <span class="full-description hidden">${post.caption}</span>
             ${isLongDescription ? `<span class="media-post-readmore">... more</span>` : ''}
           </div>
@@ -285,12 +287,12 @@ $(document).on('click', '#delete-post', function () {
   app.dialog.confirm('Are you sure you want to delete this post?', 'Delete Post', async () => {
     const response = await deletePost(postId)
     if (response) {
-      app.dialog.alert('Post deleted successfully')
+      showToast('Post deleted successfully')
       // remove the post from the DOM
       $(`.media-post[data-post-id="${postId}"]`).remove()
       app.popup.close('.edit-post-popup')
     } else {
-      app.dialog.alert('Failed to delete post')
+      showToast('Failed to delete post')
     }
   })
 })

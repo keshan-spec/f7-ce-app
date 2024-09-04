@@ -154,7 +154,7 @@ function populateUsersCard(data = []) {
         }
 
         if (user.type === 'vehicle') {
-            const userName = user.owner.name;
+            const userName = user.owner.username;
             const vehicleName = user.title;
 
             title = `${vehicleName} <br/> Owner ${userName}`;

@@ -289,6 +289,10 @@ function addEmptyGridItems(count) {
   return emptyItems
 }
 
+userStore.onUpdated((user) => {
+  displayProfile(user)
+})
+
 garageStore.onUpdated((garage) => {
   // clear path data
   store.dispatch('clearPathData')
@@ -513,9 +517,9 @@ async function updateProfilePage(data) {
 
     if (user.id == data.owner_id) {
       profile_link = '/profile/'
-
-      profileImageElement.setAttribute('href', profile_link)
     }
+
+    profileImageElement.setAttribute('href', profile_link)
   }
   // Update the vehicle make and model
   const vehicleTitleElement = document.querySelector('.profile-garage-intro h1')
@@ -753,23 +757,18 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
     return
   }
 
-  // if (!reg) {
-  //   app.dialog.alert('Please enter a vehicle registration number')
+  // if (!owned_from) {
+  //   showToast('Please enter the date you owned the vehicle from')
   //   return
   // }
 
-  if (!owned_from) {
-    showToast('Please enter the date you owned the vehicle from')
-    return
-  }
+  // // if primary_car is past, owned_to is required
+  // if (primary_car === "past" && !owned_to) {
+  //   showToast('Please enter the date you owned the vehicle to')
+  //   return
+  // }
 
-  // if primary_car is past, owned_to is required
-  if (primary_car === "past" && !owned_to) {
-    showToast('Please enter the date you owned the vehicle to')
-    return
-  }
-
-  if (owned_to) {
+  if (owned_to && owned_from) {
     const ownedFromDate = parseDate(owned_from.trim());
     const ownedToDate = parseDate(owned_to.trim());
 
@@ -904,12 +903,12 @@ $(document).on('click', '#submit-add-vehicle-form', async function (e) {
   //   return
   // }
 
-  if (!owned_from) {
-    app.dialog.alert('Please enter the date you owned the vehicle from')
-    return
-  }
+  // if (!owned_from) {
+  //   app.dialog.alert('Please enter the date you owned the vehicle from')
+  //   return
+  // }
 
-  if (owned_to) {
+  if (owned_to && owned_from) {
     const ownedFromDate = parseDate(owned_from.trim());
     const ownedToDate = parseDate(owned_to.trim());
 

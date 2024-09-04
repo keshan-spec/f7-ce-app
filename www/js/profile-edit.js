@@ -529,6 +529,43 @@ $(document).on('click', '#save-profile-socials', async function () {
         custodian
     };
 
+    // ig, tiktok, yt. mivia, custodian must be string, no special characters except for _ and - and . and
+    const usernamePattern = /^[a-zA-Z0-9._-]+$/;
+
+    if (instagram && !usernamePattern.test(instagram)) {
+        showToast('Please enter a valid Instagram username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+        return;
+    }
+
+    if (tiktok && !usernamePattern.test(tiktok)) {
+        showToast('Please enter a valid TikTok username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+        return;
+    }
+
+    if (youtube && !usernamePattern.test(youtube)) {
+        showToast('Please enter a valid YouTube username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+        return;
+    }
+
+    if (mivia && !usernamePattern.test(mivia)) {
+        showToast('Please enter a valid Mivia username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+        return;
+    }
+
+    if (custodian && !usernamePattern.test(custodian)) {
+        showToast('Please enter a valid Custodian username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+        return;
+    }
+
+
+
+    // facebook must be a valid facebook url
+    const urlPattern = /^(https?:\/\/|www\.)[\da-z\.-]+\.[a-z]{2,6}\/?$/;
+    if (facebook && !urlPattern.test(facebook)) {
+        showToast('Please enter a valid Facebook URL.', 'Error');
+        return;
+    }
+
     // check if the request data is the same as userdata
     let dirtied = false;
 

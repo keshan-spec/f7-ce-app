@@ -85,7 +85,7 @@ function displayPost(post) {
               ${post_actions}
               <div class="media-post-likecount" data-like-count="${post.likes_count}">${post.likes_count} likes</div>
               <div class="media-post-description">
-                <strong>${post.username}</strong> • <span class="post-caption">${shortDescription}</span>
+                <strong>${post.username}</strong> <br/> <span class="post-caption">${shortDescription}</span>
                 <span class="full-description hidden">${post.caption}</span>
                 ${isLongDescription ? `<span class="media-post-readmore">... more</span>` : ''}
               </div>
