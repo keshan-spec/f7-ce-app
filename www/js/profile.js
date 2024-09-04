@@ -138,18 +138,50 @@ export function displayProfile(user, container = 'profile') {
 
   if (profileLinks.instagram) {
     setLinkHref('#instagram', `https://www.instagram.com/${profileLinks.instagram}`);
+  } else {
+    // set opacity to 0.5
+    const instagramElem = containerElem.querySelector('#instagram');
+    if (instagramElem) {
+      instagramElem.style.opacity = 0.5;
+      // disable the link
+      instagramElem.onclick = (e) => e.preventDefault();
+    }
   }
 
   if (profileLinks.facebook) {
     setLinkHref('#facebook', `https://www.facebook.com/${profileLinks.facebook}`);
+  } else {
+    // set opacity to 0.5
+    const facebookElem = containerElem.querySelector('#facebook');
+    if (facebookElem) {
+      facebookElem.style.opacity = 0.5;
+      // disable the link
+      facebookElem.onclick = (e) => e.preventDefault();
+    }
   }
 
   if (profileLinks.tiktok) {
     setLinkHref('#tiktok', `https://www.tiktok.com/${profileLinks.tiktok}`);
+  } else {
+    // set opacity to 0.5
+    const tiktokElem = containerElem.querySelector('#tiktok');
+    if (tiktokElem) {
+      tiktokElem.style.opacity = 0.5;
+      // disable the link
+      tiktokElem.onclick = (e) => e.preventDefault();
+    }
   }
 
   if (profileLinks.youtube) {
     setLinkHref('#youtube', `https://www.youtube.com/${profileLinks.youtube}`);
+  } else {
+    // set opacity to 0.5
+    const youtubeElem = containerElem.querySelector('#youtube');
+    if (youtubeElem) {
+      youtubeElem.style.opacity = 0.5;
+      // disable the link
+      youtubeElem.onclick = (e) => e.preventDefault();
+    }
   }
 
   // Display External Links
