@@ -30,7 +30,6 @@ var userId = null
 
 $(document).on('page:beforein', '.page[data-name="profile-view"]', async function (e) {
     var pathStore = store.getters.getPathData
-    var view = app.views.current
     userId = e.detail.route.params.id
 
     const sessionUser = await getSessionUser()
@@ -83,8 +82,6 @@ $(document).on('page:beforein', '.page[data-name="profile-view"]', async functio
 
     const ptrContent = app.ptr.get('.profile-landing-page.ptr-content')
     ptrContent.on('refresh', async function () {
-        refreshed = true
-
         store.dispatch('removePathData', `/user/${userId}`)
 
         await renderProfileData(null, userId)
@@ -97,6 +94,7 @@ $(document).on('page:beforein', '.page[data-name="profile-view"]', async functio
             user_id: userId
         })
 
+        refreshed = true
         ptrContent.done()
     })
 
@@ -126,6 +124,7 @@ $(document).on('page:beforein', '.page[data-name="profile-view"]', async functio
     store.dispatch('getUserPosts', {
         user_id: userId
     })
+
     store.dispatch('getUserTags', {
         user_id: userId
     })
@@ -136,7 +135,7 @@ async function renderProfileData(cachedData, userId) {
         $('.loading-fullscreen').show()
     }
 
-    // refreshed = false
+    refreshed = false
 
     if (!cachedData) {
         const data = await getUserById(userId)
@@ -167,9 +166,6 @@ async function renderProfileData(cachedData, userId) {
 
         displayProfile(data.user, 'profile-view')
     } else {
-
-        console.log('cachedData:', cachedData);
-
         displayProfile(cachedData.user, 'profile-view')
 
         if (cachedData.garage) {
@@ -180,8 +176,7 @@ async function renderProfileData(cachedData, userId) {
     $('.loading-fullscreen').hide()
 }
 
-store.getters.getUserPathUpdated.onUpdated(() => {
-    const data = store.getters.getUserPathData.value
+function populateUsersPosts(data, reset = false) {
 
     if (data) {
         const postsKey = `user-${userId}-posts`
@@ -193,7 +188,7 @@ store.getters.getUserPathUpdated.onUpdated(() => {
 
             // Only update the DOM if there are new posts
             if (data[postsKey].new_data && data[postsKey].new_data.length > 0) {
-                fillGridWithPosts(data[postsKey].new_data, 'profile-view-grid-posts', refreshed)
+                fillGridWithPosts(data[postsKey].new_data, 'profile-view-grid-posts', reset)
                 // Clear new_data after processing to avoid re-rendering
 
                 data[postsKey].new_data = []
@@ -211,7 +206,7 @@ store.getters.getUserPathUpdated.onUpdated(() => {
 
             // Only update the DOM if there are new tags
             if (data[tagsKey].new_data && data[tagsKey].new_data.length > 0) {
-                fillGridWithPosts(data[tagsKey].new_data, 'profile-view-grid-tags', refreshed)
+                fillGridWithPosts(data[tagsKey].new_data, 'profile-view-grid-tags', reset)
                 // Clear new_data after processing to avoid re-rendering
                 data[tagsKey].new_data = []
             }
@@ -222,6 +217,11 @@ store.getters.getUserPathUpdated.onUpdated(() => {
             }
         }
     }
+}
+
+store.getters.getUserPathUpdated.onUpdated(() => {
+    const data = store.getters.getUserPathData.value
+    populateUsersPosts(data, true)
 })
 
 $(document).on('click', '.user-follow-btn', async function () {

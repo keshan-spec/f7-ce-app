@@ -1,5 +1,9 @@
-import { API_URL } from './consts.js'
-import { getSessionUser } from './auth.js'
+import {
+    API_URL
+} from './consts.js'
+import {
+    getSessionUser
+} from './auth.js'
 
 export async function fetchPosts(page, following = false) {
     const user = await getSessionUser()
@@ -10,7 +14,10 @@ export async function fetchPosts(page, following = false) {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: user.id, following_only: following }),
+        body: JSON.stringify({
+            user_id: user.id,
+            following_only: following
+        }),
     })
 
     const data = await response.json()
@@ -26,7 +33,10 @@ export async function fetchComments(postId) {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: user.id, post_id: postId }),
+        body: JSON.stringify({
+            user_id: user.id,
+            post_id: postId
+        }),
     })
 
     const data = await response.json()
@@ -42,7 +52,10 @@ export const maybeLikePost = async (postId) => {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: user.id, post_id: postId }),
+        body: JSON.stringify({
+            user_id: user.id,
+            post_id: postId
+        }),
     })
     const data = await response.json()
     return data
@@ -57,7 +70,31 @@ export const addComment = async (postId, comment, comment_id = null) => {
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: user.id, post_id: postId, comment, parent_id: comment_id }),
+        body: JSON.stringify({
+            user_id: user.id,
+            post_id: postId,
+            comment,
+            parent_id: comment_id
+        }),
+    })
+
+    const data = await response.json()
+    return data
+}
+
+export const deleteComment = async (commentId) => {
+    const user = await getSessionUser()
+    if (!user) return
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/delete-post-comment`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            user_id: user.id,
+            comment_id: commentId
+        }),
     })
 
     const data = await response.json()
@@ -74,7 +111,11 @@ export const maybeLikeComment = async (commentId, ownerId) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ user_id: user.id, comment_id: commentId, owner_id: ownerId }),
+            body: JSON.stringify({
+                user_id: user.id,
+                comment_id: commentId,
+                owner_id: ownerId
+            }),
         })
         const data = await response.json()
 
@@ -95,12 +136,22 @@ export const getPostsForUser = async (profileId, page = 1, tagged = false, limit
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: profileId, page, limit, tagged }),
+        body: JSON.stringify({
+            user_id: profileId,
+            page,
+            limit,
+            tagged
+        }),
     })
 
     const data = await response.json()
     if (response.status !== 200) {
-        return { data: [], total_pages: 0, page: 1, limit }
+        return {
+            data: [],
+            total_pages: 0,
+            page: 1,
+            limit
+        }
     }
 
     return data
@@ -116,7 +167,10 @@ export const getPostById = async (post_id) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ user_id: user.id, post_id }),
+            body: JSON.stringify({
+                user_id: user.id,
+                post_id
+            }),
         })
         const data = await response.json()
         return data
@@ -135,9 +189,12 @@ export const deletePost = async (post_id) => {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ user_id: user.id, post_id }),
+            body: JSON.stringify({
+                user_id: user.id,
+                post_id
+            }),
         })
-       
+
         if (response.status !== 200) {
             throw new Error("Error deleting post")
         }

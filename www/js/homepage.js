@@ -11,7 +11,8 @@ import {
   maybeLikePost,
   maybeLikeComment,
   addComment,
-  deletePost
+  deletePost,
+  deleteComment
 } from './api/posts.js'
 import {
   getSessionUser
@@ -367,50 +368,60 @@ function displayComments(comments, postId) {
 
   comments.forEach(comment => {
     const replyItems = comment.replies.length > 0 ? `
-      <div class="comment-replies">
-            <span class="comment-replies-toggle" data-replies-count="${comment.replies.length}">
-            Show ${comment.replies.length} replies
-            </span>
-            <div class="comment-replies-container">
-              ${comment.replies.map(reply => `
-                <div class="comment" 
-                  data-comment-id="${reply.id}" 
-                  data-is-liked="${reply.liked}" 
-                  data-owner-id="${reply.user_id}"
+        <div class="comment-replies">
+          <span class="comment-replies-toggle" data-replies-count="${comment.replies.length}">
+            Show ${comment.replies.length} ${comment.replies.length > 1 ? 'replies' : 'reply'}
+          </span>
+          <div class="comment-replies-container">
+            ${comment.replies.map(reply => {
+              // Determine the delete button visibility
+              const deleteButton = reply.user_id == user.id ? 
+                `<div class="comment-delete" data-comment-id="${reply.id}">
+                <i class="icon f7-icons text-red">trash</i>
+                </div>` : 
+                '';
+
+              return `
+                <div class="comment" data-comment-id="${reply.id}" data-is-liked="${reply.liked}" data-owner-id="${reply.user_id}"
                   data-owner-name="${reply.user_login}">
                   <div class="comment-profile-img" style="background-image:url('${reply.profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
                   <div class="comment-content-container">
                     <div class="comment-username">
-                      <a href="${reply.user_id == user.id ? '/profile/' : `/profile-view/${reply.user_id}`}">
-                      ${reply.user_login}
+                      <a href="${reply.user_id === user.id ? '/profile/' : `/profile-view/${reply.user_id}`}">
+                        ${reply.user_login}
                       </a>
-                    <span class="date">${formatPostDate(reply.comment_date)}</span>
+                      <span class="date">${formatPostDate(reply.comment_date)}</span>
                     </div>
                     <div class="comment-content">${reply.comment}</div>
                     <div class="comment-actions">
                       <div class="comment-like">
-                        <i class="icon f7-icons ${reply.liked && 'text-red'}">${reply.liked ? 'heart_fill' : 'heart'}</i> 
+                        <i class="icon f7-icons ${reply.liked ? 'text-red' : ''}">
+                          ${reply.liked ? 'heart_fill' : 'heart'}
+                        </i> 
                         <span class="comment-likes-count" data-likes-count="${reply.likes_count}">
-                        ${reply.likes_count}
+                          ${reply.likes_count}
                         </span>
                       </div>
                       <div class="comment-reply">
                         <i class="icon f7-icons">chat_bubble</i> <span>Reply</span>
                       </div>
+                      ${deleteButton}
                     </div>
                   </div>
                   <div class="clearfix"></div>
-                </div>
-              `).join('')}
-            </div>
-      </div>
-    ` : ''
+                </div>`;
+            }).join('')}
+          </div>
+        </div>` : '';
 
     let commenter_link = `/profile-view/${comment.user_id}`;
 
     if (comment.user_id == user.id) {
       commenter_link = '/profile/';
     }
+
+    const deleteButton = comment.user_id == user.id ?
+      `<div class="comment-delete" data-comment-id="${comment.id}"><i class="icon f7-icons text-red">trash</i></div>` : '';
 
     const commentItem = `
       <div class="comment" 
@@ -435,6 +446,7 @@ function displayComments(comments, postId) {
             <div class="comment-reply">
               <i class="icon f7-icons">chat_bubble</i> <span>Reply</span>
             </div>
+            ${deleteButton}
           </div>
           ${replyItems}
         </div>
@@ -594,6 +606,25 @@ $(document).on('click', '.comment-reply', function () {
   replyingTo.innerHTML = `Replying to <strong>${ownerName}</strong>`
   replyingTo.classList.remove('hidden')
   document.getElementById('comment-form').prepend(replyingTo)
+})
+
+$(document).on('click', '.comment-delete', async function () {
+
+
+  app.dialog.confirm('Are you sure you want to delete this comment? This will remove all replies to this comment', 'Delete Comment', async () => {
+    try {
+      const commentId = this.getAttribute('data-comment-id')
+      const response = await deleteComment(commentId)
+
+      if (response && response.success) {
+        // remove the comment from the DOM
+        $(`.comment[data-comment-id="${commentId}"]`).remove()
+        showToast('Comment deleted successfully')
+      }
+    } catch (error) {
+      app.dialog.alert('Failed to delete comment')
+    }
+  })
 })
 
 $(document).on('page:afterin', '.page[data-name="home"]', function (e) {
