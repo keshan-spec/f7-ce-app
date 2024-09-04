@@ -639,6 +639,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
   document.querySelector('input[name="vehicle_owned_from"]').value = data.owned_since
   document.querySelector('input[name="vehicle_owned_to"]').value = data.owned_until || ''
   document.querySelector('input[name="vehicle_tagging"]').checked = data.allow_tagging === "1"
+  document.querySelector('textarea[name="vehicle_description"]').value = data.short_description || ''
 
   // If a cover photo exists, use it as the background image of the upload label
   if (data.cover_photo) {
@@ -732,6 +733,7 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
   const variant = form.find('input[name="vehicle_variant"]').val()
   const reg = form.find('input[name="vehicle_reg"]').val()
   const colour = form.find('input[name="vehicle_colour"]').val()
+  const description = form.find('textarea[name="vehicle_description"]').val()
 
   const owned_from = form.find('input[name="vehicle_owned_from"]').val()
   const owned_to = form.find('input[name="vehicle_owned_to"]').val()
@@ -809,7 +811,8 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
         primary_car,
         allow_tagging,
         cover_photo: base64,
-        vehicle_period: primary_car
+        vehicle_period: primary_car,
+        description
       },
       garageId
     )
@@ -876,6 +879,7 @@ $(document).on('click', '#submit-add-vehicle-form', async function (e) {
   const variant = form.find('input[name="vehicle_variant"]').val()
   const reg = form.find('input[name="vehicle_reg"]').val()
   const colour = form.find('input[name="vehicle_colour"]').val()
+  const description = form.find('textarea[name="vehicle_description"]').val()
 
   const owned_from = form.find('input[name="vehicle_owned_from"]').val()
   const owned_to = form.find('input[name="vehicle_owned_to"]').val()
@@ -958,7 +962,8 @@ $(document).on('click', '#submit-add-vehicle-form', async function (e) {
       primary_car,
       allow_tagging,
       cover_photo: base64,
-      vehicle_period: primary_car
+      vehicle_period: primary_car,
+      description
     })
 
     if (!response || !response.success) {
