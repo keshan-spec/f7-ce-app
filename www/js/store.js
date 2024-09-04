@@ -1,7 +1,9 @@
 import {
+  getNotificationCount,
   getSessionUser,
   getUserDetails,
-  getUserNotifications
+  getUserNotifications,
+  markMultipleNotificationsAsRead
 } from './api/auth.js'
 import {
   sendRNMessage
@@ -134,8 +136,14 @@ const store = createStore({
     trendingUsers: DEFAULT_PAGINATED_DATA,
     // Search results
     searchResults: DEFAULT_SEARCH_RESULTS,
+    notificationCount: 0,
   },
   getters: {
+    getNotifCount({
+      state
+    }) {
+      return state.notificationCount
+    },
     getTrendingUsers({
       state
     }) {
@@ -253,6 +261,18 @@ const store = createStore({
     },
   },
   actions: {
+    markNotificationsAsRead({
+      state
+    }, notification_ids) {
+      markMultipleNotificationsAsRead(notification_ids)
+      state.notificationCount = 0
+    },
+    async notificationCount({
+      state
+    }) {
+      const response = await getNotificationCount()
+      state.notificationCount = response.count
+    },
     setSearchResults({
       state
     }, payload) {

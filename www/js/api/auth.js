@@ -241,3 +241,39 @@ export const getUserNotifications = async () => {
         return null
     }
 }
+
+export const getNotificationCount = async () => {
+    const user = await getSessionUser()
+    if (!user || !user.id) return
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/get-new-notifications-count`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            user_id: user.id
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+}
+
+export const markMultipleNotificationsAsRead = async (notificationIds) => {
+    const user = await getSessionUser();
+    if (!user) return null;
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/bulk-notifications-read`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            user_id: user.id
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+};

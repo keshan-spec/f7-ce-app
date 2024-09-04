@@ -1,5 +1,6 @@
 import {
-    getSessionUser
+    getSessionUser,
+    markMultipleNotificationsAsRead
 } from "./api/auth.js"
 import {
     maybeFollowUser
@@ -49,6 +50,15 @@ notificationsStore.onUpdated(async (data) => {
         const notificationItem = createNotificationItem(notification, user);
         thisWeekContainer.appendChild(notificationItem);
     });
+
+    // a list if all unread notification ids
+    const unreadNotificationIds = [
+        ...data.data.recent,
+        ...data.data.last_week,
+        ...data.data.last_30_days,
+    ].filter((item) => item.is_read === "0").map((item) => item._id);
+
+    store.dispatch('markNotificationsAsRead', unreadNotificationIds)
 })
 
 function timeAgo(dateString) {
