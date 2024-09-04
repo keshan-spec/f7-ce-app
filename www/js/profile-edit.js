@@ -583,3 +583,7 @@ $(document).on('click', '.delete-external-link', async function (e) {
     })
 })
 // --------------- End Edit Socials Page ---------------
+
+$(document).on('input', '#lowercaseInput', function (event) {
+    this.value = this.value.toLowerCase();
+});
