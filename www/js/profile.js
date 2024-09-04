@@ -181,7 +181,8 @@ export function displayProfile(user, container = 'profile') {
 
 $(document).on('click', '.profile-external-links ul li a', function (e) {
   e.preventDefault()
-  const url = $(this).attr('href')
+  const url = new URL(e.target.href)
+  console.log(url);
   window.open(url, '_blank')
 })
 

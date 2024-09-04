@@ -456,11 +456,18 @@ $(document).on('click', '#add-link-btn', async function () {
     }
 
     // Simple URL validation (basic check)
-    const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([/\w \.-]*)*\/?$/;
+    // const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([/\w \.-]*)*\/?$/;
+    // if (!urlPattern.test(linkUrl)) {
+    //     showToast('Please enter a valid URL.', 'Error');
+    //     return;
+    // }
+
+    const urlPattern = /^(https?:\/\/)[\da-z\.-]+\.[a-z]{2,6}\/?$/;
     if (!urlPattern.test(linkUrl)) {
         showToast('Please enter a valid URL.', 'Error');
         return;
     }
+
 
     // Mock API request (POST request)
     const requestData = {
