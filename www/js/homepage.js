@@ -134,7 +134,7 @@ export function detectDoubleTapClosure(callback) {
 }
 
 // event listener for tab change
-$('.tab-link').on('click', async function (e) {
+$(document).on('click', '.social-tabs .tab-link', async function (e) {
   const type = this.getAttribute('data-type')
   activeTab = type
 })

@@ -37,6 +37,7 @@ var app = new Framework7({
     stackPages: true,
     xhrCache: true,
     preloadPreviousPage: true,
+    // browserHistory: true,
   },
   toast: {
     closeTimeout: 3000,
@@ -51,15 +52,18 @@ var app = new Framework7({
   el: '#app', // App root element
   on: {
     init: async function () {
+      toolbarEl.style.display = 'none'
+
       await store.dispatch('checkAuth')
 
       const isAuthenticated = store.getters.isAuthenticated.value
 
       if (!isAuthenticated) {
-        toolbarEl.style.display = 'none'
         this.views.main.router.navigate('/auth/')
       } else {
         $('.init-loader').hide()
+        toolbarEl.style.display = 'block'
+        // this.views.main.router.navigate('/home/')
       }
 
       const deeplink = getQueryParameter('deeplink')
@@ -220,6 +224,7 @@ userStore.onUpdated((data) => {
   if (data && data.id && !data.external_refresh) {
     store.dispatch('getPosts')
     store.dispatch('notificationCount')
+    store.dispatch('fetchNotifications')
   }
 })
 
@@ -230,8 +235,21 @@ notificationCountStore.onUpdated((data) => {
   })
 })
 
-$(document).on('click', '.footer-links', function () {
+$(document).on('click', '.footer-links', function (e) {
   var view = app.views.current
+
+  // const routesMap = {
+  //   "#view-home": "/home/",
+  //   "#view-discover": "/discover/",
+  //   "#view-store": "/store/",
+  //   "#view-profile": "/profile/",
+  // }
+
+  // const linkElem = e.target.closest('a')
+  // const href = linkElem.getAttribute('href')
+
+  // app.views.main.router.navigate(routesMap[href])
+
 
   if (view.history[0] == '/profile') {
     return;
@@ -293,7 +311,7 @@ var actionSheet = app.actions.create({
 });
 
 // Init slider
-var swiper = new Swiper('.swiper-container', {
+new Swiper('.swiper-container', {
   pagination: {
     el: '.swiper-pagination',
     clickable: true,
@@ -302,29 +320,21 @@ var swiper = new Swiper('.swiper-container', {
 })
 
 //Comments Popup
-var CommentsPopup = app.popup.create({
+app.popup.create({
   el: '.comments-popup',
   swipeToClose: 'to-bottom'
 })
 
 //Share Popup
-var SharePopup = app.popup.create({
+app.popup.create({
   el: '.share-popup',
   swipeToClose: 'to-bottom'
 })
 
 //Share Popup
-var EditPostPopup = app.popup.create({
+app.popup.create({
   el: '.edit-post-popup',
   swipeToClose: 'to-bottom'
-})
-
-$(document).on('page:init', '.page[data-name="profile"]', function (e) {
-  var LinksPopup = app.popup.create({
-    el: '.links-popup',
-    swipeToClose: 'to-bottom'
-  })
-
 })
 
 document.getElementById('open-action-sheet').addEventListener('click', function () {
@@ -687,67 +697,11 @@ $(document).on('click', '#signup-complete', async function (e) {
   }
 })
 
-//GARAGE - DATE PICKER
-$(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', function (e) {
-  app.calendar.create({
-    inputEl: '#owned-from',
-    openIn: 'customModal',
-    header: true,
-    footer: true,
-    dateFormat: 'dd/mm/yyyy',
-    maxDate: new Date()
-  })
-
-  app.calendar.create({
-    inputEl: '#owned-to',
-    openIn: 'customModal',
-    header: true,
-    footer: true,
-    dateFormat: 'dd/mm/yyyy',
-    // minDate: new Date()
-  })
-})
-
-$(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', function (e) {
-  app.calendar.create({
-    inputEl: '#owned-from',
-    openIn: 'customModal',
-    header: true,
-    footer: true,
-    dateFormat: 'dd/mm/yyyy',
-    maxDate: new Date()
-  })
-
-  app.calendar.create({
-    inputEl: '#owned-to',
-    openIn: 'customModal',
-    header: true,
-    footer: true,
-    dateFormat: 'dd/mm/yyyy',
-    // minDate: new Date()
-  })
-})
-
 //PROFILE SECTION
 $(document).on('page:init', '.page[data-name="auth"]', function (e) {
-  console.log('DOMContentLoaded');
   setTimeout(() => {
     $('.init-loader').hide()
   }, 300)
-});
-
-$(document).on('page:init', '.page[data-name="profile"]', function (e) {
-  app.popup.create({
-    el: '.links-popup',
-    swipeToClose: 'to-bottom'
-  });
-});
-
-$(document).on('page:init', '.page[data-name="profile-edit-socials"]', function (e) {
-  app.popup.create({
-    el: '.add-link-popup',
-    swipeToClose: 'to-bottom'
-  });
 });
 
 // logout-button
@@ -761,22 +715,5 @@ $(document).on('click', '.logout-button', async function (e) {
 
   app.views.current.router.navigate('/auth/')
 })
-
-//DISCOVER - VIEW EVENT
-$(document).on('page:init', '.page[data-name="discover-view-event"]', function (e) {
-  // Init slider
-  var swiper = new Swiper('.swiper-container', {
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
-    },
-    // other parameters
-  });
-
-  var ShareListingPopup = app.popup.create({
-    el: '.share-listing-popup',
-    swipeToClose: 'to-bottom'
-  });
-});
 
 export default app

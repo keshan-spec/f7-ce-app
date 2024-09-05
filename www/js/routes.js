@@ -4,8 +4,7 @@ var v = '1.0.1'
 var routes = [{
     path: '/',
     url: './index.html',
-    name: 'index',
-    // keepAlive: true,
+    name: 'home',
   },
   {
     path: '/home/',
@@ -76,7 +75,6 @@ var routes = [{
     path: '/profile/',
     componentUrl: './pages/profile.html?' + v,
     keepAlive: true,
-
   },
   {
     path: '/profile-view/:id',

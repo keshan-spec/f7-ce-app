@@ -10,11 +10,11 @@ import store from "./store.js"
 var $ = Dom7
 var notificationsStore = store.getters.getNotifications
 
-$(document).on('page:init', '.page[data-name="notifications"]', async function (e) {
-    $('.init-loader.light').show()
-    await store.dispatch('fetchNotifications')
-    $('.init-loader.light').hide()
-})
+// $(document).on('page:beforein', '.page[data-name="notifications"]', async function (e) {
+//     $('.init-loader.light').show()
+//     await 
+//     $('.init-loader.light').hide()
+// })
 
 notificationsStore.onUpdated(async (data) => {
     if (!data || !data.success) {

@@ -36,6 +36,7 @@ $(document).on('page:init', '.page[data-name="profile-edit-mydetails"]', async f
     document.querySelector('input[name="tel_no"]').value = user.billing_info?.phone || '';
 })
 
+
 $(document).on('click', '#save-details', async function () {
     var view = app.views.current
 
@@ -438,6 +439,14 @@ $(document).on('page:init', '.page[data-name="profile-edit-socials"]', async fun
     });
 })
 
+$(document).on('page:init', '.page[data-name="profile-edit-socials"]', function (e) {
+    app.popup.create({
+        el: '.add-link-popup',
+        swipeToClose: 'to-bottom'
+    });
+});
+
+
 // Add event listener for the Save button
 $(document).on('click', '#add-link-btn', async function () {
     const linkTitle = $('input[name="custom_link_title"]').val();
@@ -502,6 +511,7 @@ $(document).on('click', '#add-link-btn', async function () {
 
         const externalLinksContainer = $('.social-other-links ul')[0];
         externalLinksContainer.appendChild(listItem);
+        store.dispatch('updateUserDetails')
     }
 
     app.preloader.hide()
@@ -583,7 +593,6 @@ $(document).on('click', '#save-profile-socials', async function () {
     app.preloader.show()
 
     const response = await updateSocialLinks(links);
-
 
     app.preloader.hide()
 

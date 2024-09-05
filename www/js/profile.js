@@ -334,6 +334,53 @@ myTagsStore.onUpdated((data) => {
   }
 })
 
+$(document).on('page:init', '.page[data-name="profile"]', function (e) {
+  app.popup.create({
+    el: '.links-popup',
+    swipeToClose: 'to-bottom'
+  })
+})
+
+$(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', function (e) {
+  app.calendar.create({
+    inputEl: '#owned-from',
+    openIn: 'customModal',
+    header: true,
+    footer: true,
+    dateFormat: 'dd/mm/yyyy',
+    maxDate: new Date()
+  })
+
+  app.calendar.create({
+    inputEl: '#owned-to',
+    openIn: 'customModal',
+    header: true,
+    footer: true,
+    dateFormat: 'dd/mm/yyyy',
+    // minDate: new Date()
+  })
+})
+
+$(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', function (e) {
+  app.calendar.create({
+    inputEl: '#owned-from',
+    openIn: 'customModal',
+    header: true,
+    footer: true,
+    dateFormat: 'dd/mm/yyyy',
+    maxDate: new Date()
+  })
+
+  app.calendar.create({
+    inputEl: '#owned-to',
+    openIn: 'customModal',
+    header: true,
+    footer: true,
+    dateFormat: 'dd/mm/yyyy',
+    // minDate: new Date()
+  })
+})
+
 $(document).on('infinite', '.profile-landing-page.infinite-scroll-content', async function (e) {
   refreshed = false
 
