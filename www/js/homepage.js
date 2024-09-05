@@ -36,7 +36,6 @@ var refreshed = false
 postsStore.onUpdated((data) => {
   totalPostPages = data.total_pages
 
-
   if ((data.page == data.total_pages) || (data.new_data.length == 0)) {
     $('.infinite-scroll-preloader.home-posts').hide()
 
@@ -63,19 +62,36 @@ followingPostsStore.onUpdated((data) => {
   displayPosts(data.new_data, true)
 })
 
-// Pull to refresh content
-const ptrContent = app.ptr.get('.ptr-content')
+const ptrContent = app.ptr.get('.ptr-content.home-page')
 ptrContent.on('refresh', async function () {
-  console.log('refreshed home');
-
   refreshed = true
   const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
 
-  // if (currentPage >= totalPages) {
-  //   app.infiniteScroll.destroy(infiniteScrollContent)
-  //   app.ptr.done()
-  //   return
-  // }
+  if (isFetchingPosts) return
+
+  isFetchingPosts = true
+
+  if (activeTab === 'following') {
+    currentFollowingPostsPage = 1
+  } else {
+    currentPostsPage = 1
+  }
+
+  await store.dispatch(storeName, 1)
+
+  isFetchingPosts = false
+  app.ptr.done()
+})
+
+$(document).on('infinite', '.infinite-scroll-content.home-page', async function () {
+  const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
+  const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
+  const currentPage = activeTab === 'following' ? currentFollowingPostsPage : currentPostsPage
+
+  if (currentPage >= totalPages) {
+    // app.infiniteScroll.destroy(infiniteScrollContent)
+    return
+  }
 
   if (isFetchingPosts) return
 
@@ -87,10 +103,15 @@ ptrContent.on('refresh', async function () {
     currentPostsPage++
   }
 
-  await store.dispatch(storeName, 1)
-
+  await store.dispatch(storeName, currentPage)
   isFetchingPosts = false
-  app.ptr.done()
+})
+
+$(document).on('page:beforein', '.page[data-name="home"]', function (e) {
+  console.log('Home page before in');
+
+  store.dispatch('getPosts', 1)
+  store.dispatch('getFollowingPosts', 1)
 })
 
 /* Based on this http://jsfiddle.net/brettwp/J4djY/*/
@@ -121,31 +142,6 @@ export function detectDoubleTapClosure(callback) {
 $('.tab-link').on('click', async function (e) {
   const type = this.getAttribute('data-type')
   activeTab = type
-})
-
-const infiniteScrollContent = document.querySelector('.infinite-scroll-content')
-infiniteScrollContent.addEventListener('infinite', async function () {
-  const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
-  const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
-  const currentPage = activeTab === 'following' ? currentFollowingPostsPage : currentPostsPage
-
-  if (currentPage >= totalPages) {
-    app.infiniteScroll.destroy(infiniteScrollContent)
-    return
-  }
-
-  if (isFetchingPosts) return
-
-  isFetchingPosts = true
-
-  if (activeTab === 'following') {
-    currentFollowingPostsPage++
-  } else {
-    currentPostsPage++
-  }
-
-  await store.dispatch(storeName, currentPage)
-  isFetchingPosts = false
 })
 
 async function displayPosts(posts, following = false) {
@@ -249,77 +245,6 @@ async function displayPosts(posts, following = false) {
     postsContainer.append(postItem);
   });
 }
-
-$(document).on('click', '.media-post-readmore', function () {
-  const postDescription = this.previousElementSibling.previousElementSibling; // The short description
-  const fullDescription = this.previousElementSibling; // The full description
-
-  if (fullDescription.classList.contains('hidden')) {
-    postDescription.classList.add('hidden');
-    fullDescription.classList.remove('hidden');
-    this.textContent = '... less';
-  } else {
-    postDescription.classList.remove('hidden');
-    fullDescription.classList.add('hidden');
-    this.textContent = '... more';
-  }
-});
-
-$(document).on('click', '.media-post-like i', (e) => {
-  const postId = e.target.getAttribute('data-post-id')
-
-  const parent = e.target.closest('.media-post')
-  const isSingle = parent.classList.contains('single') ? true : false
-
-  togglePostLike(postId, isSingle)
-})
-
-// media-post-edit click
-// set the post id as a data attribute from the edit post popup
-$(document).on('click', '.media-post-edit', function () {
-  const postId = $(this).closest('.media-post').attr('data-post-id')
-  $('.edit-post-popup').attr('data-post-id', postId)
-})
-
-$(document).on('click', '#delete-post', function () {
-  // set the post id as a data attribute from the edit post popup
-  const postId = $('.edit-post-popup').attr('data-post-id')
-
-  app.dialog.confirm('Are you sure you want to delete this post?', 'Delete Post', async () => {
-    const response = await deletePost(postId)
-    if (response) {
-      showToast('Post deleted successfully')
-      // remove the post from the DOM
-      $(`.media-post[data-post-id="${postId}"]`).remove()
-      app.popup.close('.edit-post-popup')
-    } else {
-      showToast('Failed to delete post')
-    }
-  })
-})
-
-$(document).on('touchstart', '.media-post-content .swiper-wrapper', detectDoubleTapClosure((e) => {
-  const parent = e.closest('.media-post')
-  const postId = parent.getAttribute('data-post-id')
-  const isLiked = parent.getAttribute('data-is-liked') === 'true'
-
-  if (isLiked) {
-    return
-  }
-
-  togglePostLike(postId)
-}), {
-  passive: false
-})
-
-// media-post-video click
-$(document).on('click', '.media-post-video', function () {
-  if (this.paused) {
-    this.play()
-  } else {
-    this.pause()
-  }
-})
 
 export function togglePostLike(postId, single = false) {
   // Find the post element and its like icon
@@ -495,6 +420,97 @@ function toggleCommentLike(commentId, ownerId) {
   maybeLikeComment(commentId, ownerId)
 }
 
+$(document).on('click', '.media-post-readmore', function () {
+  const postDescription = this.previousElementSibling.previousElementSibling; // The short description
+  const fullDescription = this.previousElementSibling; // The full description
+
+  if (fullDescription.classList.contains('hidden')) {
+    postDescription.classList.add('hidden');
+    fullDescription.classList.remove('hidden');
+    this.textContent = '... less';
+  } else {
+    postDescription.classList.remove('hidden');
+    fullDescription.classList.add('hidden');
+    this.textContent = '... more';
+  }
+});
+
+$(document).on('click', '.media-post-like i', (e) => {
+  const postId = e.target.getAttribute('data-post-id')
+
+  const parent = e.target.closest('.media-post')
+  const isSingle = parent.classList.contains('single') ? true : false
+
+  togglePostLike(postId, isSingle)
+})
+
+// set the post id as a data attribute from the edit post popup
+$(document).on('click', '.media-post-edit', function () {
+  const postId = $(this).closest('.media-post').attr('data-post-id')
+  const isSingleView = $(this).closest('.media-post').hasClass('single')
+  $('.edit-post-popup').attr('data-post-id', postId)
+  $('.edit-post-popup').attr('data-is-single', isSingleView)
+})
+
+$(document).on('click', '#delete-post', function () {
+  var view = app.views.current
+
+  // set the post id as a data attribute from the edit post popup
+  const postId = $('.edit-post-popup').attr('data-post-id')
+  const isSingleView = $('.edit-post-popup').attr('data-is-single')
+
+  app.dialog.confirm('Are you sure you want to delete this post?', 'Delete Post', async () => {
+    const response = await deletePost(postId)
+
+    if (response) {
+      store.dispatch('getMyPosts', {
+        page: 1,
+        clear: true
+      })
+      store.dispatch('getMyTags', {
+        page: 1,
+        clear: true
+      })
+
+      if (isSingleView) {
+        view.router.navigate('/profile/')
+      }
+
+      showToast('Post deleted successfully')
+      // remove the post from the DOM
+      $(`.media-post[data-post-id="${postId}"]`).remove()
+      app.popup.close('.edit-post-popup')
+    } else {
+      showToast('Failed to delete post')
+    }
+  })
+})
+
+$(document).on('touchstart', '.media-post-content .swiper-wrapper', detectDoubleTapClosure((e) => {
+  return // Disable double tap for now
+
+  const parent = e.closest('.media-post')
+  const postId = parent.getAttribute('data-post-id')
+  const isLiked = parent.getAttribute('data-is-liked') === 'true'
+
+  if (isLiked) {
+    return
+  }
+
+  togglePostLike(postId)
+}), {
+  passive: false
+})
+
+// media-post-video click
+$(document).on('click', '.media-post-video', function () {
+  if (this.paused) {
+    this.play()
+  } else {
+    this.pause()
+  }
+})
+
 // on .popup-open click
 $(document).on('click', '.media-post-comment, .media-post-commentcount', async function () {
   const postId = this.getAttribute('data-post-id')
@@ -519,7 +535,6 @@ $(document).on('click', '.media-post-comment, .media-post-commentcount', async f
   // CommentsPopup.open()
 })
 
-// .media-post-share
 $(document).on('click', '.media-post-share', function () {
   // set the post id as a data attribute 
   const postId = $(this).closest('.media-post').attr('data-post-id')
@@ -609,8 +624,6 @@ $(document).on('click', '.comment-reply', function () {
 })
 
 $(document).on('click', '.comment-delete', async function () {
-
-
   app.dialog.confirm('Are you sure you want to delete this comment? This will remove all replies to this comment', 'Delete Comment', async () => {
     try {
       const commentId = this.getAttribute('data-comment-id')
@@ -625,12 +638,6 @@ $(document).on('click', '.comment-delete', async function () {
       app.dialog.alert('Failed to delete comment')
     }
   })
-})
-
-$(document).on('page:afterin', '.page[data-name="home"]', function (e) {
-  console.log('Home page after in');
-  store.dispatch('getPosts', 1)
-  store.dispatch('getFollowingPosts', 1)
 })
 
 $(document).on('click', '.comment-username a', function (e) {

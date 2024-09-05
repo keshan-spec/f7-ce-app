@@ -96,19 +96,19 @@ function displayPost(post) {
   postsContainer.insertAdjacentHTML('beforeend', postItem)
 }
 
-$(document).on('touchstart', '.media-single-post-content .swiper-wrapper', detectDoubleTapClosure((e) => {
-  const parent = e.closest('.media-post')
-  const postId = parent.getAttribute('data-post-id')
-  const isLiked = parent.getAttribute('data-is-liked') === 'true'
+// $(document).on('touchstart', '.media-single-post-content .swiper-wrapper', detectDoubleTapClosure((e) => {
+//   const parent = e.closest('.media-post')
+//   const postId = parent.getAttribute('data-post-id')
+//   const isLiked = parent.getAttribute('data-is-liked') === 'true'
 
-  if (isLiked) {
-    return
-  }
+//   if (isLiked) {
+//     return
+//   }
 
-  togglePostLike(postId, true)
-}), {
-  passive: false
-})
+//   togglePostLike(postId, true)
+// }), {
+//   passive: false
+// })
 
 $(document).on('page:beforein', '.page[data-name="post-view"]', async function (e) {
   var pathStore = store.getters.getPathData

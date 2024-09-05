@@ -400,7 +400,8 @@ const store = createStore({
       state
     }, {
       user_id,
-      page = 1
+      page = 1,
+      clear = false
     }) {
       const posts = await getPostsForUser(user_id, page)
 
@@ -408,8 +409,10 @@ const store = createStore({
         data: []
       }
 
-      if (state.userPaths[`user-${user_id}-posts`]) {
-        prevUserPosts = state.userPaths[`user-${user_id}-posts`]
+      if (!clear) {
+        if (state.userPaths[`user-${user_id}-posts`]) {
+          prevUserPosts = state.userPaths[`user-${user_id}-posts`]
+        }
       }
 
       const data = {
@@ -421,6 +424,7 @@ const store = createStore({
         total_pages: posts.total_pages,
         page: page,
         limit: posts.limit,
+        cleared: clear,
       }
 
       state.userPaths[`user-${user_id}-posts`] = data
@@ -430,16 +434,18 @@ const store = createStore({
       state
     }, {
       user_id,
-      page = 1
+      page = 1,
+      clear = false
     }) {
       const posts = await getPostsForUser(user_id, page, true)
 
       let prevUserPosts = {
         data: []
       }
-
-      if (state.userPaths[`user-${user_id}-tags`]) {
-        prevUserPosts = state.userPaths[`user-${user_id}-tags`]
+      if (!clear) {
+        if (state.userPaths[`user-${user_id}-tags`]) {
+          prevUserPosts = state.userPaths[`user-${user_id}-tags`]
+        }
       }
 
       const data = {
@@ -451,6 +457,7 @@ const store = createStore({
         total_pages: posts.total_pages,
         page: page,
         limit: posts.limit,
+        cleared: clear,
       }
 
       state.userPaths[`user-${user_id}-tags`] = data
@@ -661,8 +668,25 @@ const store = createStore({
     },
     async getMyPosts({
       state
-    }, page = 1) {
+    }, {
+      page = 1,
+      clear = false
+    }) {
+      console.log('Getting my posts', page, clear);
+
       const posts = await getPostsForUser(state.user.id, page)
+
+      if (clear) {
+        state.myPosts = {
+          new_data: posts.data,
+          data: posts.data,
+          total_pages: posts.total_pages || 0,
+          page: page,
+          limit: posts.limit || 10,
+          cleared: true,
+        }
+        return
+      }
 
       const data = {
         new_data: posts.data,
@@ -679,8 +703,23 @@ const store = createStore({
     },
     async getMyTags({
       state
-    }, page = 1) {
+    }, {
+      page = 1,
+      clear = false
+    }) {
       const posts = await getPostsForUser(state.user.id, page, true)
+
+      if (clear) {
+        state.myTags = {
+          new_data: posts.data,
+          data: posts.data,
+          total_pages: posts.total_pages || 0,
+          page: page,
+          limit: posts.limit || 10,
+          cleared: true,
+        }
+        return
+      }
 
       const data = {
         new_data: posts.data,

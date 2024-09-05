@@ -310,7 +310,12 @@ myPostsStore.onUpdated((data) => {
     }
 
     // Call the function to fill the grid
-    fillGridWithPosts(posts, 'profile-grid-posts', refreshed)
+    fillGridWithPosts(posts, 'profile-grid-posts', data.cleared || false)
+  } else {
+    console.log('No new data');
+    // reset the page
+    currentPostPage = 1
+    fillGridWithPosts([], 'profile-grid-posts', true)
   }
 })
 
@@ -325,45 +330,48 @@ myTagsStore.onUpdated((data) => {
     }
 
     // Call the function to fill the grid
-    fillGridWithPosts(posts, 'profile-grid-tags', refreshed)
+    fillGridWithPosts(posts, 'profile-grid-tags', data.cleared || false)
+  }
+})
+
+$(document).on('infinite', '.profile-landing-page.infinite-scroll-content', async function (e) {
+  refreshed = false
+
+  if (isFetchingPosts) return
+
+  const activeTab = document.querySelector('.profile-tabs .tab-link-active')
+  const activeTabId = activeTab.id
+
+  if (!activeTabId || activeTabId === 'my-garage') return
+
+  const getterFunc = activeTabId === 'my-posts' ? 'getMyPosts' : 'getMyTags'
+
+  isFetchingPosts = true
+
+  if (activeTabId === 'my-posts') {
+    currentPostPage++
+
+    if (currentPostPage <= totalPostPages) {
+      await store.dispatch(getterFunc, {
+        page: currentPostPage,
+        clear: false
+      })
+      isFetchingPosts = false
+    }
+  } else {
+    currentFPostPage++
+
+    if (currentFPostPage <= totalFPostPages) {
+      await store.dispatch(getterFunc, {
+        page: currentPostPage,
+        clear: false
+      })
+      isFetchingPosts = false
+    }
   }
 })
 
 $(document).on('page:beforein', '.page[data-name="profile"]', function (e) {
-  // Infinite Scroll
-  const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content')
-
-  infiniteScrollContent.addEventListener('infinite', async function () {
-    refreshed = false
-
-    if (isFetchingPosts) return
-
-    const activeTab = document.querySelector('.profile-tabs .tab-link-active')
-    const activeTabId = activeTab.id
-
-    if (!activeTabId || activeTabId === 'my-garage') return
-
-    const getterFunc = activeTabId === 'my-posts' ? 'getMyPosts' : 'getMyTags'
-
-    isFetchingPosts = true
-
-    if (activeTabId === 'my-posts') {
-      currentPostPage++
-
-      if (currentPostPage <= totalPostPages) {
-        await store.dispatch(getterFunc, currentPostPage)
-        isFetchingPosts = false
-      }
-    } else {
-      currentFPostPage++
-
-      if (currentFPostPage <= totalFPostPages) {
-        await store.dispatch(getterFunc, currentFPostPage)
-        isFetchingPosts = false
-      }
-    }
-  })
-
   const ptrContent = app.ptr.get('.profile-landing-page.ptr-content')
   ptrContent.on('refresh', async function () {
     refreshed = true
@@ -372,47 +380,65 @@ $(document).on('page:beforein', '.page[data-name="profile"]', function (e) {
       store.dispatch('clearPathData')
 
       await store.dispatch('getMyGarage')
-      await store.dispatch('getMyPosts')
-      await store.dispatch('getMyTags')
+      await store.dispatch('getMyPosts', {
+        page: 1,
+        clear: true
+      })
+      await store.dispatch('getMyTags', {
+        page: 1,
+        clear: true
+      })
+
+      // await store.dispatch('getMyPosts')
+      // await store.dispatch('getMyTags')
     } catch (error) {
       console.log(error);
     }
 
     ptrContent.done()
   })
-
-  createGarageContent(garageStore.value, '.current-vehicles-list', '.past-vehicles-list')
-
-  if (userStore.value) {
-    displayProfile(userStore.value)
-  }
-
-  if (myPostsStore.value) {
-    const posts = myPostsStore.value.data
-    totalPostPages = myPostsStore.value.total_pages
-
-    if ((myPostsStore.value.page === myPostsStore.value.total_pages) || (myPostsStore.value.total_pages == 0)) {
-      // hide preloader
-      $('.infinite-scroll-preloader.posts-tab').hide()
-    }
-
-    // Call the function to fill the grid
-    fillGridWithPosts(posts, 'profile-grid-posts', true)
-  }
-
-  if (myTagsStore.value) {
-    const posts = myTagsStore.value.data
-    totalFPostPages = myTagsStore.value.total_pages || 0
-
-    if ((myTagsStore.value.page === totalFPostPages) || (totalFPostPages == 0)) {
-      // hide preloader
-      $('.infinite-scroll-preloader.tags-tab').hide()
-    }
-
-    // Call the function to fill the grid
-    fillGridWithPosts(posts, 'profile-grid-tags', true)
-  }
 })
+
+// $(document).on('page:init', '.page[data-name="profile"]', function (e) {
+//   console.log(myPostsStore.value, myTagsStore.value);
+
+//   console.log('Profile page before in');
+
+//   createGarageContent(garageStore.value, '.current-vehicles-list', '.past-vehicles-list')
+
+//   if (userStore.value) {
+//     displayProfile(userStore.value)
+//   }
+
+//   // if (myPostsStore.value) {
+//   //   const posts = myPostsStore.value.data
+//   //   totalPostPages = myPostsStore.value.total_pages
+
+//   //   if ((myPostsStore.value.page === myPostsStore.value.total_pages) || (myPostsStore.value.total_pages == 0)) {
+//   //     // hide preloader
+//   //     $('.infinite-scroll-preloader.posts-tab').hide()
+//   //   }
+
+//   //   // Call the function to fill the grid
+//   //   fillGridWithPosts(posts, 'profile-grid-posts', true)
+//   // }
+
+//   // if (myTagsStore.value) {
+//   //   const posts = myTagsStore.value.data
+//   //   totalFPostPages = myTagsStore.value.total_pages || 0
+
+//   //   if ((myTagsStore.value.page === totalFPostPages) || (totalFPostPages == 0)) {
+//   //     // hide preloader
+//   //     $('.infinite-scroll-preloader.tags-tab').hide()
+//   //   }
+
+//   //   // Call the function to fill the grid
+//   //   fillGridWithPosts(posts, 'profile-grid-tags', true)
+//   // }
+// })
+
+// ------- Garage Views -------
+
 
 $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', async function (e) {
   var garageId = e.detail.route.params.id

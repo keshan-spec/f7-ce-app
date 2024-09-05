@@ -5,6 +5,7 @@ var routes = [{
     path: '/',
     url: './index.html',
     name: 'home',
+    keepAlive: true,
   },
   {
     path: '/notifications/',
@@ -13,9 +14,9 @@ var routes = [{
   {
     path: '/auth/',
     url: './pages/auth.html',
-    options: {
-      animate: false,
-    },
+    // options: {
+    //   animate: false,
+    // },
   },
   {
     path: '/signin/',
@@ -52,6 +53,7 @@ var routes = [{
   {
     path: '/discover/',
     componentUrl: './pages/discover.html?' + v,
+    keepAlive: true,
   },
   {
     path: '/discover-view-event/:id',
@@ -67,6 +69,8 @@ var routes = [{
   {
     path: '/profile/',
     componentUrl: './pages/profile.html?' + v,
+    keepAlive: true,
+
   },
   {
     path: '/profile-view/:id',

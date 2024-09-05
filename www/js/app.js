@@ -33,9 +33,10 @@ var toolbarEl = $('.footer')[0]
 var app = new Framework7({
   initOnDeviceReady: true,
   view: {
-    pushState: true,
+    pushState: false,
     stackPages: true,
     xhrCache: true,
+    preloadPreviousPage: true,
   },
   toast: {
     closeTimeout: 3000,
@@ -43,10 +44,6 @@ var app = new Framework7({
   },
   name: 'DriveLife',
   theme: 'ios',
-  //theme: 'auto',
-  panel: {
-    swipe: 'right',
-  },
   smartSelect: {
     closeOnSelect: true,
   },
@@ -64,10 +61,6 @@ var app = new Framework7({
       } else {
         $('.init-loader').hide()
       }
-
-      // setTimeout(() => {
-      //   $('.init-loader').hide()
-      // }, 300)
 
       const deeplink = getQueryParameter('deeplink')
       if (deeplink) {
@@ -95,8 +88,14 @@ var app = new Framework7({
 
           if (data && !data.refreshed) {
             store.dispatch('getFollowingPosts')
-            store.dispatch('getMyPosts')
-            store.dispatch('getMyTags')
+            store.dispatch('getMyPosts', {
+              page: 1,
+              clear: true
+            })
+            store.dispatch('getMyTags', {
+              page: 1,
+              clear: true
+            })
           }
         })
       }
@@ -157,7 +156,28 @@ function getQueryParameter(name) {
   return urlParams.get(name)
 }
 
+function isAndroid() {
+  const toMatch = [
+    /Android/i,
+    // /webOS/i,
+    // /iPhone/i,
+    // /iPad/i,
+    // /iPod/i,
+    /BlackBerry/i,
+    /Windows Phone/i,
+  ];
+
+  return toMatch.some((toMatchItem) => {
+    return navigator.userAgent.match(toMatchItem);
+  });
+}
+
 export function onBackKeyDown() {
+  // check if the device is an android device
+  if (!isAndroid()) {
+    return
+  }
+
   var view = app.views.current
 
   var leftp = app.panel.left && app.panel.left.opened

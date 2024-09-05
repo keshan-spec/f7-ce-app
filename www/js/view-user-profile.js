@@ -28,6 +28,63 @@ var refreshed = false;
 
 var userId = null
 
+$(document).on('page:init', '.page[data-name="profile-view"]', async function (e) {
+    userId = e.detail.route.params.id
+    currentPostPage = 1
+    currentFPostPage = 1
+    isFetchingPosts = false
+    refreshed = false
+
+    store.dispatch('getUserPosts', {
+        user_id: userId,
+        clear: true
+    })
+
+    store.dispatch('getUserTags', {
+        user_id: userId,
+        clear: true
+    })
+
+    // Infinite Scroll
+    // const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content.view-page')
+    // infiniteScrollContent.addEventListener('infinite', async function () {
+    // })
+})
+
+$(document).on('infinite', '.profile-landing-page.infinite-scroll-content.view-page', async function (e) {
+    if (isFetchingPosts) return
+
+    const activeTab = document.querySelector('.profile-tabs .tab-link-active')
+    const activeTabId = activeTab.id
+
+    if (!activeTabId || activeTabId === 'my-garage') return
+
+    const getterFunc = activeTabId === 'my-posts' ? 'getUserPosts' : 'getUserTags'
+
+    isFetchingPosts = true
+
+    if (activeTabId === 'my-posts') {
+        currentPostPage++
+        if (currentPostPage <= totalPostPages) {
+            await store.dispatch(getterFunc, {
+                user_id: userId,
+                page: currentPostPage
+            })
+            isFetchingPosts = false
+        }
+    } else {
+        currentFPostPage++
+
+        if (currentFPostPage <= totalFPostPages) {
+            await store.dispatch(getterFunc, {
+                user_id: userId,
+                page: currentFPostPage
+            })
+            isFetchingPosts = false
+        }
+    }
+})
+
 $(document).on('page:beforein', '.page[data-name="profile-view"]', async function (e) {
     var pathStore = store.getters.getPathData
     userId = e.detail.route.params.id
@@ -43,55 +100,23 @@ $(document).on('page:beforein', '.page[data-name="profile-view"]', async functio
         return
     }
 
-    // Infinite Scroll
-    const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content.view-page')
-
-    infiniteScrollContent.addEventListener('infinite', async function () {
-        if (isFetchingPosts) return
-
-        const activeTab = document.querySelector('.profile-tabs .tab-link-active')
-        const activeTabId = activeTab.id
-
-        if (!activeTabId || activeTabId === 'my-garage') return
-
-        const getterFunc = activeTabId === 'my-posts' ? 'getUserPosts' : 'getUserTags'
-
-        isFetchingPosts = true
-
-        if (activeTabId === 'my-posts') {
-            currentPostPage++
-            if (currentPostPage <= totalPostPages) {
-                await store.dispatch(getterFunc, {
-                    user_id: userId,
-                    page: currentPostPage
-                })
-                isFetchingPosts = false
-            }
-        } else {
-            currentFPostPage++
-
-            if (currentFPostPage <= totalFPostPages) {
-                await store.dispatch(getterFunc, {
-                    user_id: userId,
-                    page: currentFPostPage
-                })
-                isFetchingPosts = false
-            }
-        }
-    })
-
     const ptrContent = app.ptr.get('.profile-landing-page.ptr-content')
     ptrContent.on('refresh', async function () {
+        currentPostPage = 1
+        currentFPostPage = 1
+
         store.dispatch('removePathData', `/user/${userId}`)
 
         await renderProfileData(null, userId)
 
         store.dispatch('getUserPosts', {
-            user_id: userId
+            user_id: userId,
+            clear: true
         })
 
         store.dispatch('getUserTags', {
-            user_id: userId
+            user_id: userId,
+            clear: true
         })
 
         refreshed = true
@@ -120,14 +145,21 @@ $(document).on('page:beforein', '.page[data-name="profile-view"]', async functio
     }
 
     await renderProfileData(cachedData, userId)
+})
 
-    store.dispatch('getUserPosts', {
-        user_id: userId
-    })
+$(document).on('click', '.user-follow-btn', async function () {
+    const followButton = $(this)
+    const isFollowing = followButton.text() === 'Following'
 
-    store.dispatch('getUserTags', {
-        user_id: userId
-    })
+    // change the button text
+    followButton.text(isFollowing ? 'Follow' : 'Following')
+    const response = await maybeFollowUser(followButton.attr('data-user-id'))
+
+    if (response && response.success) {
+        store.dispatch('updateUserDetails', {
+            external: true
+        })
+    }
 })
 
 async function renderProfileData(cachedData, userId) {
@@ -176,8 +208,7 @@ async function renderProfileData(cachedData, userId) {
     $('.loading-fullscreen').hide()
 }
 
-function populateUsersPosts(data, reset = false) {
-
+function populateUsersPosts(data) {
     if (data) {
         const postsKey = `user-${userId}-posts`
         const tagsKey = `user-${userId}-tags`
@@ -185,6 +216,8 @@ function populateUsersPosts(data, reset = false) {
         // Handle posts
         if (data[postsKey]) {
             totalPostPages = data[postsKey].total_pages || 0
+
+            let reset = data[postsKey].cleared || false
 
             // Only update the DOM if there are new posts
             if (data[postsKey].new_data && data[postsKey].new_data.length > 0) {
@@ -204,6 +237,8 @@ function populateUsersPosts(data, reset = false) {
         if (data[tagsKey]) {
             totalFPostPages = data[tagsKey].total_pages || 0
 
+            let reset = data[tagsKey].cleared || false
+
             // Only update the DOM if there are new tags
             if (data[tagsKey].new_data && data[tagsKey].new_data.length > 0) {
                 fillGridWithPosts(data[tagsKey].new_data, 'profile-view-grid-tags', reset)
@@ -221,20 +256,5 @@ function populateUsersPosts(data, reset = false) {
 
 store.getters.getUserPathUpdated.onUpdated(() => {
     const data = store.getters.getUserPathData.value
-    populateUsersPosts(data, true)
-})
-
-$(document).on('click', '.user-follow-btn', async function () {
-    const followButton = $(this)
-    const isFollowing = followButton.text() === 'Following'
-
-    // change the button text
-    followButton.text(isFollowing ? 'Follow' : 'Following')
-    const response = await maybeFollowUser(followButton.attr('data-user-id'))
-
-    if (response && response.success) {
-        store.dispatch('updateUserDetails', {
-            external: true
-        })
-    }
+    populateUsersPosts(data)
 })
