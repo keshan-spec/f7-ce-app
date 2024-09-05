@@ -86,7 +86,7 @@ var app = new Framework7({
             store.dispatch('getMyGarage')
           }
 
-          if (data && !data.refreshed) {
+          if (data && data.id && !data.refreshed) {
             store.dispatch('getFollowingPosts')
             store.dispatch('getMyPosts', {
               page: 1,
@@ -102,10 +102,12 @@ var app = new Framework7({
 
       if (page.name === 'discover') {
         userStore.onUpdated((data) => {
-          store.dispatch('getTrendingEvents')
-          store.dispatch('getTrendingVenues')
-          store.dispatch('filterTrendingUsers')
-          store.dispatch('fetchEventCategories')
+          if (data && data.id && !data.refreshed) {
+            store.dispatch('getTrendingEvents')
+            store.dispatch('getTrendingVenues')
+            store.dispatch('filterTrendingUsers')
+            store.dispatch('fetchEventCategories')
+          }
         })
       }
 

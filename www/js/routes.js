@@ -4,7 +4,7 @@ var v = '1.0.1'
 var routes = [{
     path: '/',
     url: './index.html',
-    // name: 'home',
+    name: 'index',
     // keepAlive: true,
   },
   {
@@ -15,6 +15,7 @@ var routes = [{
   {
     path: '/notifications/',
     componentUrl: './pages/notifications.html?' + v,
+    keepAlive: true,
   },
   {
     path: '/auth/',
