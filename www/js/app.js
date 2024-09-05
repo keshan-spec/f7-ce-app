@@ -727,7 +727,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', fu
 })
 
 //PROFILE SECTION
-$(document).on('page:afterin', '.page[data-name="auth"]', function (e) {
+$(document).on('page:init', '.page[data-name="auth"]', function (e) {
   console.log('DOMContentLoaded');
   setTimeout(() => {
     $('.init-loader').hide()

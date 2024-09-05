@@ -129,7 +129,7 @@ export const fetchTrendingVenues = async (page, paginate = false, filters = '{}'
     }
 };
 
-export const getEventCategories = async () => {
+export const fetchEventCats = async () => {
     const response = await fetch(`${API_URL}/wp-json/app/v1/get-event-categories`, {
         method: "GET",
         cache: "force-cache",

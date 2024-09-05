@@ -12,7 +12,7 @@ import {
   fetchTrendingEvents,
   fetchTrendingUsers,
   fetchTrendingVenues,
-  getEventCategories
+  fetchEventCats
 } from './api/discover.js'
 import {
   getPostsForGarage,
@@ -374,7 +374,7 @@ const store = createStore({
     async fetchEventCategories({
       state
     }) {
-      const categories = await getEventCategories()
+      const categories = await fetchEventCats()
 
       state.eventCategories = categories
     },

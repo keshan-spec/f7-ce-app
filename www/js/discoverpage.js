@@ -437,45 +437,48 @@ $(document).on('page:init', '.page[data-name="discover"]', function (e) {
     initAutocomplete();
 });
 
-$(document).on('page:afterin', '.page[data-name="discover"]', function (e) {
-    const infiniteScrollContent = document.querySelector('.discover-page.infinite-scroll-content')
+$(document).on('infinite', '.discover-page.infinite-scroll-content', async function (e) {
+    if (isFetchingPosts) return
 
-    infiniteScrollContent.addEventListener('infinite', async function () {
-        if (isFetchingPosts) return
+    // get active tab
+    const activeTabId = document.querySelector('.tabbar-nav .tab-link-active').getAttribute('data-id');
 
-        // get active tab
-        const activeTabId = document.querySelector('.tabbar-nav .tab-link-active').getAttribute('data-id');
+    if (!activeTabId) return
 
-        if (!activeTabId) return
+    isFetchingPosts = true
 
-        isFetchingPosts = true
+    if (activeTabId === 'events') {
+        currentEventsPage++
 
-        if (activeTabId === 'events') {
-            currentEventsPage++
-
-            if (currentEventsPage <= totalEventPages) {
-                await store.dispatch('filterEvents', {
-                    page: currentEventsPage,
-                    filters
-                })
-                isFetchingPosts = false
-            }
-        } else if (activeTabId === 'venues') {
-            currentVenuesPage++
-
-            if (currentVenuesPage <= totalVenuesPages) {
-                await store.dispatch('filterVenues', {
-                    page: currentVenuesPage,
-                    filters
-                })
-                isFetchingPosts = false
-            }
+        if (currentEventsPage <= totalEventPages) {
+            await store.dispatch('filterEvents', {
+                page: currentEventsPage,
+                filters
+            })
+            isFetchingPosts = false
         }
-    })
+    } else if (activeTabId === 'venues') {
+        currentVenuesPage++
+
+        if (currentVenuesPage <= totalVenuesPages) {
+            await store.dispatch('filterVenues', {
+                page: currentVenuesPage,
+                filters
+            })
+            isFetchingPosts = false
+        }
+    }
+})
+
+$(document).on('page:beforein', '.page[data-name="discover"]', function (e) {
+    console.log('Discover page before in');
 
     const ptrContent = app.ptr.get('.discover-page.ptr-content')
     ptrContent.on('refresh', async function () {
+        if (isFetchingPosts) return
+
         refreshed = true
+        isFetchingPosts = true
 
         try {
             await store.dispatch('getTrendingEvents')
@@ -486,38 +489,39 @@ $(document).on('page:afterin', '.page[data-name="discover"]', function (e) {
             console.log(error);
         }
 
+        isFetchingPosts = false
         ptrContent.done()
     })
 
-    const eventCats = eventCategories.value
-    const trendingEvents = trendingEventsStore.value
-    const trendingVenues = trendingVenuesStore.value
-    const trendingUsers = trendingUsersStore.value
+    // const eventCats = eventCategories.value
+    // const trendingEvents = trendingEventsStore.value
+    // const trendingVenues = trendingVenuesStore.value
+    // const trendingUsers = trendingUsersStore.value
 
-    if (!eventCats || eventCats.length === 0) {
-        store.dispatch('fetchEventCategories')
-    } else {
-        addCategoryOptions(eventCats);
-    }
+    // if (!eventCats || eventCats.length === 0) {
+    //     store.dispatch('fetchEventCategories')
+    // } else {
+    //     addCategoryOptions(eventCats);
+    // }
 
-    if (!trendingEvents || trendingEvents.length === 0) {
-        store.dispatch('fetchTrendingEvents')
-    } else {
-        totalEventPages = trendingEvents.total_pages
-        populateEventCard(trendingEvents.data);
-    }
+    // if (!trendingEvents || trendingEvents.length === 0) {
+    //     store.dispatch('fetchTrendingEvents')
+    // } else {
+    //     totalEventPages = trendingEvents.total_pages
+    //     populateEventCard(trendingEvents.data);
+    // }
 
-    if (!trendingVenues || trendingVenues.length === 0) {
-        store.dispatch('fetchTrendingVenues')
-    } else {
-        totalVenuesPages = trendingVenues.total_pages
-        populateVenueCard(trendingVenues.data);
-    }
+    // if (!trendingVenues || trendingVenues.length === 0) {
+    //     store.dispatch('fetchTrendingVenues')
+    // } else {
+    //     totalVenuesPages = trendingVenues.total_pages
+    //     populateVenueCard(trendingVenues.data);
+    // }
 
-    if (!trendingUsers || trendingUsers.length === 0) {
-        store.dispatch('fetchTrendingUsers')
-    } else {
-        totalUsersPages = trendingUsers.total_pages
-        populateUsersCard(trendingUsers.data);
-    }
+    // if (!trendingUsers || trendingUsers.length === 0) {
+    //     store.dispatch('fetchTrendingUsers')
+    // } else {
+    //     totalUsersPages = trendingUsers.total_pages
+    //     populateUsersCard(trendingUsers.data);
+    // }
 });

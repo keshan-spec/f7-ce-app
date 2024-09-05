@@ -7,7 +7,7 @@ import app from "./app.js";
 var $ = Dom7;
 
 //DISCOVER - VIEW EVENT
-$(document).on('page:afterin', '.page[data-name="discover-view-venue"]', async function (e) {
+$(document).on('page:init', '.page[data-name="discover-view-venue"]', async function (e) {
     var venueId = e.detail.route.params.id
 
     if (!venueId || venueId === '-1') {
