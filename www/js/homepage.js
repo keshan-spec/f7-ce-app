@@ -62,27 +62,6 @@ followingPostsStore.onUpdated((data) => {
   displayPosts(data.new_data, true)
 })
 
-const ptrContent = app.ptr.get('.ptr-content.home-page')
-ptrContent.on('refresh', async function () {
-  refreshed = true
-  const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
-
-  if (isFetchingPosts) return
-
-  isFetchingPosts = true
-
-  if (activeTab === 'following') {
-    currentFollowingPostsPage = 1
-  } else {
-    currentPostsPage = 1
-  }
-
-  await store.dispatch(storeName, 1)
-
-  isFetchingPosts = false
-  app.ptr.done()
-})
-
 $(document).on('infinite', '.infinite-scroll-content.home-page', async function () {
   const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
   const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
@@ -108,10 +87,26 @@ $(document).on('infinite', '.infinite-scroll-content.home-page', async function 
 })
 
 $(document).on('page:beforein', '.page[data-name="home"]', function (e) {
-  console.log('Home page before in');
+  const ptrContent = app.ptr.get('.ptr-content.home-page')
+  ptrContent.on('refresh', async function () {
+    refreshed = true
+    const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
 
-  store.dispatch('getPosts', 1)
-  store.dispatch('getFollowingPosts', 1)
+    if (isFetchingPosts) return
+
+    isFetchingPosts = true
+
+    if (activeTab === 'following') {
+      currentFollowingPostsPage = 1
+    } else {
+      currentPostsPage = 1
+    }
+
+    await store.dispatch(storeName, 1)
+
+    isFetchingPosts = false
+    app.ptr.done()
+  })
 })
 
 /* Based on this http://jsfiddle.net/brettwp/J4djY/*/
