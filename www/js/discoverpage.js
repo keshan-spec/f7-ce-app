@@ -69,6 +69,7 @@ function populateEventCard(data = [], isSwiper = true) {
         }
 
         const card = `
+        <a href="/discover-view-event/${event.id}">
             <div class="card event-item">
                 <div class="event-image position-relative">
                     <div class="image-rectangle" style="background-image: url('${event.thumbnail}');"></div>
@@ -80,16 +81,15 @@ function populateEventCard(data = [], isSwiper = true) {
                         ${endDateString}
                     </div>
                 </div>
-                <a href="/discover-view-event/${event.id}">
                 <div class="card-content">
                     <h3 class="event-title">${event.title}</h3>
                     <p class="event-info">Starts ${startDate.toLocaleString('default', { weekday: 'short' })}, ${startDate.getDate()} ${startDate.toLocaleString('default', { month: 'short' })} ${startDate.getFullYear()}</p>
                     <div class="event-info">
                         ${event.location}
                     </div>
-                    </a>
                 </div>
             </div>
+        </a>
         `;
 
         if (isSwiper) {
@@ -113,11 +113,11 @@ function populateVenueCard(data = [], isSwiper = true) {
         const swiperSlide = document.createElement('swiper-slide');
 
         const card = `
+        <a href="/discover-view-venue/${event.ID}">
             <div class="card event-item">
                 <div class="event-image position-relative">
                     <div class="image-rectangle" style="background-image: url('${event.cover_image}');"></div>
                 </div>
-                <a href="/discover-view-venue/${event.ID}">
                 <div class="card-content">
                     <h3 class="event-title">${event.title}</h3>
                     <div class="event-info">
@@ -127,8 +127,8 @@ function populateVenueCard(data = [], isSwiper = true) {
                         Apprx. ${event.distance} miles away
                     </div>
                 </div>
-                </a>
             </div>
+        </a>
         `;
 
         if (isSwiper) {
