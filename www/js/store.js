@@ -672,8 +672,6 @@ const store = createStore({
       page = 1,
       clear = false
     }) {
-      console.log('Getting my posts', page, clear);
-
       const posts = await getPostsForUser(state.user.id, page)
 
       if (clear) {

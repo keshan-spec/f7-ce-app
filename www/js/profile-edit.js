@@ -410,6 +410,11 @@ $(document).on('page:init', '.page[data-name="profile-edit-socials"]', async fun
 
     const externalLinks = user.profile_links || {};
 
+    app.popup.create({
+        el: '.add-link-popup',
+        swipeToClose: 'to-bottom'
+    });
+
     // Populate form fields
     document.querySelector('input[name="social_instagram"]').value = externalLinks.instagram || '';
     document.querySelector('input[name="social_facebook"]').value = externalLinks.facebook || '';
@@ -438,14 +443,6 @@ $(document).on('page:init', '.page[data-name="profile-edit-socials"]', async fun
         externalLinksContainer.appendChild(listItem);
     });
 })
-
-$(document).on('page:init', '.page[data-name="profile-edit-socials"]', function (e) {
-    app.popup.create({
-        el: '.add-link-popup',
-        swipeToClose: 'to-bottom'
-    });
-});
-
 
 // Add event listener for the Save button
 $(document).on('click', '#add-link-btn', async function () {
@@ -571,8 +568,8 @@ $(document).on('click', '#save-profile-socials', async function () {
 
     // facebook must be a valid facebook url
     const urlPattern = /^(https?:\/\/|www\.)[\da-z\.-]+\.[a-z]{2,6}\/?$/;
-    if (facebook && !urlPattern.test(facebook)) {
-        showToast('Please enter a valid Facebook URL.', 'Error');
+    if (facebook && !usernamePattern.test(facebook)) {
+        showToast('Please enter a valid Facebook username (letters, numbers, underscores, periods, hyphens only)', 'Error');
         return;
     }
 
@@ -598,8 +595,8 @@ $(document).on('click', '#save-profile-socials', async function () {
 
     if (response && response.success) {
         showToast('Social links updated successfully', 'Success');
-        store.dispatch('updateUserDetails')
         view.router.navigate('/profile/')
+        store.dispatch('updateUserDetails')
     } else {
         showToast('Failed to update social links', 'Error');
     }

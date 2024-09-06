@@ -73,7 +73,16 @@ export function displayProfile(user, container = 'profile') {
 
   const setLinkHref = (selector, url) => {
     const linkElem = containerElem.querySelector(selector);
-    if (linkElem) linkElem.setAttribute('href', url);
+    if (linkElem) {
+      linkElem.setAttribute('href', url);
+      linkElem.onclick = (e) => {
+        e.preventDefault();
+        window.open(url, '_blank');
+      }
+
+      // Enable the link
+      linkElem.style.opacity = 1;
+    }
   };
 
   if (profileLinks.instagram) {
@@ -101,7 +110,7 @@ export function displayProfile(user, container = 'profile') {
   }
 
   if (profileLinks.tiktok) {
-    setLinkHref('#tiktok', `https://www.tiktok.com/${profileLinks.tiktok}`);
+    setLinkHref('#tiktok', `https://www.tiktok.com/@${profileLinks.tiktok}`);
   } else {
     // set opacity to 0.5
     const tiktokElem = containerElem.querySelector('#tiktok');
@@ -153,7 +162,6 @@ export function displayProfile(user, container = 'profile') {
 $(document).on('click', '.profile-external-links ul li a', function (e) {
   e.preventDefault()
   const url = new URL(e.target.href)
-  console.log(url);
   window.open(url, '_blank')
 })
 
@@ -334,13 +342,6 @@ myTagsStore.onUpdated((data) => {
   }
 })
 
-$(document).on('page:init', '.page[data-name="profile"]', function (e) {
-  app.popup.create({
-    el: '.links-popup',
-    swipeToClose: 'to-bottom'
-  })
-})
-
 $(document).on('page:init', '.page[data-name="profile-garage-vehicle-add"]', function (e) {
   app.calendar.create({
     inputEl: '#owned-from',
@@ -418,33 +419,37 @@ $(document).on('infinite', '.profile-landing-page.infinite-scroll-content', asyn
   }
 })
 
+$(document).on('ptr:refresh', '.profile-landing-page.ptr-content', async function (e) {
+  console.log('PTR Refresh');
+
+  refreshed = true
+
+  try {
+    store.dispatch('clearPathData')
+
+    await store.dispatch('updateUserDetails')
+    await store.dispatch('getMyGarage')
+    await store.dispatch('getMyPosts', {
+      page: 1,
+      clear: true
+    })
+    await store.dispatch('getMyTags', {
+      page: 1,
+      clear: true
+    })
+  } catch (error) {
+    console.log(error);
+  }
+  app.ptr.get('.profile-landing-page.ptr-content').done()
+})
+
 $(document).on('page:beforein', '.page[data-name="profile"]', function (e) {
-  const ptrContent = app.ptr.get('.profile-landing-page.ptr-content')
-  ptrContent.on('refresh', async function () {
-    refreshed = true
-
-    try {
-      store.dispatch('clearPathData')
-
-      await store.dispatch('getMyGarage')
-      await store.dispatch('getMyPosts', {
-        page: 1,
-        clear: true
-      })
-      await store.dispatch('getMyTags', {
-        page: 1,
-        clear: true
-      })
-
-      // await store.dispatch('getMyPosts')
-      // await store.dispatch('getMyTags')
-    } catch (error) {
-      console.log(error);
-    }
-
-    ptrContent.done()
+  app.popup.create({
+    el: '.links-popup',
+    swipeToClose: 'to-bottom'
   })
 })
+
 
 // $(document).on('page:init', '.page[data-name="profile"]', function (e) {
 //   console.log(myPostsStore.value, myTagsStore.value);

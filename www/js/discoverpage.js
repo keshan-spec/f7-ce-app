@@ -540,3 +540,19 @@ $(document).on('page:init', '.page[data-name="discover-view-event"]', function (
         swipeToClose: 'to-bottom'
     });
 });
+
+$(document).on('ptr:refresh', '.discover-page.ptr-content', async function (e) {
+    console.log('PTR Refresh');
+    refreshed = true
+
+    try {
+        await store.dispatch('getTrendingEvents')
+        await store.dispatch('getTrendingVenues')
+        await store.dispatch('filterTrendingUsers')
+        await store.dispatch('fetchEventCategories')
+    } catch (error) {
+        console.log(error);
+    }
+
+    app.ptr.get('.discover-page.ptr-content').done()
+})
