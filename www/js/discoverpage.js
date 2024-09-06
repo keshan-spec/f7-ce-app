@@ -509,14 +509,6 @@ $(document).on('infinite', '.discover-page.infinite-scroll-content', async funct
 // });
 
 $(document).on('page:init', '.page[data-name="discover-view-event"]', function (e) {
-    // Init slider
-    new Swiper('.swiper-container', {
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-    });
-
     app.popup.create({
         el: '.share-listing-popup',
         swipeToClose: 'to-bottom'

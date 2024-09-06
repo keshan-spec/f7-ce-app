@@ -326,7 +326,6 @@ new Swiper('.swiper-container', {
     el: '.swiper-pagination',
     clickable: true,
   },
-  // other parameters
 })
 
 //Comments Popup
@@ -347,7 +346,7 @@ app.popup.create({
   swipeToClose: 'to-bottom'
 })
 
-document.getElementById('open-action-sheet').addEventListener('click', function () {
+$(document).on('click', '#open-action-sheet', function () {
   actionSheet.open()
 })
 
@@ -712,7 +711,6 @@ $(document).on('click', '#signup-complete', async function (e) {
   }
 })
 
-//PROFILE SECTION
 $(document).on('page:afterin', '.page[data-name="auth"]', function (e) {
   toolbarEl.style.display = 'none'
 
@@ -728,7 +726,6 @@ $(document).on('click', '.logout-button', async function (e) {
   app.panel.close()
 
   await store.dispatch('logout')
-  toolbarEl.style.display = 'none'
 
   // reload page
   window.location.reload()
