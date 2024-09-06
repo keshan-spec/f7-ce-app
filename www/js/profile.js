@@ -91,7 +91,7 @@ export function displayProfile(user, container = 'profile') {
     // set opacity to 0.5
     const instagramElem = containerElem.querySelector('#instagram');
     if (instagramElem) {
-      instagramElem.style.opacity = 0.5;
+      instagramElem.style.opacity = 0.2;
       // disable the link
       instagramElem.onclick = (e) => e.preventDefault();
     }
@@ -103,7 +103,7 @@ export function displayProfile(user, container = 'profile') {
     // set opacity to 0.5
     const facebookElem = containerElem.querySelector('#facebook');
     if (facebookElem) {
-      facebookElem.style.opacity = 0.5;
+      facebookElem.style.opacity = 0.2;
       // disable the link
       facebookElem.onclick = (e) => e.preventDefault();
     }
@@ -115,7 +115,7 @@ export function displayProfile(user, container = 'profile') {
     // set opacity to 0.5
     const tiktokElem = containerElem.querySelector('#tiktok');
     if (tiktokElem) {
-      tiktokElem.style.opacity = 0.5;
+      tiktokElem.style.opacity = 0.2;
       // disable the link
       tiktokElem.onclick = (e) => e.preventDefault();
     }
@@ -127,7 +127,7 @@ export function displayProfile(user, container = 'profile') {
     // set opacity to 0.5
     const youtubeElem = containerElem.querySelector('#youtube');
     if (youtubeElem) {
-      youtubeElem.style.opacity = 0.5;
+      youtubeElem.style.opacity = 0.2;
       // disable the link
       youtubeElem.onclick = (e) => e.preventDefault();
     }
