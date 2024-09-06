@@ -28,7 +28,7 @@ var $ = Dom7
 var userStore = store.getters.user
 var notificationCountStore = store.getters.getNotifCount
 
-// var toolbarEl = $('.footer')[0]
+var toolbarEl = $('.footer')[0]
 
 var app = new Framework7({
   initOnDeviceReady: true,
@@ -392,7 +392,7 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
       app.views.main.router.navigate('/')
       $('.start-link').click();
 
-      // toolbarEl.style.display = 'block'
+      toolbarEl.style.display = 'block'
       return
     }
   } catch (error) {
@@ -704,7 +704,7 @@ $(document).on('click', '#signup-complete', async function (e) {
       app.views.main.router.navigate('/')
       $('.start-link').click();
 
-      // toolbarEl.style.display = 'block'
+      toolbarEl.style.display = 'block'
       return
     }
   } catch (error) {
@@ -713,7 +713,9 @@ $(document).on('click', '#signup-complete', async function (e) {
 })
 
 //PROFILE SECTION
-$(document).on('page:init', '.page[data-name="auth"]', function (e) {
+$(document).on('page:afterin', '.page[data-name="auth"]', function (e) {
+  toolbarEl.style.display = 'none'
+
   setTimeout(() => {
     $('.init-loader').hide()
   }, 300)
@@ -726,7 +728,7 @@ $(document).on('click', '.logout-button', async function (e) {
   app.panel.close()
 
   await store.dispatch('logout')
-  // toolbarEl.style.display = 'none'
+  toolbarEl.style.display = 'none'
 
   // reload page
   window.location.reload()
