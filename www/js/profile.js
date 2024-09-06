@@ -595,6 +595,8 @@ async function updateProfilePage(data) {
 
     if (user.id == data.owner_id) {
       profile_link = '/profile/'
+      // add class view-profile
+      profileImageElement.classList.add('view-profile')
     }
 
     profileImageElement.setAttribute('href', profile_link)
