@@ -733,4 +733,8 @@ $(document).on('click', '.logout-button', async function (e) {
   // app.views.current.router.navigate('/auth/')
 })
 
+$(document).on('click', '.view-profile', function (e) {
+  $('.view-profile-link').click()
+})
+
 export default app

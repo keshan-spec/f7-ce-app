@@ -188,20 +188,29 @@ async function displayPosts(posts, following = false) {
       }
     }
 
-    let profile_link = `/profile-view/${post.user_id}`;
+
+
+    let profile_link;
 
     if (post.user_id == user.id) {
-      profile_link = '/profile/';
+      profile_link = `
+      <a href="#" class="view-profile">
+        <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
+        <div class="media-post-user">${post.username}</div>
+      </a>`
+    } else {
+      profile_link = `
+      <a href="/profile-view/${post.user_id}">
+        <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
+        <div class="media-post-user">${post.username}</div>
+      </a>`
     }
 
     const postItem = `
       <div class="media-post" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
         <div class="media-post-content">
           <div class="media-post-header">
-            <a href="${profile_link}">
-              <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
-              <div class="media-post-user">${post.username}</div>
-            </a>
+            ${profile_link}
             <div class="media-post-date">${date}</div>
           </div>
           <div class="media-post-content">
