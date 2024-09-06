@@ -144,7 +144,7 @@ $(document).on('page:beforein', '.page[data-name="post-view"]', async function (
   }
 
   if (!cachedData) {
-    $('.loading-fullscreen').show()
+    $('.loading-fullscreen.post-view').show()
 
     const post = await getPostById(postId)
     if (!post) {
@@ -159,7 +159,7 @@ $(document).on('page:beforein', '.page[data-name="post-view"]', async function (
 
     cachedData = post
   } else {
-    $('.loading-fullscreen').hide()
+    $('.loading-fullscreen.post-view').hide()
   }
 
   displayPost(cachedData)

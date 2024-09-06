@@ -83,7 +83,6 @@ var routes = [{
   {
     path: '/profile-garage-vehicle-view/:id',
     componentUrl: './pages/profile-garage-vehicle-view.html?' + v,
-
   },
   {
     path: '/post-view/:id',

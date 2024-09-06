@@ -44,46 +44,8 @@ $(document).on('page:init', '.page[data-name="profile-view"]', async function (e
         user_id: userId,
         clear: true
     })
-
-    // Infinite Scroll
-    // const infiniteScrollContent = document.querySelector('.profile-landing-page.infinite-scroll-content.view-page')
-    // infiniteScrollContent.addEventListener('infinite', async function () {
-    // })
 })
 
-$(document).on('infinite', '.profile-landing-page.infinite-scroll-content.view-page', async function (e) {
-    if (isFetchingPosts) return
-
-    const activeTab = document.querySelector('.profile-tabs .tab-link-active')
-    const activeTabId = activeTab.id
-
-    if (!activeTabId || activeTabId === 'my-garage') return
-
-    const getterFunc = activeTabId === 'my-posts' ? 'getUserPosts' : 'getUserTags'
-
-    isFetchingPosts = true
-
-    if (activeTabId === 'my-posts') {
-        currentPostPage++
-        if (currentPostPage <= totalPostPages) {
-            await store.dispatch(getterFunc, {
-                user_id: userId,
-                page: currentPostPage
-            })
-            isFetchingPosts = false
-        }
-    } else {
-        currentFPostPage++
-
-        if (currentFPostPage <= totalFPostPages) {
-            await store.dispatch(getterFunc, {
-                user_id: userId,
-                page: currentFPostPage
-            })
-            isFetchingPosts = false
-        }
-    }
-})
 
 $(document).on('page:beforein', '.page[data-name="profile-view"]', async function (e) {
     var pathStore = store.getters.getPathData
@@ -94,34 +56,6 @@ $(document).on('page:beforein', '.page[data-name="profile-view"]', async functio
     if (!sessionUser || !sessionUser.id) {
         return;
     }
-
-    if (sessionUser.id == userId) {
-        $('.tab-link[href="#view-profile"]').click()
-        return
-    }
-
-    const ptrContent = app.ptr.get('.profile-landing-page.ptr-content')
-    ptrContent.on('refresh', async function () {
-        currentPostPage = 1
-        currentFPostPage = 1
-
-        store.dispatch('removePathData', `/user/${userId}`)
-
-        await renderProfileData(null, userId)
-
-        store.dispatch('getUserPosts', {
-            user_id: userId,
-            clear: true
-        })
-
-        store.dispatch('getUserTags', {
-            user_id: userId,
-            clear: true
-        })
-
-        refreshed = true
-        ptrContent.done()
-    })
 
     // Follow button
     const followButton = $('.user-follow-btn')
@@ -163,13 +97,14 @@ $(document).on('click', '.user-follow-btn', async function () {
 })
 
 async function renderProfileData(cachedData, userId) {
-    if (!refreshed && !cachedData) {
-        $('.loading-fullscreen').show()
-    }
+    // if (!refreshed && !cachedData) {
+    // }
 
     refreshed = false
 
     if (!cachedData) {
+        $('.loading-fullscreen').show()
+
         const data = await getUserById(userId)
 
         if (!data || data.error) {
@@ -257,4 +192,65 @@ function populateUsersPosts(data) {
 store.getters.getUserPathUpdated.onUpdated(() => {
     const data = store.getters.getUserPathData.value
     populateUsersPosts(data)
+})
+
+$(document).on('infinite', '.profile-landing-page.infinite-scroll-content.view-page', async function (e) {
+    if (isFetchingPosts) return
+
+    const activeTab = document.querySelector('.profile-tabs .tab-link-active')
+    const activeTabId = activeTab.id
+
+    if (!activeTabId || activeTabId === 'my-garage') return
+
+    const getterFunc = activeTabId === 'my-posts' ? 'getUserPosts' : 'getUserTags'
+
+    isFetchingPosts = true
+
+    if (activeTabId === 'my-posts') {
+        currentPostPage++
+        if (currentPostPage <= totalPostPages) {
+            await store.dispatch(getterFunc, {
+                user_id: userId,
+                page: currentPostPage
+            })
+            isFetchingPosts = false
+        }
+    } else {
+        currentFPostPage++
+
+        if (currentFPostPage <= totalFPostPages) {
+            await store.dispatch(getterFunc, {
+                user_id: userId,
+                page: currentFPostPage
+            })
+            isFetchingPosts = false
+        }
+    }
+})
+
+$(document).on('ptr:refresh', '.profile-landing-page.view-page.ptr-content', async function (e) {
+    try {
+        currentPostPage = 1
+        currentFPostPage = 1
+
+        store.dispatch('removePathData', `/user/${userId}`)
+
+        await renderProfileData(null, userId)
+
+        store.dispatch('getUserPosts', {
+            user_id: userId,
+            clear: true
+        })
+
+        store.dispatch('getUserTags', {
+            user_id: userId,
+            clear: true
+        })
+
+        refreshed = true
+    } catch (error) {
+        console.log('Error refreshing profile page:', error);
+    }
+
+    app.ptr.get('.profile-landing-page.view-page.ptr-content').done()
 })

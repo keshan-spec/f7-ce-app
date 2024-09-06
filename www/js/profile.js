@@ -419,9 +419,7 @@ $(document).on('infinite', '.profile-landing-page.infinite-scroll-content', asyn
   }
 })
 
-$(document).on('ptr:refresh', '.profile-landing-page.ptr-content', async function (e) {
-  console.log('PTR Refresh');
-
+$(document).on('ptr:refresh', '.profile-landing-page.ptr-content.my-profile', async function (e) {
   refreshed = true
 
   try {
@@ -440,7 +438,7 @@ $(document).on('ptr:refresh', '.profile-landing-page.ptr-content', async functio
   } catch (error) {
     console.log(error);
   }
-  app.ptr.get('.profile-landing-page.ptr-content').done()
+  app.ptr.get('.profile-landing-page.ptr-content.my-profile').done()
 })
 
 $(document).on('page:beforein', '.page[data-name="profile"]', function (e) {
@@ -450,48 +448,7 @@ $(document).on('page:beforein', '.page[data-name="profile"]', function (e) {
   })
 })
 
-
-// $(document).on('page:init', '.page[data-name="profile"]', function (e) {
-//   console.log(myPostsStore.value, myTagsStore.value);
-
-//   console.log('Profile page before in');
-
-//   createGarageContent(garageStore.value, '.current-vehicles-list', '.past-vehicles-list')
-
-//   if (userStore.value) {
-//     displayProfile(userStore.value)
-//   }
-
-//   // if (myPostsStore.value) {
-//   //   const posts = myPostsStore.value.data
-//   //   totalPostPages = myPostsStore.value.total_pages
-
-//   //   if ((myPostsStore.value.page === myPostsStore.value.total_pages) || (myPostsStore.value.total_pages == 0)) {
-//   //     // hide preloader
-//   //     $('.infinite-scroll-preloader.posts-tab').hide()
-//   //   }
-
-//   //   // Call the function to fill the grid
-//   //   fillGridWithPosts(posts, 'profile-grid-posts', true)
-//   // }
-
-//   // if (myTagsStore.value) {
-//   //   const posts = myTagsStore.value.data
-//   //   totalFPostPages = myTagsStore.value.total_pages || 0
-
-//   //   if ((myTagsStore.value.page === totalFPostPages) || (totalFPostPages == 0)) {
-//   //     // hide preloader
-//   //     $('.infinite-scroll-preloader.tags-tab').hide()
-//   //   }
-
-//   //   // Call the function to fill the grid
-//   //   fillGridWithPosts(posts, 'profile-grid-tags', true)
-//   // }
-// })
-
 // ------- Garage Views -------
-
-
 $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', async function (e) {
   var garageId = e.detail.route.params.id
 
@@ -511,14 +468,14 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', as
   }
 
   if (cachedData) {
-    $('.loading-fullscreen').hide()
+    $('.loading-fullscreen.garage').hide()
     store.dispatch('setGarageViewPosts', garageId, 1)
     store.dispatch('setGarageViewTags', garageId, 1)
     updateProfilePage(cachedData)
     return
   }
 
-  $('.loading-fullscreen').show()
+  $('.loading-fullscreen.garage').show()
 
   const garage = await getGargeById(garageId)
   if (!garage) {
@@ -529,7 +486,7 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', as
     return
   }
 
-  $('.loading-fullscreen').hide()
+  $('.loading-fullscreen.garage').hide()
 
   // Assuming `path` is a dynamic path like '/garage/2'
   store.dispatch('setPathData', {

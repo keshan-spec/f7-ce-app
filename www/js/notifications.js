@@ -186,5 +186,6 @@ $(document).on('click', '.toggle-follow', async function (e) {
     e.target.textContent = isFollowing ? 'Follow' : 'Unfollow';
     e.target.dataset.isFollowing = !isFollowing;
 
-    maybeFollowUser(userId);
+    await maybeFollowUser(userId);
+    store.dispatch('updateUserDetails')
 });
