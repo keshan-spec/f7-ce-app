@@ -346,6 +346,7 @@ app.popup.create({
   swipeToClose: 'to-bottom'
 })
 
+
 $(document).on('click', '#open-action-sheet', function () {
   actionSheet.open()
 })
@@ -719,6 +720,13 @@ $(document).on('page:afterin', '.page[data-name="auth"]', function (e) {
   }, 300)
 });
 
+$(document).on('page:afterin', '.page[data-name="signup-step1"]', function (e) {
+  app.popup.create({
+    el: '.privacy-popup',
+    swipeToClose: 'to-bottom'
+  })
+});
+
 // logout-button
 $(document).on('click', '.logout-button', async function (e) {
   app.dialog.close()
@@ -734,6 +742,11 @@ $(document).on('click', '.logout-button', async function (e) {
 
 $(document).on('click', '.view-profile', function (e) {
   $('.view-profile-link').click()
+})
+
+$(document).on('click', '#forgot-password', function (e) {
+  // open the url in a new tab
+  window.open($(this).attr('href'), '_blank')
 })
 
 export default app

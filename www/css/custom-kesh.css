@@ -280,3 +280,13 @@
     z-index: 99;
     color: white;
 }
+
+.privacy-statement{
+    font-size: 12px;
+    padding: 1rem;
+}
+
+.privacy-popup.popup .page-content,
+.terms-popup.popup .page-content{
+    padding-top: 10px !important;
+}
