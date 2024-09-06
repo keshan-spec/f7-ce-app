@@ -3,7 +3,7 @@
 :root {
 	--f7-ios-primary: #ae9159;
 	--f7-page-bg-color: #F9F9F9;
-	--safe-area-inset-top
+	--safe-area-inset-top: env(safe-area-inset-top);
 }
 
 .ios {
@@ -829,7 +829,7 @@ height: 24vh;
 }
 .profile-landing-page .image-listview.media > li .imageWrapper {
     margin-right: 16px;
-    width: 50px !important;
+    width: 70px !important
 }
 
 .profile-landing-page .image-listview > li .item .in {
@@ -1758,3 +1758,33 @@ swiper-container.event-listing{
 /* For Event Detail Page End */
 
 
+.panel-left img {
+	width: 90%;
+	height: auto;
+	margin: 0 auto;
+}
+.panel-left .block {
+	text-align: center;
+	font-size: 13px;
+	line-height: 20px;
+	padding-top: calc(5px + env(safe-area-inset-top) );
+}
+.panel-left .logout-button {
+	position: absolute;
+	bottom: calc(10px + env(safe-area-inset-bottom) );
+	left: 5%;
+	width: 90%;
+	display: block;
+	color: #5c5c5c;
+	text-align: center;
+}
+
+.popup .navbar {
+	height: 45px !important;
+}
+.popup .navbar-inner {
+	padding-top: 0 !important;
+}
+.popup .page-content {
+	padding-top: 45px !important;
+}

@@ -574,9 +574,10 @@ async function updateProfilePage(data) {
       profileLinks.prepend(editLink)
     }
 
-    $('.garage-add-post').attr('data-garage-id', data.id)
+    // $('.garage-add-post').attr('data-garage-id', data.id)
 
     $(document).on('click', '.garage-add-post', async function (e) {
+      return;
       const garageId = $(this).attr('data-garage-id')
 
       if (!garageId) {
