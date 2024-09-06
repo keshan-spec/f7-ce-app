@@ -51,6 +51,10 @@ function populateEventCard(data = [], isSwiper = true) {
 
     const eventsTabContainer = document.querySelector('#filtered-events-tab');
 
+    if (refreshed) {
+        eventsTabContainer.innerHTML = '';
+    }
+
     data.forEach(event => {
         const startDate = new Date(event.start_date);
         const endDate = new Date(event.end_date);
@@ -252,10 +256,6 @@ $(document).on('click', '.apply-filters', function (e) {
     app.popup.close()
 });
 
-eventCategories.onUpdated((data) => {
-    addCategoryOptions(data);
-})
-
 $(document).on('change', '#category-filters ul', function (e) {
     const categoryFilters = document.querySelector('#category-filters ul');
     var allCheckbox = categoryFilters.querySelector('input[name="all"]');
@@ -286,6 +286,10 @@ $(document).on('change', '#category-filters ul', function (e) {
     }
 });
 
+eventCategories.onUpdated((data) => {
+    addCategoryOptions(data);
+})
+
 trendingVenuesStore.onUpdated((data) => {
     totalVenuesPages = data.total_pages
 
@@ -296,28 +300,6 @@ trendingEventsStore.onUpdated((data) => {
     totalEventPages = data.total_pages
 
     populateEventCard(data.data);
-});
-
-filteredEventsStore.onUpdated((data) => {
-    const eventsTabContainer = document.querySelector('#filtered-events-tab');
-    if (!data || data.data.length === 0) {
-        eventsTabContainer.innerHTML = `
-            <div class="no-events">
-                <h3>No events found</h3>
-            </div>
-        `;
-        return
-    }
-
-    totalEventPages = data.total_pages
-
-    if ((totalEventPages == data.page) || (totalEventPages == 0) || (data.new_data.length < 10)) {
-        $('.infinite-scroll-preloader.events-tab').hide()
-    } else {
-        $('.infinite-scroll-preloader.events-tab').show()
-    }
-
-    populateEventCard(data.new_data, false);
 });
 
 trendingUsersStore.onUpdated((data) => {
@@ -342,6 +324,29 @@ trendingUsersStore.onUpdated((data) => {
     populateUsersCard(data.new_data);
 });
 
+// Filtered views
+filteredEventsStore.onUpdated((data) => {
+    const eventsTabContainer = document.querySelector('#filtered-events-tab');
+    if (!data || data.data.length === 0) {
+        eventsTabContainer.innerHTML = `
+            <div class="no-events">
+                <h3>No events found</h3>
+            </div>
+        `;
+        return
+    }
+
+    totalEventPages = data.total_pages
+
+    if ((totalEventPages == data.page) || (totalEventPages == 0) || (data.new_data.length < 10)) {
+        $('.infinite-scroll-preloader.events-tab').hide()
+    } else {
+        $('.infinite-scroll-preloader.events-tab').show()
+    }
+
+    populateEventCard(data.new_data, false);
+});
+
 filteredVenuesStore.onUpdated((data) => {
     const tabContainer = document.querySelector('#filtered-venues-tab');
 
@@ -356,16 +361,14 @@ filteredVenuesStore.onUpdated((data) => {
         return
     }
 
-
-
-    if ((totalVenuesPages == data.page) || (totalVenuesPages == 0) || (data.new_data.length < 10)) {
+    if ((totalVenuesPages == data.page) || (totalVenuesPages == 0) || (data.new_data.length == 0)) {
         $('.infinite-scroll-preloader.venues-tab').hide()
+        totalVenuesPages = 0
     } else {
         $('.infinite-scroll-preloader.venues-tab').show()
+        totalVenuesPages = data.total_pages
+        populateVenueCard(data.new_data, false);
     }
-
-    totalEventPages = data.total_pages
-    populateVenueCard(data.new_data, false);
 });
 
 $(document).on('page:init', '.page[data-name="discover"]', function (e) {
@@ -445,13 +448,13 @@ $(document).on('infinite', '.discover-page.infinite-scroll-content', async funct
     if (isFetchingPosts) return
 
     // get active tab
-    const activeTabId = document.querySelector('.tabbar-nav .tab-link-active').getAttribute('data-id');
+    const activeTabId = $('.tabbar-nav .tab-link-active').attr('data-id');
 
     if (!activeTabId) return
 
     isFetchingPosts = true
 
-    if (activeTabId === 'events') {
+    if (activeTabId == 'events') {
         currentEventsPage++
 
         if (currentEventsPage <= totalEventPages) {
@@ -461,7 +464,7 @@ $(document).on('infinite', '.discover-page.infinite-scroll-content', async funct
             })
             isFetchingPosts = false
         }
-    } else if (activeTabId === 'venues') {
+    } else if (activeTabId == 'venues') {
         currentVenuesPage++
 
         if (currentVenuesPage <= totalVenuesPages) {
@@ -471,6 +474,8 @@ $(document).on('infinite', '.discover-page.infinite-scroll-content', async funct
             })
             isFetchingPosts = false
         }
+    } else {
+        isFetchingPosts = false
     }
 })
 
@@ -509,6 +514,14 @@ $(document).on('infinite', '.discover-page.infinite-scroll-content', async funct
 // });
 
 $(document).on('page:init', '.page[data-name="discover-view-event"]', function (e) {
+    // Init slider
+    new Swiper('.swiper-container', {
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+    })
+
     app.popup.create({
         el: '.share-listing-popup',
         swipeToClose: 'to-bottom'
@@ -516,8 +529,9 @@ $(document).on('page:init', '.page[data-name="discover-view-event"]', function (
 });
 
 $(document).on('ptr:refresh', '.discover-page.ptr-content', async function (e) {
-    console.log('PTR Refresh');
     refreshed = true
+    currentEventsPage = 1
+    currentVenuesPage = 1
 
     try {
         await store.dispatch('getTrendingEvents')
@@ -528,5 +542,6 @@ $(document).on('ptr:refresh', '.discover-page.ptr-content', async function (e) {
         console.log(error);
     }
 
+    refreshed = false
     app.ptr.get('.discover-page.ptr-content').done()
 })

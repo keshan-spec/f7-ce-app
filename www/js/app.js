@@ -27,6 +27,7 @@ import {
 var $ = Dom7
 var userStore = store.getters.user
 var notificationCountStore = store.getters.getNotifCount
+var networkErrors = store.getters.checkPoorNetworkError
 
 var toolbarEl = $('.footer')[0]
 
@@ -126,16 +127,6 @@ var app = new Framework7({
   store: store,
   routes: routes,
 })
-
-
-//HIDE TOOLBAR
-$(document).on('page:beforein', '.page[data-name="profile-edit-images"]', function (e) {
-  $('.toolbar').attr('style', 'display:none !important');
-});
-
-$(document).on('page:beforeout', '.page[data-name="profile-edit-images"]', function (e) {
-  $('.toolbar').attr('style', 'display:block !important');
-});
 
 export function showToast(message, type = 'Message', position = 'bottom') {
   app.toast.create({
@@ -243,6 +234,14 @@ notificationCountStore.onUpdated((data) => {
     el.innerHTML = data
     el.style.display = data > 0 ? 'flex' : 'none'
   })
+})
+
+networkErrors.onUpdated((data) => {
+  console.log(data);
+
+  if (data) {
+    app.dialog.alert('Poor network connection. Please check your internet connection and try again.')
+  }
 })
 
 // $(document).on('click', '.footer-links', function (e) {

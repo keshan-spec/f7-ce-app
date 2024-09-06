@@ -6,22 +6,36 @@ import {
 } from './auth.js'
 
 export async function fetchPosts(page, following = false) {
-    const user = await getSessionUser()
-    if (!user) return
+    const controller = new AbortController()
+    const signal = controller.signal
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/get-posts?page=${page}&limit=10`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: user.id,
-            following_only: following
-        }),
-    })
+    try {
+        const user = await getSessionUser()
+        if (!user) return
 
-    const data = await response.json()
-    return data
+        // setTimeout(() => {
+        //     controller.abort()
+        // }, 5)
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/get-posts?page=${page}&limit=10`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                following_only: following,
+            }),
+            signal // Abort signal
+        })
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.log(error);
+
+        return {}
+    }
 }
 
 export async function fetchComments(postId) {

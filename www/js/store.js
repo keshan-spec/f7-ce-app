@@ -137,8 +137,14 @@ const store = createStore({
     // Search results
     searchResults: DEFAULT_SEARCH_RESULTS,
     notificationCount: 0,
+    poorNetworkError: false,
   },
   getters: {
+    checkPoorNetworkError({
+      state
+    }) {
+      return state.poorNetworkError
+    },
     getNotifCount({
       state
     }) {
@@ -348,10 +354,12 @@ const store = createStore({
       try {
         const events = await fetchTrendingVenues(page, true, filters)
 
+        let existingVenues = state.filteredVenues.data.length > 0 ? state.filteredVenues.data : state.trendingVenues.data
+
         const data = {
           new_data: events.data,
           data: [
-            ...state.filteredVenues.data,
+            ...existingVenues,
             ...events.data,
           ],
           total_pages: events.total_pages,
@@ -566,20 +574,36 @@ const store = createStore({
     async getPosts({
       state
     }, page = 1) {
-      const posts = await fetchPosts(page)
+      try {
+        const posts = await fetchPosts(page)
 
-      const data = {
-        new_data: posts.data,
-        data: [
-          ...state.posts.data,
-          ...posts.data,
-        ],
-        total_pages: posts.total_pages,
-        page: page,
-        limit: posts.limit,
+        const data = {
+          new_data: posts.data,
+          data: [
+            ...state.posts.data,
+            ...posts.data,
+          ],
+          total_pages: posts.total_pages,
+          page: page,
+          limit: posts.limit,
+        }
+
+        state.posts = data
+      } catch (error) {
+        console.error('Failed to fetch posts', error)
+
+        if (error.name === 'RequestTimeout') {
+          state.poorNetworkError = true
+        }
+
+        state.posts = {
+          new_data: [],
+          data: [],
+          total_pages: 0,
+          page: 1,
+          limit: 10,
+        }
       }
-
-      state.posts = data
     },
     async setGarageViewPosts({
       state
@@ -630,20 +654,36 @@ const store = createStore({
     async getFollowingPosts({
       state
     }, page = 1) {
-      const posts = await fetchPosts(page, true)
+      try {
+        const posts = await fetchPosts(page, true)
 
-      const data = {
-        new_data: posts.data,
-        data: [
-          ...state.following_posts.data,
-          ...posts.data,
-        ],
-        total_pages: posts.total_pages,
-        page: page,
-        limit: posts.limit,
+        const data = {
+          new_data: posts.data,
+          data: [
+            ...state.following_posts.data,
+            ...posts.data,
+          ],
+          total_pages: posts.total_pages,
+          page: page,
+          limit: posts.limit,
+        }
+
+        state.following_posts = data
+      } catch (error) {
+        console.error('Failed to fetch following posts', error)
+
+        if (error.name === 'RequestTimeout') {
+          state.poorNetworkError = true
+        }
+
+        state.following_posts = {
+          new_data: [],
+          data: [],
+          total_pages: 0,
+          page: 1,
+          limit: 10,
+        }
       }
-
-      state.following_posts = data
     },
     async setRegisterData({
       state

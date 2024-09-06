@@ -64,6 +64,9 @@ export const fetchEvent = async (eventId) => {
 };
 
 export const fetchTrendingEvents = async (page, paginate = false, filters = null) => {
+    const controller = new AbortController()
+    const signal = controller.signal
+
     try {
         const user = await getSessionUser();
 
@@ -83,6 +86,7 @@ export const fetchTrendingEvents = async (page, paginate = false, filters = null
                 paginate,
                 filters
             }),
+            signal
         });
 
         const data = await response.json();

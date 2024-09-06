@@ -96,7 +96,7 @@ body {
 	padding: 10px 5px;
 }
 .custom-file-upload {
-    height: 130px;
+    height: 150px;
 }
 
 .custom-file-upload {
@@ -125,7 +125,9 @@ body {
     right: 0;
     overflow: hidden;
     background-color: rgba(225, 225, 225, 0.2);
-    background-size: 45px 58px;
+    background-size: contain !important;
+background-repeat: no-repeat;
+background-position: center;
     border: 1px solid #E1E1E1;
     border-radius: 6px;
     margin: 0;
@@ -369,6 +371,7 @@ body {
 .media-post .media-post-user {
 	font-size: 14px;
 	font-weight: 600;
+    color: #000
 }
 .media-post .media-post-date {
 	font-size: 10px;
@@ -446,7 +449,7 @@ body {
 	width: 92%;
 	height: 90%;
 	overflow: auto;
-	padding: 0 4%;
+    padding: 0;
 	margin: 20px auto 0 auto !important;
 }
 .comment {
@@ -1718,10 +1721,10 @@ swiper-container.event-listing{
     background: transparent !important;
 }
 .discover-view-event .swiper-container {
-	background-image: url('../assets/img/slider-bg.jpg');
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
+background-image: url('../assets/img/slider-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .discover-view-event .swiper-image {
 	display: block;
