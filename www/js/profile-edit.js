@@ -199,7 +199,7 @@ $(document).on('click', '#update_password', async function () {
 
 
 // --------------- Edit Username Page ---------------
-$(document).on('page:init', '.page[data-name="profile-edit-username"]', async function (e) {
+$(document).on('page:beforein', '.page[data-name="profile-edit-username"]', async function (e) {
     var view = app.views.current
 
     const user = await getSessionUser()
@@ -209,8 +209,9 @@ $(document).on('page:init', '.page[data-name="profile-edit-username"]', async fu
         return
     }
 
+
     // Example of how to fill in the form fields with the provided data
-    document.querySelector('input[name="username"]').value = user.username || '';
+    $('.profile-edit-view input[name="username"]').val(user.username || '')
 
     if (user.can_update_username) {
         $('#username-editable').remove()
@@ -228,7 +229,7 @@ $(document).on('click', '#save-username', async function () {
         return
     }
 
-    const username = $('input[name="username"]').val()
+    const username = $('.profile-edit-view input[name="username"]').val()
 
     if (username === '') {
         showToast('Please enter a username', 'Error')
@@ -248,6 +249,10 @@ $(document).on('click', '#save-username', async function () {
         return
     }
 
+    if (username === user.username) {
+        return
+    }
+
     app.preloader.show()
 
     const response = await updateUsername(username)
@@ -260,7 +265,7 @@ $(document).on('click', '#save-username', async function () {
 
         store.dispatch('updateUserDetails')
     } else {
-        showToast('Failed to update username', 'Error')
+        showToast(response.message || 'Failed to update username', 'Error')
     }
 })
 // --------------- End Edit Username Page ---------------

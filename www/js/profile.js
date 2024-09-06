@@ -458,6 +458,10 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', as
     return
   }
 
+  if (garageId == -1) {
+    return;
+  }
+
   let cachedData = null
   try {
     if (pathStore && pathStore.value[`/garage/${garageId}`]) {
