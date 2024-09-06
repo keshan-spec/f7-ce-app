@@ -4,10 +4,10 @@ var v = '1.0.1'
 var routes = [{
     path: '/',
     url: './index.html',
-    name: 'home',
+    // name: 'home',
   },
   {
-    path: '/home/',
+    path: '/social/',
     componentUrl: './pages/home.html?' + v,
     keepAlive: true,
   },

@@ -86,7 +86,7 @@ $(document).on('infinite', '.infinite-scroll-content.home-page', async function 
   isFetchingPosts = false
 })
 
-$(document).on('page:beforein', '.page[data-name="home"]', function (e) {
+$(document).on('page:beforein', '.page[data-name="social"]', function (e) {
   const ptrContent = app.ptr.get('.ptr-content.home-page')
   ptrContent.on('refresh', async function () {
     refreshed = true

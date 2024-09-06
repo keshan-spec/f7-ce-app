@@ -28,7 +28,7 @@ var $ = Dom7
 var userStore = store.getters.user
 var notificationCountStore = store.getters.getNotifCount
 
-var toolbarEl = $('.footer')[0]
+// var toolbarEl = $('.footer')[0]
 
 var app = new Framework7({
   initOnDeviceReady: true,
@@ -52,7 +52,7 @@ var app = new Framework7({
   el: '#app', // App root element
   on: {
     init: async function () {
-      toolbarEl.style.display = 'none'
+      // toolbarEl.style.display = 'none'
 
       await store.dispatch('checkAuth')
 
@@ -62,8 +62,8 @@ var app = new Framework7({
         this.views.main.router.navigate('/auth/')
       } else {
         $('.init-loader').hide()
-        toolbarEl.style.display = 'block'
-        // this.views.main.router.navigate('/home/')
+        $('.start-link').click();
+        // toolbarEl.style.display = 'block'
       }
 
       const deeplink = getQueryParameter('deeplink')
@@ -126,6 +126,16 @@ var app = new Framework7({
   store: store,
   routes: routes,
 })
+
+
+//HIDE TOOLBAR
+$(document).on('page:beforein', '.page[data-name="profile-edit-images"]', function (e) {
+  $('.toolbar').attr('style', 'display:none !important');
+});
+
+$(document).on('page:beforeout', '.page[data-name="profile-edit-images"]', function (e) {
+  $('.toolbar').attr('style', 'display:block !important');
+});
 
 export function showToast(message, type = 'Message', position = 'bottom') {
   app.toast.create({
@@ -235,44 +245,44 @@ notificationCountStore.onUpdated((data) => {
   })
 })
 
-$(document).on('click', '.footer-links', function (e) {
-  var view = app.views.current
+// $(document).on('click', '.footer-links', function (e) {
+//   var view = app.views.current
 
-  // const routesMap = {
-  //   "#view-home": "/home/",
-  //   "#view-discover": "/discover/",
-  //   "#view-store": "/store/",
-  //   "#view-profile": "/profile/",
-  // }
+//   // const routesMap = {
+//   //   "#view-home": "/home/",
+//   //   "#view-discover": "/discover/",
+//   //   "#view-store": "/store/",
+//   //   "#view-profile": "/profile/",
+//   // }
 
-  // const linkElem = e.target.closest('a')
-  // const href = linkElem.getAttribute('href')
+//   // const linkElem = e.target.closest('a')
+//   // const href = linkElem.getAttribute('href')
 
-  // app.views.main.router.navigate(routesMap[href])
-
-
-  if (view.history[0] == '/profile') {
-    return;
-  }
-
-  if (view.history.length > 1) {
-    const authRoutes = ['auth', 'login', 'signup-step1', 'signup-step2', 'signup-step3', 'signup-step4', 'signup-complete'];
-
-    // Check if any item in the view.history array contains any of the authRoutes
-    if (view.history.some(historyItem => authRoutes.some(route => historyItem.includes(`/${route}/`)))) {
-      app.views.main.router.navigate('/');
-      return;
-    }
+//   // app.views.main.router.navigate(routesMap[href])
 
 
-    view.router.back({
-      url: view.history[0],
-      history: true, // Update the history stack correctly
-      animate: true, // Optional: enable animation if you want
-      reloadCurrent: true // Optional: force reload of the current page if needed
-    });
-  }
-})
+//   if (view.history[0] == '/profile') {
+//     return;
+//   }
+
+//   if (view.history.length > 1) {
+//     const authRoutes = ['auth', 'login', 'signup-step1', 'signup-step2', 'signup-step3', 'signup-step4', 'signup-complete'];
+
+//     // Check if any item in the view.history array contains any of the authRoutes
+//     if (view.history.some(historyItem => authRoutes.some(route => historyItem.includes(`/${route}/`)))) {
+//       app.views.main.router.navigate('/');
+//       return;
+//     }
+
+
+//     view.router.back({
+//       url: view.history[0],
+//       history: true, // Update the history stack correctly
+//       animate: true, // Optional: enable animation if you want
+//       reloadCurrent: true // Optional: force reload of the current page if needed
+//     });
+//   }
+// })
 
 // Action Sheet with Grid Layout
 var actionSheet = app.actions.create({
@@ -378,8 +388,11 @@ $(document).on('submit', '.login-screen-content form', async function (e) {
       await store.dispatch('login', {
         token: response.token
       })
+
       app.views.main.router.navigate('/')
-      toolbarEl.style.display = 'block'
+      $('.start-link').click();
+
+      // toolbarEl.style.display = 'block'
       return
     }
   } catch (error) {
@@ -689,7 +702,9 @@ $(document).on('click', '#signup-complete', async function (e) {
         token: response.token
       })
       app.views.main.router.navigate('/')
-      toolbarEl.style.display = 'block'
+      $('.start-link').click();
+
+      // toolbarEl.style.display = 'block'
       return
     }
   } catch (error) {
@@ -711,9 +726,11 @@ $(document).on('click', '.logout-button', async function (e) {
   app.panel.close()
 
   await store.dispatch('logout')
-  toolbarEl.style.display = 'none'
+  // toolbarEl.style.display = 'none'
 
-  app.views.current.router.navigate('/auth/')
+  // reload page
+  window.location.reload()
+  // app.views.current.router.navigate('/auth/')
 })
 
 export default app
