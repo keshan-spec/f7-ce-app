@@ -30,6 +30,9 @@ var userId = null
 
 $(document).on('page:init', '.page[data-name="profile-view"]', async function (e) {
     userId = e.detail.route.params.id
+
+    console.log('Profile view page init', userId);
+
     currentPostPage = 1
     currentFPostPage = 1
     isFetchingPosts = false
@@ -104,12 +107,13 @@ async function renderProfileData(cachedData, userId) {
     refreshed = false
 
     if (!cachedData) {
-
         const data = await getUserById(userId)
+        console.log('User data:', data);
 
         if (!data || data.error) {
             $('.loading-fullscreen').hide()
             app.dialog.alert('User not found', 'Error')
+
             view.router.back(view.history[0], {
                 force: true
             })

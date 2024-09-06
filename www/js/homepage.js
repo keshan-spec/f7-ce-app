@@ -315,12 +315,12 @@ function displayComments(comments, postId) {
                 <div class="comment" data-comment-id="${reply.id}" data-is-liked="${reply.liked}" data-owner-id="${reply.user_id}"
                   data-owner-name="${reply.user_login}">
 
-                  <a href="${reply.user_id === user.id ? '#' : `/profile-view/${reply.user_id}`}" class="${reply.user_id === user.id ? 'view-profile' : ''} comment-profile-img" style="background-image:url('${reply.profile_image || 'assets/img/profile-placeholder.jpg'}');">
+                  <a href="#" data-url="${reply.user_id == user.id ? '#' : `/profile-view/${reply.user_id}`}" class="${reply.user_id == user.id ? 'view-profile' : ''} comment-profile-img" style="background-image:url('${reply.profile_image || 'assets/img/profile-placeholder.jpg'}');">
                   </a>
 
                   <div class="comment-content-container">
                     <div class="comment-username">
-                      <a href="${reply.user_id === user.id ? '#' : `/profile-view/${reply.user_id}`}" class="${reply.user_id === user.id ? 'view-profile' : 'a'}">
+                      <a href="#" data-url="${reply.user_id == user.id ? '#' : `/profile-view/${reply.user_id}`}" class="${reply.user_id == user.id ? 'view-profile' : 'a'}">
                         ${reply.user_login}
                       </a>
                       <span class="date">${formatPostDate(reply.comment_date)}</span>
@@ -364,12 +364,12 @@ function displayComments(comments, postId) {
         data-owner-id="${comment.user_id}"
         data-owner-name="${comment.user_login}">
 
-         <a href="${comment.user_id === user.id ? '#' : `/profile-view/${comment.user_id}`}" class="${comment.user_id === user.id ? 'view-profile' : ''} comment-profile-img" 
+         <a href="#" data-url="${comment.user_id == user.id ? '#' : `/profile-view/${comment.user_id}`}" class="${comment.user_id == user.id ? 'view-profile' : ''} comment-profile-img" 
          style="background-image:url('${comment.profile_image || 'assets/img/profile-placeholder.jpg'}');">
          </a>
         <div class="comment-content-container">
           <div class="comment-username">
-            <a href="${comment.user_id === user.id ? '#' : `/profile-view/${comment.user_id}`}" class="${comment.user_id === user.id ? 'view-profile' : 'a'}">
+            <a href="#" data-url="${comment.user_id == user.id ? '#' : `/profile-view/${comment.user_id}`}" class="${comment.user_id == user.id ? 'view-profile' : 'a'}">
                 ${comment.user_login}
             </a>
             <span class="date">${formatPostDate(comment.comment_date)}</span>
@@ -654,7 +654,22 @@ $(document).on('click', '.comment-delete', async function () {
   })
 })
 
-$(document).on('click', '.comment-username a', function (e) {
+$(document).on('click', '.comment a', function (e) {
+  var view = app.views.current
   // hide the comments popup
   app.popup.close()
+
+  // get the href attribute
+  const href = this.getAttribute('data-url')
+
+  if (!href || href === '#') {
+    return
+  }
+
+  // prevent the default action
+  e.preventDefault()
+
+  view.router.navigate(href, {
+    force: true
+  })
 })

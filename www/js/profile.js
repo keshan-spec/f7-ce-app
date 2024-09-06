@@ -39,7 +39,10 @@ var totalGarageTagPages = 1
 var currentGarageTagPage = 1
 
 export function displayProfile(user, container = 'profile') {
-  if (!user) return;
+  if (!user) {
+    console.error('User object not provided');
+    return;
+  }
 
   // Select the container element
   const containerElem = document.querySelector(`.page[data-name="${container}"]`);
