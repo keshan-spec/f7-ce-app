@@ -290,3 +290,7 @@
 .terms-popup.popup .page-content{
     padding-top: 10px !important;
 }
+
+.unread-notif{
+    background-color: #f0f0f0;
+}

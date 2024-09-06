@@ -303,6 +303,7 @@ function displayComments(comments, postId) {
           </span>
           <div class="comment-replies-container">
             ${comment.replies.map(reply => {
+
               // Determine the delete button visibility
               const deleteButton = reply.user_id == user.id ? 
                 `<div class="comment-delete" data-comment-id="${reply.id}">
@@ -313,14 +314,18 @@ function displayComments(comments, postId) {
               return `
                 <div class="comment" data-comment-id="${reply.id}" data-is-liked="${reply.liked}" data-owner-id="${reply.user_id}"
                   data-owner-name="${reply.user_login}">
-                  <div class="comment-profile-img" style="background-image:url('${reply.profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
+
+                  <a href="${reply.user_id === user.id ? '#' : `/profile-view/${reply.user_id}`}" class="${reply.user_id === user.id ? 'view-profile' : ''} comment-profile-img" style="background-image:url('${reply.profile_image || 'assets/img/profile-placeholder.jpg'}');">
+                  </a>
+
                   <div class="comment-content-container">
                     <div class="comment-username">
-                      <a href="${reply.user_id === user.id ? '/profile/' : `/profile-view/${reply.user_id}`}">
+                      <a href="${reply.user_id === user.id ? '#' : `/profile-view/${reply.user_id}`}" class="${reply.user_id === user.id ? 'view-profile' : 'a'}">
                         ${reply.user_login}
                       </a>
                       <span class="date">${formatPostDate(reply.comment_date)}</span>
                     </div>
+                    
                     <div class="comment-content">${reply.comment}</div>
                     <div class="comment-actions">
                       <div class="comment-like">
@@ -358,11 +363,16 @@ function displayComments(comments, postId) {
         data-is-liked="${comment.liked}" 
         data-owner-id="${comment.user_id}"
         data-owner-name="${comment.user_login}">
-        <div class="comment-profile-img" style="background-image:url('${comment.profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
+
+         <a href="${comment.user_id === user.id ? '#' : `/profile-view/${comment.user_id}`}" class="${comment.user_id === user.id ? 'view-profile' : ''} comment-profile-img" 
+         style="background-image:url('${comment.profile_image || 'assets/img/profile-placeholder.jpg'}');">
+         </a>
         <div class="comment-content-container">
           <div class="comment-username">
-           <a href="${commenter_link}">${comment.user_login}</a>
-          <span class="date">${formatPostDate(comment.comment_date)}</span>
+            <a href="${comment.user_id === user.id ? '#' : `/profile-view/${comment.user_id}`}" class="${comment.user_id === user.id ? 'view-profile' : 'a'}">
+                ${comment.user_login}
+            </a>
+            <span class="date">${formatPostDate(comment.comment_date)}</span>
           </div>
           <div class="comment-content">${comment.comment}</div>
           <div class="comment-actions">

@@ -46,8 +46,9 @@ $(document).on('page:init', '.page[data-name="profile-view"]', async function (e
     })
 })
 
-
 $(document).on('page:beforein', '.page[data-name="profile-view"]', async function (e) {
+    $('.loading-fullscreen').show()
+
     var pathStore = store.getters.getPathData
     userId = e.detail.route.params.id
 
@@ -103,7 +104,6 @@ async function renderProfileData(cachedData, userId) {
     refreshed = false
 
     if (!cachedData) {
-        $('.loading-fullscreen').show()
 
         const data = await getUserById(userId)
 
@@ -166,6 +166,13 @@ function populateUsersPosts(data) {
                 // hide preloader
                 $('.infinite-scroll-preloader.posts-tab.view-profile').hide()
             }
+
+            if (data[postsKey].data.length === 0) {
+                const profileGrid = document.getElementById('profile-view-grid-posts')
+                profileGrid.innerHTML = '<p>No posts</p>'
+                return;
+            }
+
         }
 
         // Handle tags
@@ -185,6 +192,13 @@ function populateUsersPosts(data) {
                 // hide preloader
                 $('.infinite-scroll-preloader.tags-tab.view-profile').hide()
             }
+
+            if (data[tagsKey].data.length === 0) {
+                const profileGrid = document.getElementById('profile-view-grid-tags')
+                profileGrid.innerHTML = '<p>No tagged posts</p>'
+                return;
+            }
+
         }
     }
 }

@@ -291,7 +291,7 @@ function addEmptyGridItems(count) {
   for (let i = 0; i < count; i++) {
     emptyItems += `
             <div class="grid-item empty-item">
-                <div class="image-square" style="background-color: #f0f0f0;"></div>
+                <div class="image-square" style="background-color: #F9F9F9;"></div>
             </div>`
   }
   return emptyItems
@@ -317,13 +317,14 @@ myPostsStore.onUpdated((data) => {
       $('.infinite-scroll-preloader.posts-tab').hide()
     }
 
+    if (data.data.length === 0) {
+      const profileGrid = document.getElementById('profile-grid-posts')
+      profileGrid.innerHTML = '<p>No posts</p>'
+      return;
+    }
+
     // Call the function to fill the grid
     fillGridWithPosts(posts, 'profile-grid-posts', data.cleared || false)
-  } else {
-    console.log('No new data');
-    // reset the page
-    currentPostPage = 1
-    fillGridWithPosts([], 'profile-grid-posts', true)
   }
 })
 
@@ -335,6 +336,12 @@ myTagsStore.onUpdated((data) => {
     if ((data.page === data.total_pages) || (data.total_pages == 0)) {
       // hide preloader
       $('.infinite-scroll-preloader.tags-tab').hide()
+    }
+
+    if (data.data.length === 0) {
+      const profileGrid = document.getElementById('profile-grid-tags')
+      profileGrid.innerHTML = '<p>No tagged posts</p>'
+      return;
     }
 
     // Call the function to fill the grid
@@ -516,6 +523,13 @@ store.getters.getGarageViewPosts.onUpdated((data) => {
       $('.infinite-scroll-preloader.garage-posts-tab').hide()
     }
 
+    if (data.data.length === 0) {
+      const profileGrid = document.getElementById('garage-posts-tab')
+      profileGrid.innerHTML = '<p>No posts yet</p>'
+      return;
+    }
+
+
     // Call the function to fill the grid
     fillGridWithPosts(posts, 'garage-posts-tab')
   }
@@ -530,6 +544,12 @@ store.getters.getGarageViewTags.onUpdated((data) => {
     if ((data.page == data.total_pages) || (data.total_pages == 0)) {
       // hide preloader
       $('.infinite-scroll-preloader.garage-tags-tab').hide()
+    }
+
+    if (data.data.length === 0) {
+      const profileGrid = document.getElementById('garage-tags-tab')
+      profileGrid.innerHTML = '<p>No tagged posts yet</p>'
+      return;
     }
 
     // Call the function to fill the grid

@@ -1,14 +1,34 @@
 import {
-    getSessionUser,
-    markMultipleNotificationsAsRead
+    getSessionUser
 } from "./api/auth.js"
 import {
     maybeFollowUser
 } from "./api/profile.js"
+import app from "./app.js"
 import store from "./store.js"
 
 var $ = Dom7
 var notificationsStore = store.getters.getNotifications
+var refreshed = false
+
+$(document).on('page:afterin', '.page[data-name="notifications"]', async function (e) {
+    const data = notificationsStore.value
+
+    if (!data || !data.success) {
+        return
+    }
+
+    // a list if all unread notification ids
+    const unreadNotificationIds = [
+        ...data.data.recent,
+        ...data.data.last_week,
+        ...data.data.last_30_days,
+    ].filter((item) => item.is_read === "0").map((item) => item._id);
+
+    if (unreadNotificationIds.length > 0) {
+        store.dispatch('markNotificationsAsRead', unreadNotificationIds)
+    }
+})
 
 notificationsStore.onUpdated(async (data) => {
     if (!data || !data.success) {
@@ -20,6 +40,12 @@ notificationsStore.onUpdated(async (data) => {
 
     const recentContainer = document.getElementById('recent');
     const thisWeekContainer = document.getElementById('this-week');
+
+    if (refreshed) {
+        recentContainer.innerHTML = '';
+        thisWeekContainer.innerHTML = '';
+        refreshed = false
+    }
 
     document.querySelectorAll('.notification-title').forEach(elem => {
         elem.innerHTML = elem.getAttribute('data-title')
@@ -44,15 +70,6 @@ notificationsStore.onUpdated(async (data) => {
         const notificationItem = createNotificationItem(notification, user);
         thisWeekContainer.appendChild(notificationItem);
     });
-
-    // a list if all unread notification ids
-    const unreadNotificationIds = [
-        ...data.data.recent,
-        ...data.data.last_week,
-        ...data.data.last_30_days,
-    ].filter((item) => item.is_read === "0").map((item) => item._id);
-
-    store.dispatch('markNotificationsAsRead', unreadNotificationIds)
 })
 
 function timeAgo(dateString) {
@@ -64,7 +81,10 @@ function timeAgo(dateString) {
 
 function createNotificationItem(notification, user) {
     const container = document.createElement('div');
-    container.className = 'notification-item';
+
+    let isReadClass = notification.is_read == "0" ? "unread-notif" : "";
+
+    container.className = `notification-item ${isReadClass}`;
 
     // Profile image and notification content container
     const leftContainer = document.createElement('a');
@@ -79,7 +99,6 @@ function createNotificationItem(notification, user) {
     infoDiv.className = 'notification-info';
 
     let content = '';
-    let isReadClass = notification.is_read === "0" ? "absolute right-0 h-2 w-2 translate-x-3 translate-y-2 rounded-full border-2 bg-customred" : "";
 
     // Conditional content rendering based on the type
     if (notification.type === 'like') {
@@ -87,7 +106,7 @@ function createNotificationItem(notification, user) {
             <div class="notification-text">
                 <strong>${notification.entity.initiator_data.display_name}</strong> liked your ${notification.entity.entity_type}
                 ${notification.entity.entity_data.comment ? `<span class="inline font-semibold text-black">: "${notification.entity.entity_data.comment}"</span>` : ''}
-                <span class="${isReadClass}"></span>
+                <span class=""></span>
             </div>
         `;
     } else if (notification.type === 'comment') {
@@ -189,3 +208,16 @@ $(document).on('click', '.toggle-follow', async function (e) {
     await maybeFollowUser(userId);
     store.dispatch('updateUserDetails')
 });
+
+$(document).on('ptr:refresh', '.notification-page.ptr-content', async function (e) {
+    refreshed = true
+
+    try {
+        await store.dispatch('notificationCount')
+        await store.dispatch('fetchNotifications')
+    } catch (error) {
+        console.log(error);
+    }
+
+    app.ptr.get('.notification-page.ptr-content').done()
+})
