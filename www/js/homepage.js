@@ -599,19 +599,34 @@ $('#comment-form').on('submit', async function (e) {
 
   app.preloader.show()
 
-  const response = await addComment(postId, comment, commentId)
+  try {
+    const response = await addComment(postId, comment, commentId)
 
-  app.preloader.hide()
+    app.preloader.hide()
 
-  if (response) {
-    this.reset()
-    this.removeAttribute('data-comment-id')
-    this.querySelector('.replying-to').innerHTML = ''
-    this.querySelector('.replying-to').classList.add('hidden')
-    const comments = await fetchComments(postId)
-    displayComments(comments, postId)
-  } else {
-    app.dialog.alert('Failed to add comment')
+    if (response) {
+      this.reset()
+      this.removeAttribute('data-comment-id')
+      this.querySelector('.replying-to').innerHTML = ''
+      this.querySelector('.replying-to').classList.add('hidden')
+      const comments = await fetchComments(postId)
+      displayComments(comments, postId)
+    } else {
+      app.notification.create({
+        text: 'Failed to add comment',
+        icon: '<i class="icon icon-f7"></i>',
+        titleRightText: 'now',
+        subtitle: 'Oops, something went wrong',
+      }).open()
+    }
+  } catch (error) {
+    app.notification.create({
+      icon: '<img src="assets/icons/favicon.png"/>',
+      titleRightText: 'now',
+      subtitle: 'Oops, something went wrong',
+      text: error.message || 'Failed to add comment',
+    }).open()
+    app.preloader.hide()
   }
 })
 

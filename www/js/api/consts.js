@@ -1,4 +1,5 @@
 export const API_URL = 'https://www.carevents.com/uk'
+export const TIMEOUT_MS_LOW = 15 * 1000
 
 export const sendRNMessage = ({
     page,

@@ -567,7 +567,7 @@ background-position: center;
 
 /*************** Notifications ***************/
 .notification-title{
-    padding: 12px 16px 12px 16px;
+    /* padding: 12px 16px 12px 16px; */
     font-size: 16px;
     text-transform: unset;
 }

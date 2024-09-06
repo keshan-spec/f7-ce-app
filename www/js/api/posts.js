@@ -1,5 +1,6 @@
 import {
-    API_URL
+    API_URL,
+    TIMEOUT_MS_LOW
 } from './consts.js'
 import {
     getSessionUser
@@ -76,24 +77,43 @@ export const maybeLikePost = async (postId) => {
 }
 
 export const addComment = async (postId, comment, comment_id = null) => {
-    const user = await getSessionUser()
-    if (!user) return
+    const controller = new AbortController()
+    const signal = controller.signal
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/add-post-comment`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: user.id,
-            post_id: postId,
-            comment,
-            parent_id: comment_id
-        }),
-    })
+    try {
+        const user = await getSessionUser()
+        if (!user) return
 
-    const data = await response.json()
-    return data
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_LOW)
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/add-post-comment`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                post_id: postId,
+                comment,
+                parent_id: comment_id
+            }),
+            signal
+        })
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to add comment, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
+    }
 }
 
 export const deleteComment = async (commentId) => {

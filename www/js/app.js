@@ -40,6 +40,11 @@ var app = new Framework7({
     preloadPreviousPage: true,
     // browserHistory: true,
   },
+  notification: {
+    title: 'DriveLife',
+    closeTimeout: 10000,
+    closeOnClick: true,
+  },
   toast: {
     closeTimeout: 3000,
     closeButton: true,
