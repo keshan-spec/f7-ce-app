@@ -1,5 +1,6 @@
 import {
-    API_URL
+    API_URL,
+    TIMEOUT_MS_HIGHER
 } from "./consts.js"
 import {
     getSessionUser
@@ -73,61 +74,119 @@ export const removeProfileLink = async (linkId) => {
 };
 
 export const updateUserDetails = async (details, email_changed) => {
-    const user = await getSessionUser();
-    if (!user) return;
+    const controller = new AbortController()
+    const signal = controller.signal
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/update-user-details`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: user.id,
-            ...details,
-            email_changed
-        }),
-    });
+    try {
+        const user = await getSessionUser();
+        if (!user) return;
 
-    const data = await response.json();
-    return data;
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_HIGHER)
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/update-user-details`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                ...details,
+                email_changed
+            }),
+            signal
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to update your details, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
+    }
 };
 
 export const updateProfileImage = async (image) => {
-    const user = await getSessionUser();
-    if (!user) return;
+    const controller = new AbortController()
+    const signal = controller.signal
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/update-profile-image`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: user.id,
-            image
-        }),
-    });
+    try {
+        const user = await getSessionUser();
+        if (!user) return;
 
-    const data = await response.json();
-    return data;
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_HIGHER)
+
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/update-profile-image`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                image
+            }),
+            signal
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to update your profile image, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
+    }
 };
 
 export const updateCoverImage = async (image) => {
-    const user = await getSessionUser();
-    if (!user) return;
+    const controller = new AbortController()
+    const signal = controller.signal
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/update-cover-image`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: user.id,
-            image
-        }),
-    });
+    try {
+        const user = await getSessionUser();
+        if (!user) return;
 
-    const data = await response.json();
-    return data;
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_HIGHER)
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/update-cover-image`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                image
+            }),
+            signal
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to update your cover image, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
+    }
 };
 
 export const maybeFollowUser = async (profileId) => {

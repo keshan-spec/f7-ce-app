@@ -44,6 +44,7 @@ var app = new Framework7({
     title: 'DriveLife',
     closeTimeout: 10000,
     closeOnClick: true,
+    icon: '<img src="assets/icons/favicon.png"/>',
   },
   toast: {
     closeTimeout: 3000,
@@ -132,6 +133,20 @@ var app = new Framework7({
   store: store,
   routes: routes,
 })
+
+$(document).on('mousedown', '.toolbar-bottom a', function (e) {
+  var targetHref = $(this).attr('href');
+  var validTabs = ['#view-social', '#view-discover', '#view-store', '#view-profile'];
+
+  if ($(this).hasClass('tab-link-active') && validTabs.includes(targetHref)) {
+    var view = app.views.current;
+    if (view.history.length > 1) {
+      view.router.back(view.history[0], {
+        force: true
+      });
+    }
+  }
+});
 
 export function showToast(message, type = 'Message', position = 'bottom') {
   app.toast.create({
@@ -573,16 +588,12 @@ $(document).on('submit', 'form#sign-up-step2', async function (e) {
       app.preloader.hide()
 
       if (!response || !response.success) {
-        app.dialog.alert(response.message || 'An error occurred, please try again')
-
-        // switch (response?.code) {
-        //   case "username_exists":
-        //     app.dialog.alert('Username already exists, please choose another one')
-        //     break
-        //   default:
-        //     app.dialog.alert(response.message || 'An error occurred, please try again')
-        //     break
-        // }
+        app.notification.create({
+          titleRightText: 'now',
+          subtitle: 'Oops, something went wrong',
+          text: error.message || 'Failed to update username',
+        }).open()
+        // app.dialog.alert(response.message || 'An error occurred, please try again')
         return
       }
 
@@ -595,7 +606,11 @@ $(document).on('submit', 'form#sign-up-step2', async function (e) {
     app.views.main.router.navigate('/signup-step3/')
   } catch (error) {
     console.log(error);
-    app.dialog.alert(error.message || 'Failed to update username')
+    app.notification.create({
+      titleRightText: 'now',
+      subtitle: 'Oops, something went wrong',
+      text: error.message || 'Failed to update username',
+    }).open()
     return
   }
 })

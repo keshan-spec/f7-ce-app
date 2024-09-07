@@ -2,7 +2,9 @@ import {
     getSessionUser
 } from './auth.js'
 import {
-    API_URL
+    API_URL,
+    TIMEOUT_MS_HIGH,
+    TIMEOUT_MS_HIGHER,
 } from './consts.js'
 
 export const getUserGarage = async (profileId) => {
@@ -81,58 +83,116 @@ export const getPostsForGarage = async (garageId, page = 1, tagged = false) => {
 }
 
 export const addVehicleToGarage = async (data) => {
-    const user = await getSessionUser()
-    if (!user) return
+    const controller = new AbortController()
+    const signal = controller.signal
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/add-vehicle-to-garage`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            ...data,
-            user_id: user.id,
-        }),
-    })
+    try {
+        const user = await getSessionUser()
+        if (!user) return
 
-    const res = await response.json()
-    return res
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_HIGH)
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/add-vehicle-to-garage`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                ...data,
+                user_id: user.id,
+            }),
+            signal
+        })
+
+        const res = await response.json()
+        return res
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to add your vehicle, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
+    }
 }
 
 export const updateVehicleInGarage = async (data, garageId) => {
-    const user = await getSessionUser()
-    if (!user) return
+    const controller = new AbortController()
+    const signal = controller.signal
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/update-garage`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            ...data,
-            user_id: user.id,
-            garage_id: garageId,
-        }),
-    })
+    try {
+        const user = await getSessionUser()
+        if (!user) return
 
-    const res = await response.json()
-    return res
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_HIGH)
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/update-garage`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                ...data,
+                user_id: user.id,
+                garage_id: garageId,
+            }),
+            signal
+        })
+
+        const res = await response.json()
+        return res
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to update your vehicle, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
+    }
 }
 
 export const deleteVehicleFromGarage = async (garageId) => {
-    const user = await getSessionUser()
+    const controller = new AbortController()
+    const signal = controller.signal
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/delete-garage`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: user.id,
-            garage_id: garageId,
-        }),
-    })
+    try {
+        const user = await getSessionUser()
+        if (!user) return
 
-    const res = await response.json()
-    return res
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_HIGH)
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/delete-garage`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                garage_id: garageId,
+            }),
+            signal
+        })
+
+        const res = await response.json()
+        return res
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to delete your vehicle, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
+    }
 }

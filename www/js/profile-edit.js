@@ -126,7 +126,11 @@ $(document).on('click', '#save-details', async function () {
         throw new Error(response.message);
     } catch (error) {
         app.preloader.hide()
-        showToast(error.message, 'Error');
+        app.notification.create({
+            titleRightText: 'now',
+            subtitle: 'Oops, something went wrong',
+            text: error.message || 'Failed to update details',
+        }).open()
     }
 });
 
@@ -192,7 +196,11 @@ $(document).on('click', '#update_password', async function () {
         throw new Error(response.message);
     } catch (error) {
         app.preloader.hide()
-        showToast(error.message || 'Failed to update password', 'Error');
+        app.notification.create({
+            titleRightText: 'now',
+            subtitle: 'Oops, something went wrong',
+            text: error.message || 'Failed to update password',
+        }).open()
     }
 })
 // --------------- End Edit Profile Page ---------------
@@ -253,20 +261,31 @@ $(document).on('click', '#save-username', async function () {
         return
     }
 
-    app.preloader.show()
+    try {
+        app.preloader.show()
 
-    const response = await updateUsername(username)
+        const response = await updateUsername(username)
 
-    app.preloader.hide()
+        app.preloader.hide()
 
-    if (response && response.success) {
-        showToast('Username updated successfully', 'Success')
-        view.router.navigate('/profile/')
+        if (response && response.success) {
+            showToast('Username updated successfully', 'Success')
+            view.router.navigate('/profile/')
 
-        store.dispatch('updateUserDetails')
-    } else {
-        showToast(response.message || 'Failed to update username', 'Error')
+            store.dispatch('updateUserDetails')
+        } else {
+            throw new Error(response.message)
+        }
+    } catch (error) {
+        app.preloader.hide()
+        app.notification.create({
+            titleRightText: 'now',
+            subtitle: 'Oops, something went wrong',
+            text: error.message || 'Failed to update username',
+        }).open()
     }
+
+
 })
 // --------------- End Edit Username Page ---------------
 
@@ -360,7 +379,13 @@ $(document).on('click', '#save-profile-images', async function () {
             throw new Error('Failed to update images')
         }
     } catch (error) {
-        showToast('Failed to update images', 'Error')
+        app.preloader.hide()
+
+        app.notification.create({
+            titleRightText: 'now',
+            subtitle: 'Oops, something went wrong',
+            text: error.message || 'Failed to update images',
+        }).open()
     }
 })
 

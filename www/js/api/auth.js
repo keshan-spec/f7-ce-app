@@ -1,5 +1,6 @@
 import {
-    API_URL
+    API_URL,
+    TIMEOUT_MS_HIGHER
 } from "./consts.js"
 import store from "../store.js"
 
@@ -93,29 +94,47 @@ export const handleSignUp = async (user) => {
 }
 
 export const updateUsername = async (username, user_id = null) => {
-    if (!user_id) {
-        const user = await getSessionUser();
-        if (!user) return {
-            success: false,
-            message: 'User id not provided'
-        };
-        user_id = user.id
+    const controller = new AbortController()
+    const signal = controller.signal
+
+    try {
+        if (!user_id) {
+            const user = await getSessionUser();
+            if (!user) return {
+                success: false,
+                message: 'User id not provided'
+            };
+            user_id = user.id
+        }
+
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_HIGHER)
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/update-username`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                username
+            }),
+            signal
+        })
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to update your username, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
     }
-
-
-    const response = await fetch(`${API_URL}/wp-json/app/v1/update-username`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: user_id,
-            username
-        }),
-    })
-
-    const data = await response.json()
-    return data
 }
 
 export const updateContentIds = async (content_ids, user_id) => {
@@ -151,30 +170,56 @@ export const updateAboutUserIds = async (content_ids, user_id) => {
 }
 
 export const updatePassword = async (new_password, old_password) => {
-    const user = await getSessionUser()
-    if (!user) return
+    const controller = new AbortController()
+    const signal = controller.signal
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/update-password`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: user.id,
-            new_password,
-            old_password
-        }),
-    })
+    try {
+        const user = await getSessionUser()
+        if (!user) return
 
-    const data = await response.json()
-    return data
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_HIGHER)
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/update-password`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                new_password,
+                old_password
+            }),
+            signal
+        })
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to update your password, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
+    }
 }
 
 export const updateUserDetails = async (details, email_changed) => {
-    const user = await getSessionUser()
-    if (!user) return
+    const controller = new AbortController()
+    const signal = controller.signal
 
     try {
+        const user = await getSessionUser();
+        if (!user) return;
+
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_HIGHER)
+
         const response = await fetch(`${API_URL}/wp-json/app/v1/update-user-details`, {
             method: "POST",
             headers: {
@@ -185,14 +230,22 @@ export const updateUserDetails = async (details, email_changed) => {
                 ...details,
                 email_changed
             }),
-        })
+            signal
+        });
 
-        const data = await response.json()
-        return data
+        const data = await response.json();
+        return data;
     } catch (error) {
-        return null
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to update your details, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
     }
-}
+};
 
 export const getUserById = async (id) => {
     try {

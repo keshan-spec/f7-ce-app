@@ -543,10 +543,16 @@ $(document).on('click', '.media-post-comment, .media-post-commentcount', async f
   document.getElementById('comment-form').querySelector('.replying-to').innerHTML = ''
   document.getElementById('comment-form').querySelector('.replying-to').classList.add('hidden')
 
-  const comments = await fetchComments(postId)
-
-  displayComments(comments, postId)
-  // CommentsPopup.open()
+  try {
+    const comments = await fetchComments(postId)
+    displayComments(comments, postId)
+  } catch (error) {
+    app.notification.create({
+      titleRightText: 'now',
+      subtitle: 'Oops, something went wrong',
+      text: error.message || 'Failed to fetch comments',
+    }).open()
+  }
 })
 
 $(document).on('click', '.media-post-share', function () {
@@ -614,14 +620,12 @@ $('#comment-form').on('submit', async function (e) {
     } else {
       app.notification.create({
         text: 'Failed to add comment',
-        icon: '<i class="icon icon-f7"></i>',
         titleRightText: 'now',
         subtitle: 'Oops, something went wrong',
       }).open()
     }
   } catch (error) {
     app.notification.create({
-      icon: '<img src="assets/icons/favicon.png"/>',
       titleRightText: 'now',
       subtitle: 'Oops, something went wrong',
       text: error.message || 'Failed to add comment',

@@ -32,3 +32,34 @@ export function formatPostDate(date) {
 
     return 'Just now'
 }
+
+export const timedFetch = async (url, fetchObj, error = 'Your connection seems unstable.', timeout = TIMEOUT_MS_LOW) => {
+    const controller = new AbortController()
+    const signal = controller.signal
+
+    try {
+        const user = await getSessionUser()
+        if (!user) return
+
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_LOW)
+
+        const response = await fetch(url,
+            fetchObj,
+            signal
+        )
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: error,
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
+    }
+}

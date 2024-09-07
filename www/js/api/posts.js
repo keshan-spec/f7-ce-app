@@ -40,22 +40,41 @@ export async function fetchPosts(page, following = false) {
 }
 
 export async function fetchComments(postId) {
-    const user = await getSessionUser()
-    if (!user) return
+    const controller = new AbortController()
+    const signal = controller.signal
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/get-post-comments`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: user.id,
-            post_id: postId
-        }),
-    })
+    try {
+        const user = await getSessionUser()
+        if (!user) return
 
-    const data = await response.json()
-    return data
+        setTimeout(() => {
+            controller.abort()
+        }, TIMEOUT_MS_LOW)
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/get-post-comments`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                post_id: postId
+            }),
+            signal
+        })
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw {
+                message: "Failed to fetch comments, your connection timed out",
+                name: "TimeOutError"
+            };
+        } else {
+            throw error; // Rethrow any other errors
+        }
+    }
 }
 
 export const maybeLikePost = async (postId) => {

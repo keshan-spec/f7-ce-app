@@ -776,7 +776,12 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-edit"]', as
       } catch (error) {
         console.log(error);
         app.preloader.hide()
-        showToast('Failed to delete vehicle')
+
+        app.notification.create({
+          titleRightText: 'now',
+          subtitle: 'Oops, something went wrong',
+          text: error.message || 'Failed to delete vehicle',
+        }).open()
       }
     })
   })
@@ -895,9 +900,12 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
       force: true
     })
   } catch (error) {
-    console.log(error);
     app.preloader.hide()
-    showToast('Failed to update vehicle')
+    app.notification.create({
+      titleRightText: 'now',
+      subtitle: 'Oops, something went wrong',
+      text: error.message || 'Failed to update vehicle',
+    }).open()
   }
 })
 
@@ -954,12 +962,12 @@ $(document).on('click', '#submit-add-vehicle-form', async function (e) {
   const cover_image = form.find('input[name="vehicle_image"]').prop('files')[0]
 
   if (!make || make === "0") {
-    app.dialog.alert('Please select a vehicle make')
+    showToast('Please select a vehicle make')
     return
   }
 
   if (!model) {
-    app.dialog.alert('Please enter a vehicle model')
+    showToast('Please enter a vehicle model')
     return
   }
 
@@ -990,12 +998,13 @@ $(document).on('click', '#submit-add-vehicle-form', async function (e) {
 
   // if primary_car is past, owned_to is required
   if (primary_car === "past" && !owned_to) {
-    app.dialog.alert('Please enter the date you owned the vehicle to')
+    showToast('Please enter the date you owned the vehicle to');
+
     return
   }
 
   if (!cover_image) {
-    app.dialog.alert('Please upload a cover image')
+    showToast('Please upload a cover image')
     return
   }
 
@@ -1046,6 +1055,10 @@ $(document).on('click', '#submit-add-vehicle-form', async function (e) {
   } catch (error) {
     app.preloader.hide()
 
-    app.dialog.alert('Failed to update vehicle')
+    app.notification.create({
+      titleRightText: 'now',
+      subtitle: 'Oops, something went wrong',
+      text: error.message || 'Failed to add vehicle',
+    }).open()
   }
 })

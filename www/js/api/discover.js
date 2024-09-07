@@ -212,7 +212,6 @@ export const fetchVenue = async (venueId) => {
     return data;
 }
 
-
 export const fetchTrendingUsers = async (page) => {
     try {
         const user = await getSessionUser();
