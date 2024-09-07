@@ -79,6 +79,7 @@ var app = new Framework7({
         // ex; http://localhost:3000/post-view/308
         // get the /post-view/308 and navigate to it
         const path = deeplink.split('/').slice(3).join('/')
+        alert(path)
         this.views.main.router.navigate(path)
         // remove the query parameter from the URL
         window.history.pushState({}, document.title, window.location.pathname)

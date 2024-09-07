@@ -1792,3 +1792,7 @@ background-image: url('../assets/img/slider-bg.jpg');
 .popup .page-content {
 	padding-top: 45px !important;
 }
+
+.navbar a.link.back {
+padding-right: 50px !important;
+}
