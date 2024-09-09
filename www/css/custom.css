@@ -1798,3 +1798,11 @@ background-image: url('../assets/img/slider-bg.jpg');
 .navbar a.link.back {
 padding-right: 50px !important;
 }
+
+.comment-delete {
+	margin-left:15px;	
+}
+.comment-delete i {
+	font-size: 15px !important;
+    color: #6c6c6c !important;
+}

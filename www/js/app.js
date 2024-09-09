@@ -352,10 +352,10 @@ new Swiper('.swiper-container', {
 })
 
 //Comments Popup
-app.popup.create({
-  el: '.comments-popup',
-  swipeToClose: 'to-bottom'
-})
+// app.popup.create({
+//   el: '.comments-popup',
+//   swipeToClose: 'to-bottom'
+// })
 
 //Share Popup
 app.popup.create({

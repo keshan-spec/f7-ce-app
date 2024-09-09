@@ -63,24 +63,23 @@ followingPostsStore.onUpdated((data) => {
 })
 
 $(document).on('infinite', '.infinite-scroll-content.home-page', async function () {
-  const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
-  const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
-  const currentPage = activeTab === 'following' ? currentFollowingPostsPage : currentPostsPage
-
-  if (currentPage >= totalPages) {
-    // app.infiniteScroll.destroy(infiniteScrollContent)
-    return
-  }
-
   if (isFetchingPosts) return
 
-  isFetchingPosts = true
+  const totalPages = activeTab === 'following' ? totalFPostPages : totalPostPages
+  const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'
 
   if (activeTab === 'following') {
     currentFollowingPostsPage++
   } else {
     currentPostsPage++
   }
+
+  const currentPage = activeTab === 'following' ? currentFollowingPostsPage : currentPostsPage
+  if (currentPage >= totalPages) {
+    return
+  }
+
+  isFetchingPosts = true
 
   await store.dispatch(storeName, currentPage)
   isFetchingPosts = false
