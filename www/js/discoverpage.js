@@ -545,3 +545,8 @@ $(document).on('ptr:refresh', '.discover-page.ptr-content', async function (e) {
     refreshed = false
     app.ptr.get('.discover-page.ptr-content').done()
 })
+
+$(document).on('click', '#featured-event-link', function (e) {
+    e.preventDefault();
+    window.open(e.target.href, '_blank');
+});
