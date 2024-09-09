@@ -78,8 +78,12 @@ var app = new Framework7({
         // get the page from the deeplink and navigate to it
         // ex; http://localhost:3000/post-view/308
         // get the /post-view/308 and navigate to it
-        const path = deeplink.split('/').slice(3).join('/')
-        alert(path)
+        let path = deeplink.split('/').slice(3).join('/')
+
+        if (!path.startsWith('/')) {
+          path = `/${path}`
+        }
+
         this.views.main.router.navigate(path)
         // remove the query parameter from the URL
         window.history.pushState({}, document.title, window.location.pathname)
@@ -99,7 +103,6 @@ var app = new Framework7({
           }
 
           if (data && data.id && !data.refreshed) {
-            store.dispatch('getFollowingPosts')
             store.dispatch('getMyPosts', {
               page: 1,
               clear: true

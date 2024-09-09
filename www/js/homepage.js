@@ -174,7 +174,7 @@ async function displayPosts(posts, following = false) {
     post_actions += `</div>`;
 
     const date = formatPostDate(post.post_date);
-    const maxDescriptionLength = 100; // Set your character limit here
+    const maxDescriptionLength = 200; // Set your character limit here
     const isLongDescription = post.caption.length > maxDescriptionLength;
     const shortDescription = isLongDescription ? post.caption.slice(0, maxDescriptionLength) : post.caption;
 
@@ -188,31 +188,28 @@ async function displayPosts(posts, following = false) {
       }
     }
 
-
-
     let profile_link;
 
     if (post.user_id == user.id) {
       profile_link = `
-      <a href="#" class="view-profile">
+      <a href="#" class="view-profile media-post-header">
         <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
         <div class="media-post-user">${post.username}</div>
+        <div class="media-post-date">${date}</div>
       </a>`
     } else {
       profile_link = `
-      <a href="/profile-view/${post.user_id}">
+      <a href="/profile-view/${post.user_id}" class="media-post-header">
         <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
         <div class="media-post-user">${post.username}</div>
+        <div class="media-post-date">${date}</div>
       </a>`
     }
 
     const postItem = `
       <div class="media-post" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
         <div class="media-post-content">
-          <div class="media-post-header">
-            ${profile_link}
-            <div class="media-post-date">${date}</div>
-          </div>
+          ${profile_link}
           <div class="media-post-content">
             <div class="swiper-container">
               <div class="swiper-wrapper">
@@ -500,6 +497,18 @@ $(document).on('click', '#delete-post', function () {
   })
 })
 
+$(document).on('click', '#edit-post', function () {
+  var view = app.views.current
+
+  // set the post id as a data attribute from the edit post popup
+  const postId = $('.edit-post-popup').attr('data-post-id')
+  view.router.navigate(`/post-edit/${postId}`, {
+    force: true
+  })
+
+  app.popup.close('.edit-post-popup')
+})
+
 $(document).on('touchstart', '.media-post-content .swiper-wrapper', detectDoubleTapClosure((e) => {
   return // Disable double tap for now
 
@@ -640,8 +649,6 @@ $(document).on('click', '.comment-reply', function () {
   const commentId = this.closest('.comment').getAttribute('data-comment-id')
   const ownerId = this.closest('.comment').getAttribute('data-owner-id')
   const ownerName = this.closest('.comment').getAttribute('data-owner-name')
-
-  console.log('Replying to comment', commentId, 'by', ownerId, ownerName)
 
   // add something above the comment form to show the user they are replying to a comment
   // add the comment id to the form

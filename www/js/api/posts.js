@@ -257,3 +257,36 @@ export const deletePost = async (post_id) => {
         return false
     }
 }
+
+/**
+ * @param {Object} data {
+     post_id: string | number;
+     new_tags: PostTag[];
+     removed_tags: number[];
+     caption ? : string;
+     location ? : string;
+ }
+ */
+export const updatePost = async (data) => {
+    try {
+        const user = await getSessionUser();
+        if (!user || !user.id) return null;
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/edit-post`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                ...data
+            }),
+        });
+
+        const res = await response.json();
+        return res;
+    } catch (e) {
+        console.error("Error updating post", e.message);
+        return null;
+    }
+};

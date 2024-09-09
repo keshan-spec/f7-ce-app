@@ -267,6 +267,39 @@ const store = createStore({
     },
   },
   actions: {
+    updatePost({
+      state
+    }, {
+      post_id,
+      caption
+    }) {
+      // loop through the posts and find the post with the post_id
+      const posts = state.posts.data
+      const post = posts.find(p => p.id == post_id)
+
+      const myPosts = state.myPosts.data
+      const myPost = myPosts.find(p => p.id == post_id)
+
+      // update the post with the new data
+      if (post) {
+        // update the post with the new data
+        post.caption = caption
+        // update the state with the new posts
+        state.posts = {
+          ...state.posts,
+          data: posts,
+        }
+      }
+
+      if (myPost) {
+        myPost.caption = caption
+
+        state.myPosts = {
+          ...state.myPosts,
+          data: myPosts,
+        }
+      }
+    },
     markNotificationsAsRead({
       state
     }, notification_ids) {
