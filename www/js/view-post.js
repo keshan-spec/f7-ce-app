@@ -3,10 +3,6 @@ import {
   getPostById
 } from "./api/posts.js"
 import {
-  detectDoubleTapClosure,
-  togglePostLike
-} from "./homepage.js"
-import {
   formatPostDate
 } from "./utils.js"
 import store from "./store.js"

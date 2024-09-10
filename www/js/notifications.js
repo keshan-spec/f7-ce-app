@@ -47,7 +47,7 @@ notificationsStore.onUpdated(async (data) => {
         refreshed = false
     }
 
-    document.querySelectorAll('.notification-title').forEach(elem => {
+    document.querySelectorAll('.app-notification-title').forEach(elem => {
         elem.innerHTML = elem.getAttribute('data-title')
     })
 
@@ -80,20 +80,26 @@ function timeAgo(dateString) {
 }
 
 function createNotificationItem(notification, user) {
-    const container = document.createElement('div');
+    const isFollow = notification.type === 'follow' ? true : false;
+    const container = document.createElement(isFollow ? 'div' : 'a');
+
+    if (!isFollow) {
+        container.href = `/post-view/${notification.entity.entity_id}`;
+    }
 
     let isReadClass = notification.is_read == "0" ? "unread-notif" : "";
 
     container.className = `notification-item ${isReadClass}`;
+    container.dataset.notificationId = notification._id;
 
     // Profile image and notification content container
-    const leftContainer = document.createElement('a');
-    leftContainer.href = `/profile-view/${notification.entity.user_id}`;
+    const leftContainer = document.createElement('div');
     leftContainer.className = 'notification-left';
 
-    const imageDiv = document.createElement('div');
+    const imageDiv = document.createElement('a');
     imageDiv.className = 'image-square image-rounded';
     imageDiv.style.backgroundImage = `url('${notification.entity.initiator_data.profile_image || 'assets/img/profile-placeholder.jpg'}')`;
+    imageDiv.href = `/profile-view/${notification.entity.user_id}`;
 
     const infoDiv = document.createElement('div');
     infoDiv.className = 'notification-info';
@@ -104,30 +110,34 @@ function createNotificationItem(notification, user) {
     if (notification.type === 'like') {
         content = `
             <div class="notification-text">
-                <strong>${notification.entity.initiator_data.display_name}</strong> liked your ${notification.entity.entity_type}
+                <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> liked your ${notification.entity.entity_type}
                 ${notification.entity.entity_data.comment ? `<span class="inline font-semibold text-black">: "${notification.entity.entity_data.comment}"</span>` : ''}
                 <span class=""></span>
             </div>
         `;
     } else if (notification.type === 'comment') {
+        const eclipseComment = notification.entity.entity_data.comment.length > 50 ? notification.entity.entity_data.comment.substring(0, 50) + '...' : notification.entity.entity_data.comment;
+
+        container.href = `/post-view/${notification.entity.entity_data.post_id}/#comment-${notification.entity.entity_id}`;
+
         content = `
             <div class="notification-text">
-                <strong>${notification.entity.initiator_data.display_name}</strong> commented on your post: 
-                <span class="block font-semibold text-black">"${notification.entity.entity_data.comment}"</span>
+                <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> commented on your post: 
+                <span class="font-semibold text-black">"${eclipseComment}"</span>
                 <span class="${isReadClass}"></span>
             </div>
         `;
     } else if (notification.type === 'follow') {
         content = `
             <div class="notification-text">
-                <strong>${notification.entity.initiator_data.display_name}</strong> followed you
+                <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> followed you
                 <span class="${isReadClass}"></span>
             </div>
         `;
     } else if (notification.type === 'mention') {
         content = `
             <div class="notification-text">
-                <strong>${notification.entity.initiator_data.display_name}</strong> mentioned you in a ${notification.entity.entity_type}
+                <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> mentioned you in a ${notification.entity.entity_type}
                 ${notification.entity.entity_data.comment ? `<span class="block font-semibold text-black">"${notification.entity.entity_data.comment}"</span>` : ''}
                 <span class="${isReadClass}"></span>
             </div>
@@ -135,7 +145,7 @@ function createNotificationItem(notification, user) {
     } else if (notification.type === 'post') {
         content = `
             <div class="notification-text">
-                <strong>${notification.entity.initiator_data.display_name}</strong> has posted ${notification.entity.entity_type === 'car' ? "your car" : "a post"} 
+                <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> has posted ${notification.entity.entity_type === 'car' ? "your car" : "a post"} 
                 <a href="/profile/garage/${notification.entity.entity_data?.garage?.id}" class="font-semibold hover:cursor-pointer hover:text-customblue">
                     ${notification.entity.entity_data?.garage?.make || ''} ${notification.entity.entity_data?.garage?.model || ''}
                 </a>
@@ -145,7 +155,7 @@ function createNotificationItem(notification, user) {
     } else if (notification.type === 'tag') {
         content = `
             <div class="notification-text">
-                <strong>${notification.entity.initiator_data.display_name}</strong> ${notification.entity.entity_type === 'car' ? "tagged your car in a post" : "tagged you in a post"}
+                <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> ${notification.entity.entity_type === 'car' ? "tagged your car in a post" : "tagged you in a post"}
                 <span class="${isReadClass}"></span>
             </div>
         `;
@@ -180,11 +190,20 @@ function createNotificationItem(notification, user) {
 
         if (notification.entity.entity_type === 'car') {
             path = 'car';
+            rightContainer.href = `/${path}/${notification.entity.entity_id}`;
+
         } else if (notification.entity.entity_type === 'post') {
             path = 'post-view';
+            rightContainer.href = `/${path}/${notification.entity.entity_id}`;
+
+        } else if (notification.entity.entity_type === 'comment') {
+            path = 'post-view';
+            rightContainer.href = `/${path}/${notification.entity.entity_data.post_id}`;
+        } else {
+            path = 'profile-view';
+            rightContainer.href = `/${path}/${notification.entity.user_id}`;
         }
 
-        rightContainer.href = `/${path}/${notification.entity.entity_id}`;
 
         const imageDiv = document.createElement('div');
         imageDiv.className = 'image-square image-rounded';
