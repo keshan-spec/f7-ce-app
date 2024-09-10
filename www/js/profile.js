@@ -273,19 +273,19 @@ export function fillGridWithPosts(posts, profileGridID, reset = false) {
     profileGrid.innerHTML += generatePostGridItem(post)
   })
 
-  if (emptySlotsNeeded > 0) {
-    // Add empty slots to fill the grid
-    profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
-  }
+  // if (emptySlotsNeeded > 0) {
+  //   // Add empty slots to fill the grid
+  //   profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
+  // }
 
 
-  // Add the "big image" as the last item, if the grid is filled correctly
-  if (emptySlotsNeeded === 0 && posts.length > 0) {
-    profileGrid.innerHTML += `
-      <a href="/post-view/${posts[posts.length - 1].id}" class="grid-item large-item">
-          <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
-      </a>`
-  }
+  // // Add the "big image" as the last item, if the grid is filled correctly
+  // if (emptySlotsNeeded === 0 && posts.length > 0) {
+  //   profileGrid.innerHTML += `
+  //     <a href="/post-view/${posts[posts.length - 1].id}" class="grid-item large-item">
+  //         <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
+  //     </a>`
+  // }
 }
 
 // Function to add empty grid items to fill the grid

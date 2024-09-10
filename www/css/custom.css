@@ -861,7 +861,7 @@ height: 24vh;
 	margin-right: 5px;
 }
 
-.profile-grid {
+/* .profile-grid {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
@@ -877,7 +877,24 @@ height: 24vh;
 	box-sizing: border-box;
 	overflow: hidden;
 	min-height: 100px;
+} */
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1%;
+    width: 95%;
+    margin: 0 auto;
+    text-align: center;
 }
+
+.profile-grid .grid-item {
+    min-height: 100px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+
 .profile-grid .video-square {
 	display: block;
 	overflow: hidden;
@@ -885,6 +902,7 @@ height: 24vh;
 	padding-bottom: 100%;
 	position: relative;
 }
+
 .profile-grid .video-square video {
 	position: absolute;
 	top:50%;
