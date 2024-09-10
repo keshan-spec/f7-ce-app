@@ -71,7 +71,7 @@ body {
 .image-square {
 	display: block;
 	width: 100%;
-	padding-bottom: 100%;
+	/* padding-bottom: 100%; */
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: center;
@@ -882,7 +882,7 @@ height: 24vh;
 .profile-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1%;
+    gap: 5px;
     width: 95%;
     margin: 0 auto;
     text-align: center;
@@ -892,8 +892,8 @@ height: 24vh;
     min-height: 100px;
     box-sizing: border-box;
     overflow: hidden;
+    max-height: 130px;
 }
-
 
 .profile-grid .video-square {
 	display: block;
