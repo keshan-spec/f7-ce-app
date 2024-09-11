@@ -17,6 +17,9 @@ import {
 import {
   getSessionUser
 } from "./api/auth.js"
+import {
+  renderPost
+} from "./view-post.js"
 
 var $ = Dom7
 var currentPostsPage = 1
@@ -33,6 +36,8 @@ var isFetchingPosts = false
 var activeTab = 'latest'
 var refreshed = false
 
+var myList;
+
 postsStore.onUpdated((data) => {
   totalPostPages = data.total_pages
 
@@ -46,6 +51,7 @@ postsStore.onUpdated((data) => {
   }
 
   displayPosts(data.new_data)
+  // myList.appendItems(data.new_data)
 })
 
 followingPostsStore.onUpdated((data) => {
@@ -106,6 +112,15 @@ $(document).on('page:beforein', '.page[data-name="social"]', function (e) {
     isFetchingPosts = false
     app.ptr.done()
   })
+
+  // myList = app.virtualList.create({
+  //   el: '.list-virtual-latest',
+  //   items: [],
+  //   height: 200,
+  //   renderItem(item) {
+  //     return renderPost(item)
+  //   },
+  // });
 })
 
 /* Based on this http://jsfiddle.net/brettwp/J4djY/*/

@@ -118,7 +118,7 @@ function createNotificationItem(notification, user) {
     } else if (notification.type === 'comment') {
         const eclipseComment = notification.entity.entity_data.comment.length > 50 ? notification.entity.entity_data.comment.substring(0, 50) + '...' : notification.entity.entity_data.comment;
 
-        container.href = `/post-view/${notification.entity.entity_data.post_id}/#comment-${notification.entity.entity_id}`;
+        container.href = `/post-view/${notification.entity.entity_data.post_id}?commentId=${notification.entity.entity_id}`;
 
         content = `
             <div class="notification-text">
@@ -198,7 +198,7 @@ function createNotificationItem(notification, user) {
 
         } else if (notification.entity.entity_type === 'comment') {
             path = 'post-view';
-            rightContainer.href = `/${path}/${notification.entity.entity_data.post_id}`;
+            rightContainer.href = `/${path}/${notification.entity.entity_data.post_id}?commentId=${notification.entity.entity_id}`;
         } else {
             path = 'profile-view';
             rightContainer.href = `/${path}/${notification.entity.user_id}`;
