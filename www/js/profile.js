@@ -266,39 +266,9 @@ export function fillGridWithPosts(posts, profileGridID, reset = false) {
     profileGrid.innerHTML = '' // Clear the grid before adding new posts
   }
 
-  const gridColumns = 3 // Assuming a 3-column grid
-  const gridSize = posts.filter(post => post.media && post.media.length > 0).length
-  const emptySlotsNeeded = (gridColumns - (gridSize % gridColumns)) % gridColumns
-
   posts.forEach(post => {
     profileGrid.innerHTML += generatePostGridItem(post)
   })
-
-  // if (emptySlotsNeeded > 0) {
-  //   // Add empty slots to fill the grid
-  //   profileGrid.innerHTML += addEmptyGridItems(emptySlotsNeeded)
-  // }
-
-
-  // // Add the "big image" as the last item, if the grid is filled correctly
-  // if (emptySlotsNeeded === 0 && posts.length > 0) {
-  //   profileGrid.innerHTML += `
-  //     <a href="/post-view/${posts[posts.length - 1].id}" class="grid-item large-item">
-  //         <div class="image-large" style="background-image:url('${posts[posts.length - 1].media[0].media_url}');"></div>
-  //     </a>`
-  // }
-}
-
-// Function to add empty grid items to fill the grid
-function addEmptyGridItems(count) {
-  let emptyItems = ''
-  for (let i = 0; i < count; i++) {
-    emptyItems += `
-            <div class="grid-item empty-item">
-                <div class="image-square" style="background-color: #F9F9F9;"></div>
-            </div>`
-  }
-  return emptyItems
 }
 
 userStore.onUpdated((user) => {
@@ -323,7 +293,7 @@ myPostsStore.onUpdated((data) => {
 
     if (data.data.length === 0) {
       const profileGrid = document.getElementById('profile-grid-posts')
-      profileGrid.innerHTML = '<p>No posts</p>'
+      profileGrid.innerHTML = '<p></p><p>No posts</p>'
       return;
     }
 
@@ -344,7 +314,7 @@ myTagsStore.onUpdated((data) => {
 
     if (data.data.length === 0) {
       const profileGrid = document.getElementById('profile-grid-tags')
-      profileGrid.innerHTML = '<p>No tagged posts</p>'
+      profileGrid.innerHTML = '<p></p><p>No tagged posts</p>'
       return;
     }
 

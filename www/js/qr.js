@@ -27,7 +27,7 @@ const renderResult = (result) => {
     const user = store.getters.user.value
 
     if (!result || result.status === 'error') {
-        return `<h2 class="text-center">Sorry, this QR code is not valid</h2>`
+        return `<h2 class="text-center">${result?.message || 'Oops, looks like you scanned an invalid QR code'}</h2>`
     }
 
     if (result.available) {

@@ -173,7 +173,7 @@ function populateUsersPosts(data) {
 
             if (data[postsKey].data.length === 0) {
                 const profileGrid = document.getElementById('profile-view-grid-posts')
-                profileGrid.innerHTML = '<p>No posts</p>'
+                profileGrid.innerHTML = '<p></p><p>No posts</p>'
                 return;
             }
 
@@ -199,7 +199,7 @@ function populateUsersPosts(data) {
 
             if (data[tagsKey].data.length === 0) {
                 const profileGrid = document.getElementById('profile-view-grid-tags')
-                profileGrid.innerHTML = '<p>No tagged posts</p>'
+                profileGrid.innerHTML = '<p></p><p>No tagged posts</p>'
                 return;
             }
 

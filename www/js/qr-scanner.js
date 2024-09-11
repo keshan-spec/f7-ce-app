@@ -15,6 +15,7 @@ export const onScanSuccess = async (decodedText) => {
 
     try {
         const url = new URL(decodedText)
+
         if (url.hostname === 'mydrivelife.com') {
             const qrCode = url.pathname.split('/').pop()
             if (qrCode) {
@@ -23,7 +24,11 @@ export const onScanSuccess = async (decodedText) => {
                 store.dispatch('setScanningQrCode', false)
             }
         } else {
-            store.dispatch('setScannedData', null)
+            store.dispatch('setScannedData', {
+                status: 'error',
+                message: 'Oops, looks like you scanned an invalid QR code',
+                available: false
+            })
             store.dispatch('setScanningQrCode', false)
         }
     } catch (error) {
@@ -34,5 +39,5 @@ export const onScanSuccess = async (decodedText) => {
 export function onScanFailure(error) {
     // handle scan failure, usually better to ignore and keep scanning.
     // for example:
-    console.warn(`Code scan error = ${error}`)
+    // console.warn(`Code scan error = ${error}`)
 }
