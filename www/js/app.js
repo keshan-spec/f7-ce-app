@@ -17,6 +17,7 @@ import {
   getIDFromQrCode
 } from './api/scanner.js'
 import {
+  openModal,
   openQRModal
 } from './qr.js'
 import {
@@ -187,18 +188,42 @@ async function maybeRedirectToProfile(qrCode) {
     $('.init-loader').show()
     const response = await getIDFromQrCode(qrCode)
 
+    if (response && response.status === 'error') {
+      throw new Error(response.message || 'Oops, Unable to find the profile linked to this QR code.')
+    }
+
+    const user = store.getters.user.value
     const id = response?.data?.linked_to;
 
     if (id) {
-      view.router.navigate(`/profile-view/${id}`)
+      if (user && user.id == id) {
+        $('.view-profile-link').click()
+      } else {
+        view.router.navigate(`/profile-view/${id}`)
+      }
+
       // remove the query parameter from the URL
       window.history.pushState({}, document.title, window.location.pathname)
       $('.init-loader').hide()
+    } else {
+
+      openModal()
+      $('.init-loader').hide()
+
+      setTimeout(() => {
+        store.dispatch('setScannedData', {
+          status: 'success',
+          qr_code: qrCode,
+          message: 'QR Code is not linked to any profile',
+          available: true
+        })
+      }, 1000)
+      return
     }
   } catch (error) {
     console.log(error);
     window.history.pushState({}, document.title, window.location.pathname)
-    app.dialog.alert('Oops, Unable to find the profile linked to this QR code.')
+    app.dialog.alert(error.message || 'Oops, Unable to find the profile linked to this QR code.')
     $('.init-loader').hide()
   }
 }

@@ -56,7 +56,7 @@ const renderResult = (result) => {
 }
 
 // Function to create and open the modal with default content
-function openModal() {
+export function openModal() {
     const myModal = app.dialog.create({
         title: 'Scan QR Code',
         content: `
@@ -137,9 +137,11 @@ $(document).on('click', '.open-qr-modal', function () {
 })
 
 store.getters.scannedData.onUpdated((data) => {
-    if (data && html5QrCode) {
+    if (html5QrCode) {
         html5QrCode.stop()
+    }
 
+    if (data) {
         document.getElementById('custom-modal-content').innerHTML = renderResult(data)
     }
 })
