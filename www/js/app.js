@@ -75,6 +75,26 @@ var app = new Framework7({
 
       const deeplink = getQueryParameter('deeplink')
       if (deeplink) {
+        // check if deeplink has ?qr= query parameter
+        // if it does, get the value of the qr parameter and redirect to the profile
+        // ex; http://localhost:3000/?qr=123456
+        const maybeQr = deeplink.split('?qr=')[1]
+        const deepqrCode = maybeQr ? maybeQr : null
+
+        if (deepqrCode) {
+          maybeRedirectToProfile(deepqrCode)
+          return;
+        }
+
+        // check if url looks like https://mydrivelife.com/qr/8700279E
+        // if it does, get the qr code and redirect to the profile
+        const isDriveLifeUrl = deeplink.includes('mydrivelife.com/qr/')
+        if (isDriveLifeUrl) {
+          const qrCode = deeplink.split('/').slice(-1)[0]
+          maybeRedirectToProfile(qrCode)
+          return;
+        }
+
         // get the page from the deeplink and navigate to it
         // ex; http://localhost:3000/post-view/308
         // get the /post-view/308 and navigate to it
@@ -184,8 +204,9 @@ async function maybeRedirectToProfile(qrCode) {
 }
 
 // Function to parse query parameters from the URL
-function getQueryParameter(name) {
-  const urlParams = new URLSearchParams(window.location.search)
+function getQueryParameter(name, url) {
+
+  const urlParams = new URLSearchParams(url || window.location.search)
   return urlParams.get(name)
 }
 
