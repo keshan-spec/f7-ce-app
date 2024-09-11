@@ -161,6 +161,8 @@ export function showToast(message, type = 'Message', position = 'bottom') {
 }
 
 async function maybeRedirectToProfile(qrCode) {
+  var view = app.views.current
+
   try {
     $('.init-loader').show()
     const response = await getIDFromQrCode(qrCode)
@@ -168,7 +170,7 @@ async function maybeRedirectToProfile(qrCode) {
     const id = response?.data?.linked_to;
 
     if (id) {
-      app.views.main.router.navigate(`/profile-view/${id}`)
+      view.router.navigate(`/profile-view/${id}`)
       // remove the query parameter from the URL
       window.history.pushState({}, document.title, window.location.pathname)
       $('.init-loader').hide()
@@ -232,7 +234,6 @@ export function onBackKeyDown() {
     window.ReactNativeWebView.postMessage('exit_app')
     return true
   } else {
-
     if (view.history.length < 2) {
       $('.tab-link[href="#view-home"]').click()
       return
@@ -261,51 +262,10 @@ notificationCountStore.onUpdated((data) => {
 })
 
 networkErrors.onUpdated((data) => {
-  console.log(data);
-
   if (data) {
     app.dialog.alert('Poor network connection. Please check your internet connection and try again.')
   }
 })
-
-// $(document).on('click', '.footer-links', function (e) {
-//   var view = app.views.current
-
-//   // const routesMap = {
-//   //   "#view-home": "/home/",
-//   //   "#view-discover": "/discover/",
-//   //   "#view-store": "/store/",
-//   //   "#view-profile": "/profile/",
-//   // }
-
-//   // const linkElem = e.target.closest('a')
-//   // const href = linkElem.getAttribute('href')
-
-//   // app.views.main.router.navigate(routesMap[href])
-
-
-//   if (view.history[0] == '/profile') {
-//     return;
-//   }
-
-//   if (view.history.length > 1) {
-//     const authRoutes = ['auth', 'login', 'signup-step1', 'signup-step2', 'signup-step3', 'signup-step4', 'signup-complete'];
-
-//     // Check if any item in the view.history array contains any of the authRoutes
-//     if (view.history.some(historyItem => authRoutes.some(route => historyItem.includes(`/${route}/`)))) {
-//       app.views.main.router.navigate('/');
-//       return;
-//     }
-
-
-//     view.router.back({
-//       url: view.history[0],
-//       history: true, // Update the history stack correctly
-//       animate: true, // Optional: enable animation if you want
-//       reloadCurrent: true // Optional: force reload of the current page if needed
-//     });
-//   }
-// })
 
 // Action Sheet with Grid Layout
 var actionSheet = app.actions.create({
