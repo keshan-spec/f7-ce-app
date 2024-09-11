@@ -91,23 +91,11 @@ export const handleLink = async (result) => {
 
     try {
         const response = await linkProfile(result?.qr_code)
-
-        if (response.status === 'error') {
-            return {
-                type: 'error',
-                text: response.message
-            }
-        } else {
-            return {
-                type: 'success',
-                text: response.message
-            }
-        }
-
+        return response
     } catch (e) {
         console.error("Error linking profile", e)
         return {
-            type: 'error',
+            status: 'error',
             text: 'Error linking profile'
         }
     }

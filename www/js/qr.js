@@ -87,14 +87,19 @@ export function openModal() {
 // on link profile
 $(document).on('click', '#link-profile', async function () {
     const result = store.getters.scannedData.value
-    // close the modal
-    app.dialog.close()
 
     if (result) {
         const response = await handleLink(result)
-        if (response.type === 'success') {
-            app.dialog.alert(response.text)
+        if (response.status === 'error') {
+            store.dispatch('setScannedData', {
+                status: 'error',
+                message: response.text,
+                available: false
+            })
         }
+
+        app.dialog.close()
+        app.dialog.alert(response.message)
 
         // reset the scanned data
         store.dispatch('setScannedData', null)

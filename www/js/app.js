@@ -201,15 +201,8 @@ async function maybeRedirectToProfile(qrCode) {
       } else {
         view.router.navigate(`/profile-view/${id}`)
       }
-
-      // remove the query parameter from the URL
-      window.history.pushState({}, document.title, window.location.pathname)
-      $('.init-loader').hide()
     } else {
-
       openModal()
-      $('.init-loader').hide()
-
       setTimeout(() => {
         store.dispatch('setScannedData', {
           status: 'success',
@@ -218,8 +211,11 @@ async function maybeRedirectToProfile(qrCode) {
           available: true
         })
       }, 1000)
-      return
     }
+
+    // remove the query parameter from the URL
+    window.history.pushState({}, document.title, window.location.pathname)
+    $('.init-loader').hide()
   } catch (error) {
     console.log(error);
     window.history.pushState({}, document.title, window.location.pathname)
