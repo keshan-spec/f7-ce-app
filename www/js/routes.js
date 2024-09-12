@@ -129,6 +129,10 @@ var routes = [{
     path: '/post-edit/:id',
     componentUrl: './pages/post-edit.html?' + v,
   },
+  {
+    path: '/profile-edit-account-settings/',
+    componentUrl: './pages/profile-edit-account-settings.html?' + v,
+  },
   // Default route (404 page). MUST BE THE LAST
   {
     path: '(.*)',

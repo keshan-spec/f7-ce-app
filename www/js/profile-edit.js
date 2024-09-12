@@ -1,4 +1,5 @@
 import {
+    deleteUserAccount,
     getSessionUser,
     updatePassword,
     updateUserDetails,
@@ -660,3 +661,75 @@ $(document).on('click', '.delete-external-link', async function (e) {
 $(document).on('input', '#lowercaseInput', function (event) {
     this.value = this.value.toLowerCase();
 });
+
+// --------------- Delete Profile Page ---------------
+// $(document).on('page:init', '.page[data-name="profile-edit-account-settings"]', function (e) {
+// });
+
+$(document).on('click', '.account-delete', function (e) {
+    app.dialog.confirm('Are you sure? It is not possible to restore accounts once deleted. To proceed, re-enter your password:', 'Confirm', function (name) {
+        app.dialog.passwordConfirm('Please enter your password.', 'Delete Account', async function (password) {
+            await handleDeleteAccount(password);
+        });
+    });
+});
+
+async function handleDeleteAccount(password) {
+
+    try {
+        app.preloader.show();
+
+        const response = await deleteUserAccount(password);
+
+        app.preloader.hide();
+        if (!response) {
+            app.dialog.alert('Failed to delete account', 'Error');
+            return;
+        }
+
+        if (response && response.success == false) {
+            app.dialog.alert(response.message, 'Error');
+            return;
+        }
+
+        if (response && response.success) {
+            app.dialog.alert('Account deleted successfully', 'Success');
+
+            setTimeout(() => {
+                store.dispatch('logout');
+            }, 1000);
+        }
+    } catch (error) {
+        app.preloader.hide();
+        app.dialog.alert(error.message || 'Failed to delete account', 'Error');
+    }
+}
+
+// Custom dialog to ask for password
+app.dialog.passwordConfirm = function (text, title, callback) {
+    app.dialog.create({
+        title: title,
+        text: text,
+        content: '<div class="dialog-input-field item-input"><div class="item-input-wrap"><input type="password" name="password" placeholder="Enter your password" class="dialog-input"></div></div>',
+        buttons: [{
+                text: 'Cancel',
+                onClick: function (dialog, e) {
+                    dialog.close();
+                }
+            },
+            {
+                text: 'Delete',
+                bold: true,
+                onClick: function (dialog, e) {
+                    var password = dialog.$el.find('.dialog-input').val(); // Get the password entered
+                    if (!password) {
+                        showToast('Please enter your password', 'Error');
+                        return;
+                    }
+                    callback(password); // Pass the password to the callback
+                    dialog.close();
+                }
+            }
+        ]
+    }).open();
+};

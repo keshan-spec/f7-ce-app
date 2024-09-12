@@ -291,6 +291,7 @@ window.onAppBackKey = onBackKeyDown
 userStore.onUpdated((data) => {
   if (data && data.id && !data.external_refresh && !data.refreshed) {
     store.dispatch('getPosts')
+    store.dispatch('getFollowingPosts')
     store.dispatch('notificationCount')
     store.dispatch('fetchNotifications')
   }

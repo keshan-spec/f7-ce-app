@@ -330,3 +330,29 @@ export const markMultipleNotificationsAsRead = async (notificationIds) => {
     const data = await response.json();
     return data;
 };
+
+export const deleteUserAccount = async (password) => {
+    const user = await getSessionUser()
+    if (!user || !user.id) return
+
+    try {
+        const response = await fetch(`${API_URL}/wp-json/app/v1/delete_account`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+                password
+            }),
+        })
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        return {
+            success: false,
+            message: 'Oops, unable to delete your account. Please try again later.'
+        }
+    }
+}

@@ -565,6 +565,7 @@ const store = createStore({
     }) {
       state.user = null
       window.localStorage.removeItem('token')
+      window.location.reload()
     },
     async updateUserDetails({
       state
