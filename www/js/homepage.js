@@ -225,7 +225,11 @@ async function displayPosts(posts, following = false) {
                     // `
                     'Disabled for testing'
                      : `
-                      <img src="${mediaItem.media_url}" alt="${mediaItem.media_alt}" />
+                      <img 
+                        src="${mediaItem.media_url}" 
+                        alt="${mediaItem.caption || post.username + ' post'}"
+                        loading="lazy"
+                      />
                     `}
                   </div>
                 `).join('')}

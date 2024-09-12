@@ -238,21 +238,23 @@ function generatePostGridItem(post) {
   const media = post.media[0] // Get the first media item
   const isVideo = media.media_type === "video" || media.media_url.includes('.mp4')
 
-  // <video playsinline>
-  //           <source src="${media.media_url}" type="video/mp4" />
-  //         </video>
   if (isVideo) {
     return `
       <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}">
         <div class="video-square">
-          
         </div>
       </a>`
   } else {
-    // <div class="image-square" style="background-image:url('${media.media_url}');"></div>
     return `
       <a href="/post-view/${post.id}" class="grid-item image-square" data-src="${media.media_url}">
-        <img src="${media.media_url}" class="" loading="lazy" />
+        <img 
+          src="${media.media_url}"
+          loading="lazy"
+          role="presentation"
+          sizes="(max-width: 320px) 280px, 320px"
+          decoding="async"
+          fetchPriority="high"
+        />
       </a>`
   }
 }
