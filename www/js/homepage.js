@@ -109,6 +109,8 @@ $(document).on('page:beforein', '.page[data-name="social"]', function (e) {
     isFetchingPosts = false
     app.ptr.done()
   })
+
+  app.toolbar.show('.toolbar.toolbar-bottom', true)
 })
 
 /* Based on this http://jsfiddle.net/brettwp/J4djY/*/
