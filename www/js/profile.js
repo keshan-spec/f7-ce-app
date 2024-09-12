@@ -251,8 +251,8 @@ function generatePostGridItem(post) {
   } else {
     // <div class="image-square" style="background-image:url('${media.media_url}');"></div>
     return `
-      <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}">
-        <img src="${media.media_url}" class="image-square" loading="lazy" />
+      <a href="/post-view/${post.id}" class="grid-item image-square" data-src="${media.media_url}">
+        <img src="${media.media_url}" class="" loading="lazy" />
       </a>`
   }
 }

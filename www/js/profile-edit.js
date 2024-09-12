@@ -667,7 +667,7 @@ $(document).on('input', '#lowercaseInput', function (event) {
 // });
 
 $(document).on('click', '.account-delete', function (e) {
-    app.dialog.confirm('Are you sure? It is not possible to restore accounts once deleted. To proceed, re-enter your password:', 'Confirm', function (name) {
+    app.dialog.confirm('Are you sure? It is not possible to restore accounts once deleted.', 'Confirm', function (name) {
         app.dialog.passwordConfirm('Please enter your password.', 'Delete Account', async function (password) {
             await handleDeleteAccount(password);
         });
