@@ -207,7 +207,10 @@ function createNotificationItem(notification, user) {
 
         const imageDiv = document.createElement('div');
         imageDiv.className = 'image-square image-rounded';
-        imageDiv.style.backgroundImage = `url('${notification.entity.entity_data.media || 'assets/img/profile-placeholder.jpg'}')`;
+        imageDiv.style.backgroundImage = `url('${notification.entity.entity_data.media}')`;
+        imageDiv.style.backgroundSize = 'cover';
+        imageDiv.style.backgroundPosition = 'center';
+        imageDiv.style.backgroundColor = '#f1f1f1';
 
         rightContainer.appendChild(imageDiv);
         container.appendChild(rightContainer)
