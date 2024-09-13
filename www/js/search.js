@@ -5,11 +5,15 @@ import store from "./store.js";
 
 var $ = Dom7;
 
-let activeTab = 'all';
+// let activeTab = 'all';
 let lastSearchText = '';
 let controller; // To store the current AbortController
 
 var searchResultsStore = store.getters.getSearchResults;
+
+$(document).on('page:afterin', '.page[data-name="search"]', async function (e) {
+    $('#discover-search').focus();
+})
 
 // event listener for tab change
 $(document).on('click', '.discovery-wrap .tab-link', async function (e) {
