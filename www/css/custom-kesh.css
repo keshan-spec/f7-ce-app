@@ -220,6 +220,14 @@
     position: relative;
     /* min-height: 300px; */
     max-height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e7e7e7;
+}
+
+.post-media img {
+    z-index: 1;
 }
 
 .post-media::before {
@@ -229,10 +237,10 @@
     left: 50%;
     width: 18px;
     height: 40px;
-    /* background: url('../assets/loader.gif') center center no-repeat; */
+    background: url('../assets/loader.gif') center center no-repeat;
     background-size: contain;
     transform: translate(-50%, -50%);
-    z-index: -1;
+    /* z-index: ; */
 }
 
 .replying-to {

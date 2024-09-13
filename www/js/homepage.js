@@ -36,6 +36,9 @@ var isFetchingPosts = false
 var activeTab = 'latest'
 var refreshed = false
 
+//screen width
+var containerWidth = window.innerWidth
+
 postsStore.onUpdated((data) => {
   totalPostPages = data.total_pages
 
@@ -185,12 +188,27 @@ async function displayPosts(posts, following = false) {
     let imageHeight = 400;
 
     if (post.media.length > 0) {
-      imageHeight = post.media[0].media_height;
+      const intrinsicWidth = post.media[0].media_width;
+      const intrinsicHeight = post.media[0].media_height;
 
-      if (imageHeight > 800) {
-        imageHeight = 'auto';
+      // Calculate intrinsic aspect ratio
+      const intrinsicRatio = intrinsicWidth / intrinsicHeight;
+
+      // Calculate the rendered height based on the container width
+      const renderedHeight = containerWidth / intrinsicRatio;
+
+      // Use either the rendered height or the fallback height
+      if (renderedHeight > 0) {
+
+        if (renderedHeight > 500) {
+          imageHeight = 500
+        } else {
+          imageHeight = renderedHeight
+        }
       }
+
     }
+
 
     let profile_link;
 
@@ -218,7 +236,7 @@ async function displayPosts(posts, following = false) {
             <div class="swiper-container">
               <div class="swiper-wrapper">
                 ${post.media.map(mediaItem => `
-                  <div class="swiper-slide post-media" style="height: ${imageHeight}; ">
+                  <div class="swiper-slide post-media" style="height: ${imageHeight}px; ">
                     ${mediaItem.media_type === 'video' ? 
                     // `
                     //   <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
@@ -229,8 +247,10 @@ async function displayPosts(posts, following = false) {
                      : `
                       <img 
                         src="${mediaItem.media_url}" 
-                        alt="${mediaItem.caption || post.username + ' post'}"
+                        alt="${mediaItem.caption || post.username + 's post'}"
                         loading="lazy"
+                        style="text-align: center;"
+                        onerror = "this.style.display='none';"
                       />
                     `}
                   </div>
