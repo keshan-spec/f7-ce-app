@@ -339,7 +339,8 @@ var actionSheet = app.actions.create({
         text: '<div class="actions-grid-item">Add Vehicle</div>',
         icon: '<img src="assets/img/icon-vehicle-add.svg" width="48" style="max-width: 100%;"/>',
         onClick: function () {
-          app.views.main.router.navigate('/profile-garage-vehicle-add/');
+          var view = app.views.current
+          view.router.navigate('/profile-garage-vehicle-add/');
         }
       }
     ],
