@@ -237,14 +237,14 @@ async function displayPosts(posts, following = false) {
               <div class="swiper-wrapper">
                 ${post.media.map(mediaItem => `
                   <div class="swiper-slide post-media" style="height: ${imageHeight}px; ">
-                    ${mediaItem.media_type === 'video' ? 
-                    // `
-                    //   <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
-                    //     <source src="${mediaItem.media_url}" type="${mediaItem.media_mime_type}" />
-                    //   </video>
-                    // `
-                    'Disabled for testing'
-                     : `
+                    ${mediaItem.media_type === 'video' ?
+        // `
+        //   <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
+        //     <source src="${mediaItem.media_url}" type="${mediaItem.media_mime_type}" />
+        //   </video>
+        // `
+        'Disabled for testing'
+        : `
                       <img 
                         src="${mediaItem.media_url}" 
                         alt="${mediaItem.caption || post.username + 's post'}"
@@ -364,14 +364,14 @@ function displayComments(comments, postId) {
           <div class="comment-replies-container">
             ${comment.replies.map(reply => {
 
-              // Determine the delete button visibility
-              const deleteButton = reply.user_id == user.id ? 
-                `<div class="comment-delete" data-comment-id="${reply.id}">
+      // Determine the delete button visibility
+      const deleteButton = reply.user_id == user.id ?
+        `<div class="comment-delete" data-comment-id="${reply.id}">
                 <i class="icon f7-icons text-red">trash</i>
-                </div>` : 
-                '';
+                </div>` :
+        '';
 
-              return `
+      return `
                 <div class="comment" data-comment-id="${reply.id}" data-is-liked="${reply.liked}" data-owner-id="${reply.user_id}"
                   data-owner-name="${reply.user_login}">
 
@@ -404,7 +404,7 @@ function displayComments(comments, postId) {
                   </div>
                   <div class="clearfix"></div>
                 </div>`;
-            }).join('')}
+    }).join('')}
           </div>
         </div>` : '';
 
@@ -534,7 +534,10 @@ $(document).on('click', '#delete-post', function () {
   const isSingleView = $('.edit-post-popup').attr('data-is-single')
 
   app.dialog.confirm('Are you sure you want to delete this post?', 'Delete Post', async () => {
+
+    app.preloader.show()
     const response = await deletePost(postId)
+    app.preloader.hide()
 
     if (response) {
       store.dispatch('getMyPosts', {
@@ -546,8 +549,12 @@ $(document).on('click', '#delete-post', function () {
         clear: true
       })
 
-      if (isSingleView) {
-        view.router.navigate('/profile/')
+      console.log(isSingleView);
+
+      if (isSingleView == 'true') {
+        // $('.view-profile-link').click()
+        view.router.back()
+        // view.router.navigate('/profile/')
       }
 
       showToast('Post deleted successfully')
@@ -556,6 +563,7 @@ $(document).on('click', '#delete-post', function () {
       app.popup.close('.edit-post-popup')
     } else {
       showToast('Failed to delete post')
+      app.preloader.hide()
     }
   })
 })

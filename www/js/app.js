@@ -286,11 +286,14 @@ export function onBackKeyDown() {
   }
 }
 
-function onPostUpload() {
-  store.dispatch('getPosts')
-  store.dispatch('getMyPosts')
 
-  alert('Post uploaded');
+function onPostUpload() {
+  store.dispatch('getMyPosts', {
+    page: 1,
+    clear: true
+  })
+
+  store.dispatch('getPosts')
 }
 
 window.onPostUpload = onPostUpload

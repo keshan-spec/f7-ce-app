@@ -1443,6 +1443,11 @@ height: 24vh;
     color: #141515;
     font-weight: 600;
 }
+
+.list .section-title {
+    padding-inline: 1rem;
+}
+
 .event-listing .card {
     background: #ffffff;
     border-radius: 6px;

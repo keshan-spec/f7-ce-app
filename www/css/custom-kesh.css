@@ -316,3 +316,61 @@
     0% { background-color: rgba(255,255,153,.8); }
     100% { background-color: rgba(255,255,153,0); }
 }
+
+.w-full{
+    width: 100%;
+}
+
+
+.search-history {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none; /* Initially hidden */
+    position: absolute;
+    z-index: 999;
+    width: 100%;
+    background: #fff;
+    top: 45px;
+
+}
+
+.search-history li {
+    padding: 8px;
+    cursor: pointer;
+    padding-inline: 1rem;
+    margin-bottom: 2px;
+}
+
+.search-history li:hover {
+    background-color: #f0f0f0;
+}
+
+.searchbar{
+    position: relative;
+}
+
+.search-history-item{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.search-history-item i {
+    font-size: 10px;
+    margin-right: 5px;
+}
+
+.search-history-item span {
+    flex-grow: 1; /* Makes the search text take up available space */
+    width: 100%;
+}
+
+.search-history-item .delete-history {
+    cursor: pointer;
+    color: red; /* You can change this color as needed */
+}

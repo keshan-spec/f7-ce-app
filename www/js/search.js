@@ -5,7 +5,7 @@ import store from "./store.js";
 
 var $ = Dom7;
 
-// let activeTab = 'all';
+let activeTab = 'all';
 let lastSearchText = '';
 let controller; // To store the current AbortController
 
@@ -13,6 +13,7 @@ var searchResultsStore = store.getters.getSearchResults;
 
 $(document).on('page:afterin', '.page[data-name="search"]', async function (e) {
     $('#discover-search').focus();
+    $('.loading-fullscreen.search-view').hide()
 })
 
 // event listener for tab change
@@ -36,9 +37,14 @@ function addLoaderToTabs() {
     const topContainer = document.querySelector('#top-results .list');
 
     const loader = `
-    <div style="padding-block: .5rem;">
-        <div class="infinite-scroll-preloader">
-            <div class="preloader"></div>
+    <div class="loading-fullscreen search-view">
+        <div class="preloader preloader-central">
+            <span class="preloader-inner"><span class="preloader-inner-line"></span><span
+                class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                class="preloader-inner-line"></span>
+            </span>
         </div>
     </div>`;
 
@@ -46,7 +52,94 @@ function addLoaderToTabs() {
     usersContainer.innerHTML = loader;
     venuesContainer.innerHTML = loader;
     topContainer.innerHTML = loader;
+    $('.loading-fullscreen.search-view').show()
 }
+
+// Function to save searches to localStorage
+function saveSearchToHistory(search) {
+    const maxHistoryLength = 5; // Limit the number of stored searches
+    let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+
+    // Check if search is already in the history
+    if (!searchHistory.includes(search)) {
+        // Add the new search to the beginning of the array
+        searchHistory.unshift(search);
+
+        // Keep only the last maxHistoryLength searches
+        if (searchHistory.length > maxHistoryLength) {
+            searchHistory = searchHistory.slice(0, maxHistoryLength);
+        }
+
+        // Save the updated history to localStorage
+        localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+    }
+}
+
+// Function to display search history
+function displaySearchHistory() {
+    const searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+
+    const historyContainer = $('#search-history');
+    historyContainer.empty(); // Clear previous history
+
+    if (searchHistory.length > 0) {
+        // Populate the history container with recent searches
+        searchHistory.forEach(search => {
+            historyContainer.append(`
+                <li class="search-history-item" data-index="${searchHistory.indexOf(search)}">
+                <div>
+                    <i class="icon f7-icons">timer</i>
+                    <span>${search}</span>
+                </div>
+                <i class="icon f7-icons delete-history">xmark</i>
+                </li>
+                `);
+        });
+
+        // Show the history container
+        historyContainer.show();
+    } else {
+        // Hide the history container if there's no history
+        historyContainer.hide();
+    }
+}
+
+// Handle clicking on the delete history icon
+$(document).on('click', '.delete-history', function (e) {
+    e.stopPropagation(); // Prevent the search from being triggered
+
+    let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+    const index = $(this).closest('li').data('index');
+
+    // Remove the search from the history
+    searchHistory.splice(index, 1);
+    localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+
+    // Update the search history display after deletion
+    displaySearchHistory();
+});
+
+// Hide search history when clicking outside
+$(document).on('click', function (e) {
+    if (!$(e.target).closest('#discover-search').length && !$(e.target).closest('#search-history').length) {
+        $('#search-history').hide();
+    }
+});
+
+// Handle clicking on a history item to perform the search
+$(document).on('click', '#search-history li', function () {
+    // Get the search text from the history item span
+    const search = $(this).find('span').text();
+
+    // clear the search input
+    $('#discover-search').val('');
+
+    $('#discover-search').val(search).trigger('input');
+    $('#search-history').hide(); // Hide the history after selecting
+});
+
+// Optionally, display history on input focus
+$(document).on('click', '#discover-search', displaySearchHistory);
 
 const debouncedSearch = debounce(async function () {
     const search = $(this).val().trim();
@@ -67,6 +160,11 @@ const debouncedSearch = debounce(async function () {
     const signal = controller.signal;
 
     addLoaderToTabs();
+
+
+    // Save the valid search to history
+    saveSearchToHistory(search);
+
     try {
         const searchResults = await getDiscoverData(search, 'all', 1, signal);
         store.dispatch('setSearchResults', searchResults);
@@ -85,7 +183,10 @@ $(document).on('change input paste', '#discover-search', debouncedSearch);
 function renderList(container, items, renderItem) {
     container.innerHTML = '';
 
-    const noResultsMessage = '<li><strong>No results found</strong></li>';
+    const noResultsMessage = `
+    <li class="item-content w-full">
+        <strong class="text-center w-full">No results found</strong>
+    </li>`;
 
     if (!items || items.length === 0) {
         container.innerHTML = noResultsMessage;
@@ -134,7 +235,7 @@ function renderSearchResults(searchResults) {
             let contentText;
 
             if (user.type == 'user') {
-                contentText = `${user.name} (${user.username})`;
+                contentText = `${user.name} (@${user.username})`;
             }
 
             if (user.type == 'vehicle') {
@@ -209,7 +310,7 @@ function renderSearchResults(searchResults) {
                 let contentText;
 
                 if (user.type == 'user') {
-                    contentText = `${user.name} (${user.username})`;
+                    contentText = `${user.name} (@${user.username})`;
                 }
 
                 if (user.type == 'vehicle') {
@@ -254,7 +355,10 @@ function renderSearchResults(searchResults) {
     }
 
     if (!hasTopResults) {
-        topContainer.innerHTML = '<div><strong>No top results found</strong></div>';
+        topContainer.innerHTML = `
+        <li class="item-content w-full">
+            <strong class="text-center w-full">No results found</strong>
+        </li>`;
     }
 }
 

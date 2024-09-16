@@ -29,12 +29,14 @@
         <div class="searchbar">
           <div class="searchbar-inner">
             <div class="searchbar-input-wrap">
-              <input type="search" placeholder="Search" class="discover-search" id="discover-search" />
+              <input type="search" placeholder="Search" class="discover-search" id="discover-search"
+                aria-autocomplete="none" />
               <i class="searchbar-icon"></i>
               <!-- <span class="input-clear-button"></span> -->
             </div>
             <span class="searchbar-disable-button if-not-aurora">Cancel</span>
           </div>
+          <ul id="search-history" class="search-history"></ul> <!-- Container for the search history -->
         </div>
 
         <div class="tabbar-nav pt-1">
@@ -50,7 +52,16 @@
           <!-- Tab - Top Results -->
           <div class="tab tab-active" id="top-results">
             <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
-
+              <div class="loading-fullscreen search-view">
+                <div class="preloader preloader-central">
+                  <span class="preloader-inner"><span class="preloader-inner-line"></span><span
+                      class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                      class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                      class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                      class="preloader-inner-line"></span>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -58,6 +69,16 @@
           <div class="tab" id="events-results">
             <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
               <ul>
+                <div class="loading-fullscreen search-view">
+                  <div class="preloader preloader-central">
+                    <span class="preloader-inner"><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span>
+                    </span>
+                  </div>
+                </div>
               </ul>
             </div>
           </div>
@@ -67,6 +88,16 @@
           <div class="tab" id="venues-results">
             <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
               <ul>
+                <div class="loading-fullscreen search-view">
+                  <div class="preloader preloader-central">
+                    <span class="preloader-inner"><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span>
+                    </span>
+                  </div>
+                </div>
               </ul>
             </div>
           </div>
@@ -75,6 +106,16 @@
           <div class="tab" id="users_vehicles-results">
             <div class="list list-outline-ios list-strong-ios list-dividers-ios mt-2">
               <ul>
+                <div class="loading-fullscreen search-view">
+                  <div class="preloader preloader-central">
+                    <span class="preloader-inner"><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span><span class="preloader-inner-line"></span><span
+                        class="preloader-inner-line"></span>
+                    </span>
+                  </div>
+                </div>
               </ul>
             </div>
           </div>
