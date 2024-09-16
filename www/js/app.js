@@ -290,7 +290,7 @@ function onPostUpload() {
   store.dispatch('getPosts')
   store.dispatch('getMyPosts')
 
-  console.log('Post uploaded');
+  alert('Post uploaded');
 }
 
 window.onPostUpload = onPostUpload
