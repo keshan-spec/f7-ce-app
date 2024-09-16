@@ -286,6 +286,14 @@ export function onBackKeyDown() {
   }
 }
 
+function onPostUpload() {
+  store.dispatch('getPosts')
+  store.dispatch('getMyPosts')
+
+  console.log('Post uploaded');
+}
+
+window.onPostUpload = onPostUpload
 window.onAppBackKey = onBackKeyDown
 
 userStore.onUpdated((data) => {
@@ -315,34 +323,34 @@ var actionSheet = app.actions.create({
   grid: true,
   buttons: [
     [{
-        text: '<div class="actions-grid-item">Add Post</div>',
-        icon: '<img src="assets/img/icon-add-post.svg" width="48" style="max-width: 100%"/>',
-        onClick: async function () {
-          const user = await getSessionUser()
-          if (user) {
-            sendRNMessage({
-              type: "createPost",
-              user_id: user.id,
-              page: 'create-post',
-            })
-          }
-        }
-      },
-      {
-        text: '<div class="actions-grid-item">Scan QR Code</div>',
-        icon: '<img src="assets/img/icon-qr-code.svg" width="48" style="max-width: 100%;"/>',
-        onClick: function () {
-          openQRModal()
-        }
-      },
-      {
-        text: '<div class="actions-grid-item">Add Vehicle</div>',
-        icon: '<img src="assets/img/icon-vehicle-add.svg" width="48" style="max-width: 100%;"/>',
-        onClick: function () {
-          var view = app.views.current
-          view.router.navigate('/profile-garage-vehicle-add/');
+      text: '<div class="actions-grid-item">Add Post</div>',
+      icon: '<img src="assets/img/icon-add-post.svg" width="48" style="max-width: 100%"/>',
+      onClick: async function () {
+        const user = await getSessionUser()
+        if (user) {
+          sendRNMessage({
+            type: "createPost",
+            user_id: user.id,
+            page: 'create-post',
+          })
         }
       }
+    },
+    {
+      text: '<div class="actions-grid-item">Scan QR Code</div>',
+      icon: '<img src="assets/img/icon-qr-code.svg" width="48" style="max-width: 100%;"/>',
+      onClick: function () {
+        openQRModal()
+      }
+    },
+    {
+      text: '<div class="actions-grid-item">Add Vehicle</div>',
+      icon: '<img src="assets/img/icon-vehicle-add.svg" width="48" style="max-width: 100%;"/>',
+      onClick: function () {
+        var view = app.views.current
+        view.router.navigate('/profile-garage-vehicle-add/');
+      }
+    }
     ],
   ]
 });
