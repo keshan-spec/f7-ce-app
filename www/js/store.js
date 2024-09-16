@@ -566,6 +566,12 @@ const store = createStore({
       state.user = null
       window.localStorage.removeItem('token')
       window.location.reload()
+
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        type: "signOut",
+        user_id: null,
+        page: 'auth',
+      }))
     },
     async updateUserDetails({
       state
