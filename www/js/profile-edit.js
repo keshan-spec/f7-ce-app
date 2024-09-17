@@ -24,6 +24,7 @@ $(document).on('page:init', '.page[data-name="profile-edit-mydetails"]', async f
     var view = app.views.current
 
     const user = await getSessionUser()
+    const isEmailVerified = user.email_verified ?? false;
 
     if (!user) {
         view.router.navigate('/login')
@@ -32,6 +33,12 @@ $(document).on('page:init', '.page[data-name="profile-edit-mydetails"]', async f
 
     // Example of how to fill in the form fields with the provided data
     document.querySelector('input[name="email"]').value = user.email || '';
+
+    // if email is not verified, show the verify email button
+    if (isEmailVerified) {
+        $('#email-verify-span').remove()
+    }
+
     document.querySelector('input[name="first_name"]').value = user.first_name || '';
     document.querySelector('input[name="last_name"]').value = user.last_name || '';
     document.querySelector('input[name="tel_no"]').value = user.billing_info?.phone || '';
@@ -42,6 +49,7 @@ $(document).on('click', '#save-details', async function () {
     var view = app.views.current
 
     const user = await getSessionUser()
+
 
     // Get the values from the input fields
     const firstName = $('input[name="first_name"]').val().trim();
@@ -712,24 +720,24 @@ app.dialog.passwordConfirm = function (text, title, callback) {
         text: text,
         content: '<div class="dialog-input-field item-input"><div class="item-input-wrap"><input type="password" name="password" placeholder="Enter your password" class="dialog-input"></div></div>',
         buttons: [{
-                text: 'Cancel',
-                onClick: function (dialog, e) {
-                    dialog.close();
-                }
-            },
-            {
-                text: 'Delete',
-                bold: true,
-                onClick: function (dialog, e) {
-                    var password = dialog.$el.find('.dialog-input').val(); // Get the password entered
-                    if (!password) {
-                        showToast('Please enter your password', 'Error');
-                        return;
-                    }
-                    callback(password); // Pass the password to the callback
-                    dialog.close();
-                }
+            text: 'Cancel',
+            onClick: function (dialog, e) {
+                dialog.close();
             }
+        },
+        {
+            text: 'Delete',
+            bold: true,
+            onClick: function (dialog, e) {
+                var password = dialog.$el.find('.dialog-input').val(); // Get the password entered
+                if (!password) {
+                    showToast('Please enter your password', 'Error');
+                    return;
+                }
+                callback(password); // Pass the password to the callback
+                dialog.close();
+            }
+        }
         ]
     }).open();
 };

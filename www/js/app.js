@@ -5,6 +5,7 @@ import {
   updateAboutUserIds,
   updateContentIds,
   updateUsername,
+  verifyEmail,
   verifyUser
 } from './api/auth.js'
 import store from './store.js'
@@ -60,7 +61,11 @@ var app = new Framework7({
   el: '#app', // App root element
   on: {
     init: async function () {
-      // toolbarEl.style.display = 'none'
+      const verifyToken = getQueryParameter('verifyToken')
+      if (verifyToken) {
+        await verifyUserEmail(verifyToken)
+        return;
+      }
 
       await store.dispatch('checkAuth')
 
@@ -158,6 +163,80 @@ var app = new Framework7({
   store: store,
   routes: routes,
 })
+
+
+async function verifyUserEmail(token) {
+  // remove the query parameter from the URL
+  // window.history.pushState({}, document.title, window.location.pathname)
+
+  try {
+    // Clear the app landing page content
+    $('.app-landing-page').html('')
+
+    // Add content to show email verification in progress
+    $('.app-landing-page').html(`
+      <div class="verification-content">
+        <div class="block">
+          <img src="assets/img/ce-logo-dark.png" />
+        <div class="verification-header">
+          <h1>Email Verification</h1>
+        </div>
+        <div class="verification-body">
+          <div class="verification-loader">
+            <div class="preloader color-white"></div> 
+          </div>
+          <div class="verification-message">
+            <p>Verifying your email address...</p>
+          </div>
+        </div>
+        </div>
+      </div>
+    `)
+
+    const response = await verifyEmail(token)
+
+    // Check if there's an error in the response
+    if (!response || response.status === 'error') {
+      // Display an error message
+      $('.verification-body').html(`
+        <div class="verification-message">
+          <p class="verification-error">An error occurred: ${response.message || 'Please try again.'}</p>
+          <p class="verification-error">If you continue to experience issues, please contact support.</p>
+          <div class="button button-fill button-large" id="goto-app">Go Back</div>
+        </div>
+      `)
+      return
+    }
+
+    if (response.status === 'success') {
+      // Show a success message in the DOM
+      $('.verification-body').html(`
+        <div class="verification-message">
+          <p class="verification-success">Your email has been successfully verified! You can now proceed.</p>
+          <div class="button button-fill button-large" id="goto-app">Continue</div>
+        </div>
+      `)
+      return
+    }
+  } catch (error) {
+    // Display a generic error message in case of exceptions
+    $('.verification-body').html(`
+      <div class="verification-message">
+        <p class="verification-error">An unexpected error occurred. Please try again.</p>
+        <p class="verification-error">If you continue to experience issues, please contact support.</p>
+        <div class="button button-fill button-large" id="goto-app">Go Back</div>
+      </div>
+    `)
+  }
+}
+
+$(document).on('click', '#goto-app', function (e) {
+  // remove the query parameter from the URL
+  window.history.pushState({}, document.title, window.location.pathname)
+  // reload the page
+  window.location.reload()
+})
+
 
 $(document).on('mousedown', '.toolbar-bottom a', function (e) {
   var targetHref = $(this).attr('href');

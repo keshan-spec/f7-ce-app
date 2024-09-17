@@ -67,6 +67,50 @@ export const verifyUser = async (credentials) => {
     }
 }
 
+export const verifyEmail = async (token) => {
+    try {
+        const response = await fetch(`${API_URL}/wp-json/app/v1/verify-email`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                token
+            }),
+        })
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error verifying email:', error)
+        return null
+    }
+}
+
+export const sendEmailVerification = async () => {
+    try {
+        const user = await getSessionUser()
+        if (!user) return
+
+        const response = await fetch(`${API_URL}/wp-json/app/v1/resend-verification-email`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: user.id,
+            }),
+        })
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error sending email verification:', error)
+        return null
+    }
+}
+
+
 export const handleSignUp = async (user) => {
     try {
         const response = await fetch(`${API_URL}/wp-json/app/v1/register-user`, {

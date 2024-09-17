@@ -424,7 +424,28 @@ $(document).on('ptr:refresh', '.profile-landing-page.ptr-content.my-profile', as
   app.ptr.get('.profile-landing-page.ptr-content.my-profile').done()
 })
 
-$(document).on('page:beforein', '.page[data-name="profile"]', function (e) {
+$(document).on('page:beforein', '.page[data-name="profile"]', async function (e) {
+
+  const user = await getSessionUser()
+  const isEmailVerified = user.email_verified ?? false;
+
+  if (!isEmailVerified) {
+    const profileHead = $('.page[data-name="profile"] .profile-head')
+
+    if (profileHead.length) {
+      // Add email verification message before the element
+      $(`
+        <div class="email-verification-message">
+          <p>Your email is not verified. Please verify your email address to access all features.</p>
+        </div>
+      `).insertBefore(profileHead);
+
+      profileHead.addClass('email-not-verified');
+    } else {
+      console.log('Profile head element not found.');
+    }
+  }
+
   app.popup.create({
     el: '.links-popup',
     swipeToClose: 'to-bottom'
@@ -843,19 +864,19 @@ $(document).on('click', '#submit-vehicle-form', async function (e) {
     app.preloader.show()
 
     const response = await updateVehicleInGarage({
-        make,
-        model,
-        variant,
-        registration: reg,
-        colour,
-        ownedFrom: owned_from,
-        ownedTo: owned_to,
-        primary_car,
-        allow_tagging,
-        cover_photo: base64,
-        vehicle_period: primary_car,
-        description
-      },
+      make,
+      model,
+      variant,
+      registration: reg,
+      colour,
+      ownedFrom: owned_from,
+      ownedTo: owned_to,
+      primary_car,
+      allow_tagging,
+      cover_photo: base64,
+      vehicle_period: primary_car,
+      description
+    },
       garageId
     )
 
