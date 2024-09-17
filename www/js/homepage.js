@@ -17,9 +17,6 @@ import {
 import {
   getSessionUser
 } from "./api/auth.js"
-import {
-  renderPost
-} from "./view-post.js"
 
 var $ = Dom7
 var currentPostsPage = 1
