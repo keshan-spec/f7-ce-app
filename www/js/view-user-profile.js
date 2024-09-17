@@ -156,8 +156,6 @@ function populateUsersPosts(data) {
 
             let reset = data[postsKey].cleared || false
 
-            console.log(reset);
-
             // Only update the DOM if there are new posts
             if (data[postsKey].new_data && data[postsKey].new_data.length > 0) {
                 fillGridWithPosts(data[postsKey].new_data, 'profile-view-grid-posts', reset)

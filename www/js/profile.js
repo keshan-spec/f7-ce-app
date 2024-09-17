@@ -425,24 +425,26 @@ $(document).on('ptr:refresh', '.profile-landing-page.ptr-content.my-profile', as
 })
 
 $(document).on('page:beforein', '.page[data-name="profile"]', async function (e) {
-
   const user = await getSessionUser()
-  const isEmailVerified = user.email_verified ?? false;
 
-  if (!isEmailVerified) {
-    const profileHead = $('.page[data-name="profile"] .profile-head')
+  if (user && user.id) {
+    const isEmailVerified = user.email_verified ?? false;
 
-    if (profileHead.length) {
-      // Add email verification message before the element
-      $(`
-        <div class="email-verification-message">
-          <p>Your email is not verified. Please verify your email address to access all features.</p>
-        </div>
-      `).insertBefore(profileHead);
+    if (!isEmailVerified) {
+      const profileHead = $('.page[data-name="profile"] .profile-head')
 
-      profileHead.addClass('email-not-verified');
-    } else {
-      console.log('Profile head element not found.');
+      if (profileHead.length) {
+        // Add email verification message before the element
+        $(`
+          <div class="email-verification-message">
+            <p>Your email is not verified. Please verify your email address to access all features.</p>
+          </div>
+        `).insertBefore(profileHead);
+
+        profileHead.addClass('email-not-verified');
+      } else {
+        console.log('Profile head element not found.');
+      }
     }
   }
 

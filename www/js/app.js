@@ -123,6 +123,26 @@ var app = new Framework7({
     pageInit: function (page) {
       if (page.name === 'profile') {
         userStore.onUpdated((data) => {
+          if (data && data.id) {
+            const isEmailVerified = data.email_verified ?? false;
+
+            if (!isEmailVerified) {
+              const profileHead = $('.page[data-name="profile"] .profile-head')
+
+              if (profileHead.length) {
+                // Add email verification message before the element
+                $(`
+                  <div class="email-verification-message">
+                    <p>Your email is not verified. Please verify your email address to access all features.</p>
+                  </div>
+                `).insertBefore(profileHead);
+
+                profileHead.addClass('email-not-verified');
+              }
+            }
+          }
+
+
           if (data && data.id && !data.external_refresh) {
             displayProfile(data, 'profile')
             store.dispatch('getMyGarage')
@@ -235,6 +255,14 @@ $(document).on('click', '#goto-app', function (e) {
   window.history.pushState({}, document.title, window.location.pathname)
   // reload the page
   window.location.reload()
+})
+
+$(document).on('click', '.start-link', function (e) {
+  var view = app.views.current
+  // scroll to top
+  window.scrollTo(0, 0, {
+    behavior: 'smooth'
+  })
 })
 
 
@@ -351,7 +379,7 @@ export function onBackKeyDown() {
     app.dialog.close()
     app.popup.close()
     return false
-  } else if (view.history[0] == '/') {
+  } else if (view.history[0] == '/social/') {
     window.ReactNativeWebView.postMessage('exit_app')
     return true
   } else {
