@@ -146,6 +146,23 @@ $(document).on('click', '.social-tabs .tab-link', async function (e) {
   activeTab = type
 })
 
+function preloadImage(url) {
+  const MAX_PRELOADS = 10;
+
+  // Get all preloaded images
+  const preloadedImages = document.querySelectorAll('.post-media-preloader');
+
+  // If there are more than 10 preloaded images, remove the first one
+  if (preloadedImages.length >= MAX_PRELOADS) {
+    preloadedImages[0].remove();
+  }
+
+  // Preload the image
+  document.head.insertAdjacentHTML('beforeend', `
+    <link rel="preload" href="${url}" as="image" class="post-media-preloader" />
+  `);
+}
+
 async function displayPosts(posts, following = false) {
   const postsContainer = $(following ? '#tab-following .data' : '#tab-latest .data');
 
@@ -235,26 +252,23 @@ async function displayPosts(posts, following = false) {
           <div class="media-post-content">
             <div class="swiper-container">
               <div class="swiper-wrapper">
-                ${post.media.map(mediaItem => `
-                  <div class="swiper-slide post-media" style="height: ${imageHeight}px; ">
-                    ${mediaItem.media_type === 'video' ?
-        // `
-        //   <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
-        //     <source src="${mediaItem.media_url}" type="${mediaItem.media_mime_type}" />
-        //   </video>
-        // `
-        'Disabled for testing'
-        : `
-                      <img 
+                ${post.media.map((mediaItem, index) => {
+      // Preload the first image in the post
+      if (index === 0 && mediaItem.media_type !== 'video') {
+        preloadImage(mediaItem.media_url)
+      }
+
+      return `<div class="swiper-slide post-media" style="height: ${imageHeight}px; ">
+                    ${mediaItem.media_type === 'video' ? 'Disabled for testing' : `
+                    <img 
                         src="${mediaItem.media_url}" 
                         alt="${mediaItem.caption || post.username + 's post'}"
                         loading="lazy"
                         style="text-align: center;"
                         onerror = "this.style.display='none';"
-                      />
-                    `}
+                      />`}
                   </div>
-                `).join('')}
+                `}).join('')}
               </div>
               <div class="swiper-pagination"></div>
             </div>
