@@ -613,9 +613,26 @@ const store = createStore({
     },
     async getPosts({
       state
-    }, page = 1) {
+    }, {
+      page = 1,
+      reset = false
+    }) {
       try {
+        console.log('Fetching posts', page, reset);
+
         const posts = await fetchPosts(page)
+
+        if (reset) {
+          state.posts = {
+            new_data: posts.data,
+            data: posts.data,
+            total_pages: posts.total_pages,
+            page: page,
+            limit: posts.limit,
+            reset: true,
+          }
+          return
+        }
 
         const data = {
           new_data: posts.data,
@@ -693,9 +710,24 @@ const store = createStore({
     },
     async getFollowingPosts({
       state
-    }, page = 1) {
+    }, {
+      page = 1,
+      reset = false
+    }) {
       try {
         const posts = await fetchPosts(page, true)
+
+        if (reset) {
+          state.following_posts = {
+            new_data: posts.data,
+            data: posts.data,
+            total_pages: posts.total_pages,
+            page: page,
+            limit: posts.limit,
+            reset: true,
+          }
+          return
+        }
 
         const data = {
           new_data: posts.data,

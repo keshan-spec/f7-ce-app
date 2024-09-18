@@ -48,7 +48,11 @@ postsStore.onUpdated((data) => {
     }
   }
 
-  displayPosts(data.new_data)
+  if (data.reset) {
+    refreshed = data.reset
+  }
+
+  displayPosts(data.new_data, false)
 })
 
 followingPostsStore.onUpdated((data) => {
@@ -60,6 +64,10 @@ followingPostsStore.onUpdated((data) => {
       $('#tab-following .data').html('<p class="text-center">No posts</p>')
       return;
     }
+  }
+
+  if (data.reset) {
+    refreshed = data.reset
   }
 
   displayPosts(data.new_data, true)
@@ -84,7 +92,9 @@ $(document).on('infinite', '.infinite-scroll-content.home-page', async function 
 
   isFetchingPosts = true
 
-  await store.dispatch(storeName, currentPage)
+  await store.dispatch(storeName, {
+    page: currentPage
+  })
   isFetchingPosts = false
 })
 
@@ -104,7 +114,10 @@ $(document).on('page:beforein', '.page[data-name="social"]', function (e) {
       currentPostsPage = 1
     }
 
-    await store.dispatch(storeName, 1)
+    await store.dispatch(storeName, {
+      page: 1,
+      clear: true
+    })
 
     isFetchingPosts = false
     app.ptr.done()

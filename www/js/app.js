@@ -265,7 +265,6 @@ $(document).on('click', '.start-link', function (e) {
   })
 })
 
-
 $(document).on('mousedown', '.toolbar-bottom a', function (e) {
   var targetHref = $(this).attr('href');
   var validTabs = ['#view-social', '#view-discover', '#view-store', '#view-profile'];
@@ -400,7 +399,10 @@ function onPostUpload() {
     clear: true
   })
 
-  store.dispatch('getPosts')
+  store.dispatch('getPosts', {
+    page: 1,
+    reset: true
+  })
 }
 
 window.onPostUpload = onPostUpload
@@ -408,8 +410,14 @@ window.onAppBackKey = onBackKeyDown
 
 userStore.onUpdated((data) => {
   if (data && data.id && !data.external_refresh && !data.refreshed) {
-    store.dispatch('getPosts')
-    store.dispatch('getFollowingPosts')
+    store.dispatch('getPosts', {
+      page: 1,
+      reset: true
+    })
+    store.dispatch('getFollowingPosts', {
+      page: 1,
+      reset: true
+    })
     store.dispatch('notificationCount')
     store.dispatch('fetchNotifications')
   }
