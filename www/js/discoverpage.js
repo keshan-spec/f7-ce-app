@@ -26,11 +26,11 @@ var filters = {};
 function initAutocomplete() {
     autocomplete = new google.maps.places.Autocomplete(
         document.getElementById("autocomplete"), {
-            types: ["establishment", "geocode"],
-            componentRestrictions: {
-                country: 'GB'
-            }
+        types: ["establishment", "geocode"],
+        componentRestrictions: {
+            country: 'GB'
         }
+    }
     );
     autocomplete.setFields(["geometry", "address_component"]);
     autocomplete.addListener("place_changed", fillInAddress);
@@ -214,9 +214,21 @@ $(document).on('click', '.apply-filters', function (e) {
     const selectedLocation = [...locationFilters.querySelectorAll('input[type="radio"]:checked')].map(cb => cb.value);
     const dateFilter = [...dateFilters.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
 
+    const latitude = document.getElementById('lat').value;
+    const longitude = document.getElementById('lng').value;
+
+    let location = null;
+
+    if (latitude && longitude) {
+        location = {
+            latitude,
+            longitude
+        }
+    }
+
     filters = {
         'event_location': selectedLocation,
-        //  'custom_location': location,
+        'custom_location': location,
         'event_date': dateFilter,
         //  'event_start': customDateRange?.start,
         //  'event_end': customDateRange?.end,
@@ -280,7 +292,7 @@ $(document).on('change', '#category-filters ul', function (e) {
         // If "All" is selected, uncheck all other checkboxes
         if (targetCheckbox.checked) {
             [...categoryFilters.querySelectorAll('input[type="checkbox"]')]
-            .filter(cb => cb.name !== "all")
+                .filter(cb => cb.name !== "all")
                 .forEach(cb => cb.checked = false);
         }
     }
@@ -474,44 +486,9 @@ $(document).on('infinite', '.discover-page.infinite-scroll-content', async funct
             })
             isFetchingPosts = false
         }
-    } else {
-        isFetchingPosts = false
     }
+    isFetchingPosts = false
 })
-
-// $(document).on('page:beforein', '.page[data-name="discover"]', function (e) {
-// const eventCats = eventCategories.value
-// const trendingEvents = trendingEventsStore.value
-// const trendingVenues = trendingVenuesStore.value
-// const trendingUsers = trendingUsersStore.value
-
-// if (!eventCats || eventCats.length === 0) {
-//     store.dispatch('fetchEventCategories')
-// } else {
-//     addCategoryOptions(eventCats);
-// }
-
-// if (!trendingEvents || trendingEvents.length === 0) {
-//     store.dispatch('fetchTrendingEvents')
-// } else {
-//     totalEventPages = trendingEvents.total_pages
-//     populateEventCard(trendingEvents.data);
-// }
-
-// if (!trendingVenues || trendingVenues.length === 0) {
-//     store.dispatch('fetchTrendingVenues')
-// } else {
-//     totalVenuesPages = trendingVenues.total_pages
-//     populateVenueCard(trendingVenues.data);
-// }
-
-// if (!trendingUsers || trendingUsers.length === 0) {
-//     store.dispatch('fetchTrendingUsers')
-// } else {
-//     totalUsersPages = trendingUsers.total_pages
-//     populateUsersCard(trendingUsers.data);
-// }
-// });
 
 $(document).on('page:init', '.page[data-name="discover-view-event"]', function (e) {
     // Init slider

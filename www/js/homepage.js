@@ -273,7 +273,6 @@ async function displayPosts(posts, following = false) {
                     <img 
                         src="${mediaItem.media_url}" 
                         alt="${mediaItem.caption || post.username + 's post'}"
-                        loading="lazy"
                         style="text-align: center;"
                         onerror = "this.style.display='none';"
                       />`}
