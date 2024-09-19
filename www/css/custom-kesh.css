@@ -432,3 +432,17 @@
   .profile-landing-page .profile-head.email-not-verified {
     padding: 68px 0 0 0 !important;
   }
+
+  .button-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width:  35px;
+    margin-right: 10px;
+  }
+
+  #sso-ce-button{
+    text-transform: none;
+    background-color: #101010;
+    display: none;
+  }

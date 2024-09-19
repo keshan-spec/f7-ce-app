@@ -67,6 +67,7 @@ var app = new Framework7({
         return;
       }
 
+      await handleSSOSignIn() // SSO with CarEvents
       await store.dispatch('checkAuth')
 
       const isAuthenticated = store.getters.isAuthenticated.value
@@ -76,31 +77,12 @@ var app = new Framework7({
       } else {
         $('.init-loader').hide()
         $('.start-link').click();
-        // toolbarEl.style.display = 'block'
       }
+
+      await handleQRCode()
 
       const deeplink = getQueryParameter('deeplink')
       if (deeplink) {
-        // check if deeplink has ?qr= query parameter
-        // if it does, get the value of the qr parameter and redirect to the profile
-        // ex; http://localhost:3000/?qr=123456
-        const maybeQr = deeplink.split('?qr=')[1]
-        const deepqrCode = maybeQr ? maybeQr : null
-
-        if (deepqrCode) {
-          maybeRedirectToProfile(deepqrCode)
-          return;
-        }
-
-        // check if url looks like https://mydrivelife.com/qr/8700279E
-        // if it does, get the qr code and redirect to the profile
-        const isDriveLifeUrl = deeplink.includes('mydrivelife.com/qr/')
-        if (isDriveLifeUrl) {
-          const qrCode = deeplink.split('/').slice(-1)[0]
-          maybeRedirectToProfile(qrCode)
-          return;
-        }
-
         // get the page from the deeplink and navigate to it
         // ex; http://localhost:3000/post-view/308
         // get the /post-view/308 and navigate to it
@@ -113,11 +95,6 @@ var app = new Framework7({
         this.views.main.router.navigate(path)
         // remove the query parameter from the URL
         window.history.pushState({}, document.title, window.location.pathname)
-      }
-
-      const qrCode = getQueryParameter('qr')
-      if (qrCode) {
-        maybeRedirectToProfile(qrCode)
       }
     },
     pageInit: function (page) {
@@ -184,6 +161,57 @@ var app = new Framework7({
   routes: routes,
 })
 
+async function handleSSOSignIn() {
+  // SSO with CarEvents
+  const ceToken = getQueryParameter('token')
+  if (ceToken) {
+    // remove the query parameter from the URL
+    window.history.pushState({}, document.title, window.location.pathname)
+    window.localStorage.setItem('token', ceToken)
+  }
+
+  // check if deeplink url has ?token= query parameter
+  // if it does, save the token in the local storage
+  const deeplink = getQueryParameter('deeplink')
+  if (deeplink) {
+    const token = deeplink.split('?token=')[1]
+    if (token) {
+      window.localStorage.setItem('token', token)
+      // remove the query parameter from the URL
+      window.history.pushState({}, document.title, window.location.pathname)
+    }
+  }
+}
+
+async function handleQRCode() {
+  const deeplink = getQueryParameter('deeplink')
+  if (deeplink) {
+    // check if deeplink has ?qr= query parameter
+    // if it does, get the value of the qr parameter and redirect to the profile
+    // ex; http://localhost:3000/?qr=123456
+    const maybeQr = deeplink.split('?qr=')[1]
+    const deepqrCode = maybeQr ? maybeQr : null
+
+    if (deepqrCode) {
+      maybeRedirectToProfile(deepqrCode)
+      return;
+    }
+
+    // check if url looks like https://mydrivelife.com/qr/8700279E
+    // if it does, get the qr code and redirect to the profile
+    const isDriveLifeUrl = deeplink.includes('mydrivelife.com/qr/')
+    if (isDriveLifeUrl) {
+      const qrCode = deeplink.split('/').slice(-1)[0]
+      maybeRedirectToProfile(qrCode)
+      return;
+    }
+  }
+
+  const qrCode = getQueryParameter('qr')
+  if (qrCode) {
+    maybeRedirectToProfile(qrCode)
+  }
+}
 
 async function verifyUserEmail(token) {
   // remove the query parameter from the URL
@@ -900,6 +928,20 @@ $(document).on('click', '.view-profile', function (e) {
 $(document).on('click', '#forgot-password', function (e) {
   // open the url in a new tab
   window.open($(this).attr('href'), '_blank')
+})
+
+
+// SSO with CarEvents
+$(document).on('click', '#sso-ce-button', function (e) {
+
+  // URL encode the redirect URI (the app URL)
+  const appRedirectUri = encodeURIComponent('https://app.mydrivelife.com/'); // Replace with your app's redirect URL
+
+  // Build the CarEvents login URL with the state and app_redirect
+  const loginUrl = `https://www.carevents.com/uk/login?app_redirect=${appRedirectUri}`;
+
+  // Store the state in localStorage or sessionStorage for validation later
+  window.open(loginUrl, '_blank')
 })
 
 export default app
