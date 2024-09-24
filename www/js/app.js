@@ -162,6 +162,8 @@ var app = new Framework7({
 })
 
 async function handleSSOSignIn() {
+  $('.init-loader').show()
+
   // SSO with CarEvents
   const ceToken = getQueryParameter('token')
   if (ceToken) {
@@ -286,11 +288,7 @@ $(document).on('click', '#goto-app', function (e) {
 })
 
 $(document).on('click', '.start-link', function (e) {
-  var view = app.views.current
-  // scroll to top
-  window.scrollTo(0, 0, {
-    behavior: 'smooth'
-  })
+  toolbarEl.style.display = 'block'
 })
 
 $(document).on('mousedown', '.toolbar-bottom a', function (e) {
