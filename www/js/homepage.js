@@ -260,27 +260,39 @@ async function displayPosts(posts, following = false) {
         <div class="media-post-content">
           ${profile_link}
           <div class="media-post-content">
-            <div class="swiper-container">
-              <div class="swiper-wrapper">
+          <swiper-container pagination class="demo-swiper-multiple" space-between="50">
                 ${post.media.map((mediaItem, index) => {
       // Preload the first image in the post
       if (index === 0 && mediaItem.media_type !== 'video') {
         preloadImage(mediaItem.media_url)
       }
 
-      return `<div class="swiper-slide post-media" style="height: ${imageHeight}px; ">
-                    ${mediaItem.media_type === 'video' ? 'Disabled for testing' : `
+      // create a url encoded string for the media url
+      const videoThumbnail = mediaItem.media_type === 'video' ?
+        encodeURIComponent(`${mediaItem.media_url}/thumbnails/thumbnail.jpg`) : '';
+
+      return `<swiper-slide class="swiper-slide post-media ${mediaItem.media_type === 'video' ? 'video' : ''}" style="height: ${imageHeight}px; ">
+                    ${mediaItem.media_type === 'video' ?
+          `
+  <iframe
+    src="${mediaItem.media_url}/iframe?autoplay=true&poster=${videoThumbnail}&height=${imageHeight}&width=${containerWidth}"
+    loading="lazy"
+    style="border: none;  height: 100%; width: 100%;min-height: ${imageHeight}px;"
+    allow="accelerometer; gyroscope; autoplay; encrypted-media;"
+    allowfullscreen="false"
+    frameBorder="0"
+    </iframe>
+         `
+          : `
                     <img 
                         src="${mediaItem.media_url}" 
                         alt="${mediaItem.caption || post.username + 's post'}"
                         style="text-align: center;"
                         onerror = "this.style.display='none';"
                       />`}
-                  </div>
+                  </swiper-slide>
                 `}).join('')}
-              </div>
-              <div class="swiper-pagination"></div>
-            </div>
+          </swiper-container>
           </div>
           ${post_actions}
           <div class="media-post-likecount" data-like-count="${post.likes_count}">${post.likes_count} likes</div>

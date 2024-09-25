@@ -240,9 +240,15 @@ function generatePostGridItem(post) {
 
   if (isVideo) {
     return `
-      <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}">
-        <div class="video-square">
-        </div>
+      <a href="/post-view/${post.id}" class="grid-item" data-src="${media.media_url}/thumbnails/thumbnail.jpg">
+        <img 
+          src="${media.media_url}/thumbnails/thumbnail.jpg"
+          loading="lazy"
+          role="presentation"
+          sizes="(max-width: 320px) 280px, 320px"
+          decoding="async"
+          fetchPriority="high"
+        />
       </a>`
   } else {
     return `

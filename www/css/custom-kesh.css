@@ -243,6 +243,10 @@
     /* z-index: ; */
 }
 
+.post-media.video::before{
+    display: none;
+}
+
 .replying-to {
      position: absolute;
     top: -28px;
@@ -444,4 +448,13 @@
   #sso-ce-button{
     text-transform: none;
     background-color: #101010;
+  }
+
+  .swiper-pagination-bullet {
+    background: #e0e0e0;
+  }
+
+
+.swiper-pagination-bullet.swiper-pagination-bullet-active{
+    background: #ae9159 !important;
   }
