@@ -275,12 +275,12 @@ async function displayPosts(posts, following = false) {
                     ${mediaItem.media_type === 'video' ?
           `
   <iframe
-    src="${mediaItem.media_url}/iframe?autoplay=true&poster=${videoThumbnail}&height=${imageHeight}&width=${containerWidth}"
+    src="${mediaItem.media_url}/iframe?autoplay=true&poster=${videoThumbnail}&height=${imageHeight}&width=${containerWidth}&muted=true"
     loading="lazy"
     style="border: none;  height: 100%; width: 100%;min-height: ${imageHeight}px;"
     allow="accelerometer; gyroscope; autoplay; encrypted-media;"
     allowfullscreen="false"
-    frameBorder="0"
+    frameBorder="0">
     </iframe>
          `
           : `
