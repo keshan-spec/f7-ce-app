@@ -275,7 +275,7 @@ async function displayPosts(posts, following = false) {
                     ${mediaItem.media_type === 'video' ?
           `
   <iframe
-    src="${mediaItem.media_url}/iframe?autoplay=true&poster=${videoThumbnail}&height=${imageHeight}&muted=true"
+    src="${mediaItem.media_url}/iframe?autoplay=true&poster=${videoThumbnail}&height=${imageHeight}&width=${containerWidth}&muted=true"
     loading="lazy"
     style="border: none;  height: 100%; width: 100%;min-height: ${imageHeight}px;"
     allow="accelerometer; gyroscope; encrypted-media;"
@@ -569,7 +569,6 @@ $(document).on('click', '#delete-post', function () {
   const isSingleView = $('.edit-post-popup').attr('data-is-single')
 
   app.dialog.confirm('Are you sure you want to delete this post?', 'Delete Post', async () => {
-
     app.preloader.show()
     const response = await deletePost(postId)
     app.preloader.hide()

@@ -207,3 +207,41 @@ export const maybeFollowUser = async (profileId) => {
     const data = await response.json();
     return data;
 };
+
+export const removeTagFromPost = async (tagId) => {
+    const user = await getSessionUser();
+    if (!user) return;
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/remove-post-tag`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            tag_id: tagId,
+            user_id: user.id
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+}
+
+export const approvePostTag = async (tagId) => {
+    const user = await getSessionUser();
+    if (!user) return;
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/approve-post-tag`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            tag_id: tagId,
+            user_id: user.id
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+}
