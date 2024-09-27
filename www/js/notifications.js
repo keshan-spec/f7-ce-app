@@ -145,12 +145,13 @@ function createNotificationItem(notification, user) {
             </div>
         `;
     } else if (notification.type === 'post') {
+        // <a href="/profile-garage-vehicle-view/${notification.entity.entity_data?.garage?.id}">
+        //     <strong>${notification.entity.entity_data?.garage?.make || ''} ${notification.entity.entity_data?.garage?.model || ''}</strong>
+        // </a>
         content = `
             <div class="notification-text">
                 <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> has posted ${notification.entity.entity_type === 'car' ? "your car" : "a post"} 
-                <a href="/profile-garage-vehicle-view/${notification.entity.entity_data?.garage?.id}">
-                    <strong>${notification.entity.entity_data?.garage?.make || ''} ${notification.entity.entity_data?.garage?.model || ''}</strong>
-                </a>
+                
                 <span class="${isReadClass}"></span>
             </div>
             ${(notification.entity.entity_type === 'car' && !notification.entity.entity_data.tag_approved) ? `<div class="notification-text tag-actions">
