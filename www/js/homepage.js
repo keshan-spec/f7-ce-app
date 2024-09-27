@@ -569,7 +569,6 @@ $(document).on('click', '#delete-post', function () {
   const isSingleView = $('.edit-post-popup').attr('data-is-single')
 
   app.dialog.confirm('Are you sure you want to delete this post?', 'Delete Post', async () => {
-
     app.preloader.show()
     const response = await deletePost(postId)
     app.preloader.hide()

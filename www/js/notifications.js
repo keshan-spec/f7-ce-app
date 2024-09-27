@@ -2,9 +2,11 @@ import {
     getSessionUser
 } from "./api/auth.js"
 import {
-    maybeFollowUser
+    approvePostTag,
+    maybeFollowUser,
+    removeTagFromPost
 } from "./api/profile.js"
-import app from "./app.js"
+import app, { showToast } from "./app.js"
 import store from "./store.js"
 
 var $ = Dom7
@@ -146,11 +148,15 @@ function createNotificationItem(notification, user) {
         content = `
             <div class="notification-text">
                 <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> has posted ${notification.entity.entity_type === 'car' ? "your car" : "a post"} 
-                <a href="/profile/garage/${notification.entity.entity_data?.garage?.id}" class="font-semibold hover:cursor-pointer hover:text-customblue">
-                    ${notification.entity.entity_data?.garage?.make || ''} ${notification.entity.entity_data?.garage?.model || ''}
+                <a href="/profile-garage-vehicle-view/${notification.entity.entity_data?.garage?.id}">
+                    <strong>${notification.entity.entity_data?.garage?.make || ''} ${notification.entity.entity_data?.garage?.model || ''}</strong>
                 </a>
                 <span class="${isReadClass}"></span>
             </div>
+            ${(notification.entity.entity_type === 'car' && !notification.entity.entity_data.tag_approved) ? `<div class="notification-text tag-actions">
+                <div class="btn btn-primary btn-sm approve-tag" data-tag-id="${notification.entity.entity_data.tag_id}">Approve</div>
+                <div class="btn btn-secondary btn-sm decline-tag" data-tag-id="${notification.entity.entity_data.tag_id}">Decline</div>
+                </div>` : ''}
         `;
     } else if (notification.type === 'tag') {
         content = `
@@ -178,19 +184,21 @@ function createNotificationItem(notification, user) {
 
     if (notification.type === 'follow') {
         const isFollowing = user.following.includes(notification.entity.user_id);
-        let followBtn = `<div class="btn btn-primary btn-sm toggle-follow" data-is-following="${isFollowing}" data-user-id="${notification.entity.user_id}">
-            ${isFollowing ? 'Unfollow' : 'Follow'}
+        let followBtn = `<div class="btn btn-primary btn-sm ${!isFollowing ? 'toggle-follow' : ''}" data-is-following="${isFollowing}" data-user-id="${notification.entity.user_id}">
+            ${isFollowing ? 'Following' : 'Follow'}
         </div>`;
 
         container.innerHTML += followBtn;
+
     } else {
         const rightContainer = document.createElement('a');
         rightContainer.className = 'notification-left';
         let path;
 
         if (notification.entity.entity_type === 'car') {
-            path = 'car';
-            rightContainer.href = `/${path}/${notification.entity.entity_id}`;
+            path = 'post-view';
+            rightContainer.href = `/${path}/${notification.entity.entity_data.post_id}`;
+            container.href = `#`;
 
         } else if (notification.entity.entity_type === 'post') {
             path = 'post-view';
@@ -242,4 +250,59 @@ $(document).on('ptr:refresh', '.notification-page.ptr-content', async function (
     }
 
     app.ptr.get('.notification-page.ptr-content').done()
+})
+
+$(document).on('click', '.approve-tag', async function (e) {
+    e.preventDefault()
+
+    const tagId = e.target.dataset.tagId
+
+    app.dialog.confirm('Are you sure you want to approve this tag?', 'Approve Tag', async function () {
+        try {
+            app.preloader.show()
+
+            const response = await approvePostTag(tagId)
+
+            app.preloader.hide()
+
+            if (response.success) {
+                // remove the buttons
+                e.target.parentElement.innerHTML = ''
+
+                showToast('Tag has been approved')
+            } else {
+                showToast(response.message || 'Failed to approve tag')
+            }
+        } catch (error) {
+            app.preloader.hide()
+            showToast('Failed to approve tag')
+        }
+    })
+})
+
+$(document).on('click', '.decline-tag', async function (e) {
+    e.preventDefault()
+
+    const tagId = e.target.dataset.tagId
+
+    app.dialog.confirm('Are you sure you want to decline this tag?', 'Decline Tag', async function () {
+        try {
+            app.preloader.show()
+
+            const response = await removeTagFromPost(tagId)
+
+            app.preloader.hide()
+
+            if (response.success) {
+                // refetch notifications
+                store.dispatch('fetchNotifications')
+                showToast('Tag has been declined')
+            } else {
+                showToast(response.message || 'Failed to decline tag')
+            }
+        } catch (error) {
+            app.preloader.hide()
+            showToast('Failed to decline tag')
+        }
+    })
 })

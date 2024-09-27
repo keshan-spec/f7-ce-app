@@ -76,12 +76,26 @@
 
             <div class="profile-lower">
                 <div class="profile-tabs">
-                    <a href="#profileview-garage-tab" class="tab-link tab-link-active" id="my-garage">Garage</a>
-                    <a href="#profileview-posts-tab" class="tab-link" id="my-posts">Posts</a>
+                    <a href="#profileview-posts-tab" class="tab-link tab-link-active" id="my-posts">Posts</a>
+                    <a href="#profileview-garage-tab" class="tab-link" id="my-garage">Garage</a>
                     <a href="#profileview-tags-tab" class="tab-link" id="my-tags">Tags</a>
                 </div>
 
                 <swiper-container class="tabs">
+
+                    <swiper-slide id="profileview-posts-tab" class="tab">
+                        <div class="swiper-inner-container">
+                            <div class="profile-grid list virtual-list" id="profile-view-grid-posts">
+                                <!-- Content generates here -->
+                            </div>
+
+                            <!-- Preloader for infinite scroll -->
+                            <div class="infinite-scroll-preloader posts-tab view-profile">
+                                <div class="preloader"></div>
+                            </div>
+                        </div>
+                    </swiper-slide>
+
                     <swiper-slide id="profileview-garage-tab" class="tab tab-active">
                         <div class="swiper-inner-container">
                             <div class="listview-title garage-sub-title">Current Vehicles</div>
@@ -99,18 +113,6 @@
                         </div>
                     </swiper-slide>
 
-                    <swiper-slide id="profileview-posts-tab" class="tab">
-                        <div class="swiper-inner-container">
-                            <div class="profile-grid list virtual-list" id="profile-view-grid-posts">
-                                <!-- Content generates here -->
-                            </div>
-
-                            <!-- Preloader for infinite scroll -->
-                            <div class="infinite-scroll-preloader posts-tab view-profile">
-                                <div class="preloader"></div>
-                            </div>
-                        </div>
-                    </swiper-slide>
 
                     <swiper-slide id="profileview-tags-tab" class="tab">
                         <div class="swiper-inner-container">
