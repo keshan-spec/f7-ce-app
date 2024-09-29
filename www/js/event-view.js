@@ -32,7 +32,34 @@ $(document).on('page:afterin', '.page[data-name="discover-view-event"]', async f
     mainContainer.find('.event-detail-title').text(eventData.title);
 
     // Populating the Event Date
-    const dateText = `Sun, Aug 25th 2024`; // You can format this dynamically if needed
+    // const dateText = `Sun, Aug 25th 2024`; // You can format this dynamically if needed
+    const startDate = new Date(eventData.dates[0].start_date);
+    const endDate = new Date(eventData.dates[0].end_date);
+
+    // format as "Sun, Aug 25th 2024" or "Sun, Aug 25th 2024 - Mon, Aug 26th 2024"
+    if (startDate.toDateString() === endDate.toDateString()) {
+        var dateText = startDate.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    }
+
+    if (startDate.toDateString() !== endDate.toDateString()) {
+        var dateText = startDate.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        }) + ' - ' + endDate.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    }
+
     mainContainer.find('.event-time-address:nth-child(1) span').text(dateText);
 
     // Populating the Event Time
