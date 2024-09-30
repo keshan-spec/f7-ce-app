@@ -12,6 +12,8 @@ import store from "./store.js"
 var $ = Dom7
 var notificationsStore = store.getters.getNotifications
 var refreshed = false
+var userStore = store.getters.user
+let notificationInterval = null
 
 $(document).on('page:afterin', '.page[data-name="notifications"]', async function (e) {
     const data = notificationsStore.value
@@ -32,6 +34,40 @@ $(document).on('page:afterin', '.page[data-name="notifications"]', async functio
     }
 })
 
+userStore.onUpdated((data) => {
+    if (data && data.id) {
+        store.dispatch('notificationCount')
+        store.dispatch('fetchNotifications', {
+            load_more: false
+        })
+
+        // fetch notifications every 1 min
+        // create an interval to fetch notifications every 1 min
+        if (!notificationInterval) {
+            notificationInterval = setInterval(() => {
+                refreshed = true
+                store.dispatch('notificationCount')
+                store.dispatch('fetchNotifications', {
+                    load_more: false
+                })
+            }, 60000)
+        } else {
+            clearInterval(notificationInterval)
+            notificationInterval = setInterval(() => {
+                refreshed = true
+                store.dispatch('notificationCount')
+                store.dispatch('fetchNotifications', {
+                    load_more: false
+                })
+            }, 60000)
+        }
+    }
+
+    if (!data || !data.id) {
+        clearInterval(notificationInterval)
+    }
+})
+
 notificationsStore.onUpdated(async (data) => {
     if (!data || !data.success) {
         $('.notification-wrap').html('<p class="text-center">No notifications</p>')
@@ -42,26 +78,44 @@ notificationsStore.onUpdated(async (data) => {
 
     const recentContainer = document.getElementById('recent');
     const thisWeekContainer = document.getElementById('this-week');
+    const last30DaysContainer = document.getElementById('last-30-days');
 
     if (refreshed) {
         recentContainer.innerHTML = '';
         thisWeekContainer.innerHTML = '';
+        last30DaysContainer.innerHTML = '';
         refreshed = false
     }
 
-    document.querySelectorAll('.app-notification-title').forEach(elem => {
-        elem.innerHTML = elem.getAttribute('data-title')
-    })
 
     var user = await getSessionUser()
 
-    if (!notifications.recent.length) {
+    document.querySelectorAll('.app-notification-title').forEach(elem => {
+        console.log(elem.getAttribute('data-id'));
+
+        if (elem.getAttribute('data-id') === 'last-30') {
+            if (notifications.last_30_days.length > 0) {
+                elem.innerHTML = elem.getAttribute('data-title');
+            } else {
+                elem.innerHTML = '';
+            }
+            return
+        }
+        elem.innerHTML = elem.getAttribute('data-title');
+    })
+
+    if (!notifications.recent.length && !notifications.is_paginated) {
         recentContainer.innerHTML = '<p class="text-center">No recent notifications</p>';
     }
 
-    if (!notifications.last_week.length) {
+    if (!notifications.last_week.length && !notifications.has_more_notifications) {
         thisWeekContainer.innerHTML = '<p class="text-center">No notifications from this week</p>';
     }
+
+    notifications.last_30_days.forEach(notification => {
+        const notificationItem = createNotificationItem(notification, user);
+        last30DaysContainer.appendChild(notificationItem);
+    });
 
     notifications.recent.forEach(notification => {
         const notificationItem = createNotificationItem(notification, user);
@@ -72,6 +126,19 @@ notificationsStore.onUpdated(async (data) => {
         const notificationItem = createNotificationItem(notification, user);
         thisWeekContainer.appendChild(notificationItem);
     });
+
+    // add a load more button at the end
+    if ((notifications.recent.length >= 0 || notifications.last_week.length >= 0) && (notifications.has_more_notifications)) {
+        $('.load-more-notifications').removeClass('hidden');
+    } else {
+        $('.load-more-notifications').addClass('hidden');
+    }
+})
+
+$(document).on('click', '.load-more-notifications', async function (e) {
+    await store.dispatch('fetchNotifications', {
+        load_more: true
+    })
 })
 
 function timeAgo(dateString) {
@@ -150,8 +217,7 @@ function createNotificationItem(notification, user) {
         // </a>
         content = `
             <div class="notification-text">
-                <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> has posted ${notification.entity.entity_type === 'car' ? "your car" : "a post"} 
-                
+                <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> has tagged ${notification.entity.entity_type === 'car' ? "your car" : "you"} in a post
                 <span class="${isReadClass}"></span>
             </div>
             ${(notification.entity.entity_type === 'car' && !notification.entity.entity_data.tag_approved) ? `<div class="notification-text tag-actions">
@@ -165,14 +231,19 @@ function createNotificationItem(notification, user) {
                 <a href="/profile-view/${notification.entity.user_id}"><strong>${notification.entity.initiator_data.display_name}</strong></a> ${notification.entity.entity_type === 'car' ? "tagged your car in a post" : "tagged you in a post"}
                 <span class="${isReadClass}"></span>
             </div>
+            ${(!notification.entity.entity_data.tag_approved && notification.entity.entity_data.tag_id) ? `<div class="notification-text tag-actions">
+                <div class="btn btn-primary btn-sm approve-tag" data-tag-id="${notification.entity.entity_data.tag_id}">Approve</div>
+                <div class="btn btn-secondary btn-sm decline-tag" data-tag-id="${notification.entity.entity_data.tag_id}">Decline</div>
+                </div>` : ''}
         `;
+
+        container.href = `#`;
     }
 
     // Add time ago
     const timeSpan = document.createElement('span');
     timeSpan.className = 'notification-time';
     timeSpan.textContent = timeAgo(notification.date);
-
 
     infoDiv.innerHTML = `${content} ${timeSpan.outerHTML}`;
 
@@ -185,12 +256,12 @@ function createNotificationItem(notification, user) {
 
     if (notification.type === 'follow') {
         const isFollowing = user.following.includes(notification.entity.user_id);
-        let followBtn = `<div class="btn btn-primary btn-sm ${!isFollowing ? 'toggle-follow' : ''}" data-is-following="${isFollowing}" data-user-id="${notification.entity.user_id}">
-            ${isFollowing ? 'Following' : 'Follow'}
-        </div>`;
-
-        container.innerHTML += followBtn;
-
+        if (!isFollowing) {
+            let followBtn = `<div class="btn btn-primary btn-sm ${!isFollowing ? 'toggle-follow' : ''}" data-is-following="${isFollowing}" data-user-id="${notification.entity.user_id}">
+                Follow
+            </div>`;
+            container.innerHTML += followBtn;
+        }
     } else {
         const rightContainer = document.createElement('a');
         rightContainer.className = 'notification-left';
@@ -245,7 +316,9 @@ $(document).on('ptr:refresh', '.notification-page.ptr-content', async function (
 
     try {
         await store.dispatch('notificationCount')
-        await store.dispatch('fetchNotifications')
+        await store.dispatch('fetchNotifications', {
+            load_more: false
+        })
     } catch (error) {
         console.log(error);
     }
@@ -296,7 +369,9 @@ $(document).on('click', '.decline-tag', async function (e) {
 
             if (response.success) {
                 // refetch notifications
-                store.dispatch('fetchNotifications')
+                store.dispatch('fetchNotifications', {
+                    load_more: false
+                })
                 showToast('Tag has been declined')
             } else {
                 showToast(response.message || 'Failed to decline tag')

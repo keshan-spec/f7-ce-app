@@ -433,8 +433,10 @@ const store = createStore({
     },
     async fetchNotifications({
       state
+    }, {
+      load_more = false
     }) {
-      const notifications = await getUserNotifications()
+      const notifications = await getUserNotifications(load_more)
       state.notifications = notifications
     },
     async getUserPosts({

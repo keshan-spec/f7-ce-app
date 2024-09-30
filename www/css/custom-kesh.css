@@ -458,3 +458,14 @@
 .swiper-pagination-bullet.swiper-pagination-bullet-active{
     background: #ae9159 !important;
   }
+
+  .load-more-notifications{
+    margin: 1rem auto;
+    width: 90%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .load-more-notifications.hidden {
+    display: none;
+  }

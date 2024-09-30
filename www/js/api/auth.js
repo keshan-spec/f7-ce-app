@@ -314,7 +314,7 @@ export const getUserById = async (id) => {
     }
 }
 
-export const getUserNotifications = async () => {
+export const getUserNotifications = async (load_old_notifications = false) => {
     try {
         const user = await getSessionUser()
         if (!user) {
@@ -327,7 +327,8 @@ export const getUserNotifications = async () => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                user_id: user.id
+                user_id: user.id,
+                load_old_notifications
             }),
         })
 

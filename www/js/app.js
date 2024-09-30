@@ -119,7 +119,6 @@ var app = new Framework7({
             }
           }
 
-
           if (data && data.id && !data.external_refresh) {
             displayProfile(data, 'profile')
             store.dispatch('getMyGarage')
@@ -441,8 +440,6 @@ function onPostUpload() {
 window.onPostUpload = onPostUpload
 window.onAppBackKey = onBackKeyDown
 
-let notificationInterval = null
-
 userStore.onUpdated((data) => {
   if (data && data.id && !data.external_refresh && !data.refreshed) {
     store.dispatch('getPosts', {
@@ -453,28 +450,6 @@ userStore.onUpdated((data) => {
       page: 1,
       reset: true
     })
-    store.dispatch('notificationCount')
-    store.dispatch('fetchNotifications')
-
-
-    // fetch notifications every 1 min
-    // create an interval to fetch notifications every 1 min
-    if (!notificationInterval) {
-      notificationInterval = setInterval(() => {
-        store.dispatch('notificationCount')
-        store.dispatch('fetchNotifications')
-      }, 60000)
-    } else {
-      clearInterval(notificationInterval)
-      notificationInterval = setInterval(() => {
-        store.dispatch('notificationCount')
-        store.dispatch('fetchNotifications')
-      }, 60000)
-    }
-  }
-
-  if (!data || !data.id) {
-    clearInterval(notificationInterval)
   }
 })
 
