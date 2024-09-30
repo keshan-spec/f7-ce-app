@@ -91,8 +91,6 @@ notificationsStore.onUpdated(async (data) => {
     var user = await getSessionUser()
 
     document.querySelectorAll('.app-notification-title').forEach(elem => {
-        console.log(elem.getAttribute('data-id'));
-
         if (elem.getAttribute('data-id') === 'last-30') {
             if (notifications.last_30_days.length > 0) {
                 elem.innerHTML = elem.getAttribute('data-title');
@@ -270,9 +268,8 @@ function createNotificationItem(notification, user) {
         if (notification.entity.entity_type === 'car') {
             path = 'post-view';
             rightContainer.href = `/${path}/${notification.entity.entity_data.post_id}`;
-            container.href = `#`;
 
-        } else if (notification.entity.entity_type === 'post') {
+        } else if (notification.entity.entity_type === 'post' || notification.entity.entity_type === 'tag') {
             path = 'post-view';
             rightContainer.href = `/${path}/${notification.entity.entity_id}`;
 
@@ -282,6 +279,11 @@ function createNotificationItem(notification, user) {
         } else {
             path = 'profile-view';
             rightContainer.href = `/${path}/${notification.entity.user_id}`;
+        }
+
+        if (notification.type === 'tag') {
+            path = 'post-view';
+            rightContainer.href = `/${path}/${notification.entity.entity_id}`;
         }
 
 
