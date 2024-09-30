@@ -310,37 +310,6 @@ async function displayPosts(posts, following = false) {
   });
 }
 
-export function togglePostLikeV1(postId, single = false) {
-  // Find the post element and its like icon
-  let container = single ? `.media-post.single[data-post-id="${postId}"]` : `.media-post[data-post-id="${postId}"]`
-  const postElement = document.querySelector(container)
-  const likeIcon = postElement.querySelector('.media-post-like i')
-  const isLiked = postElement.getAttribute('data-is-liked') === 'true'
-  const likeCountElem = postElement.querySelector('.media-post-likecount')
-  let likeCount = parseInt(likeCountElem.getAttribute('data-like-count'))
-
-  // Toggle the like state
-  if (isLiked) {
-    likeIcon.classList.remove('text-red')
-    likeIcon.innerText = 'heart'
-    likeCount--
-    postElement.setAttribute('data-is-liked', 'false')
-  } else {
-    likeIcon.classList.add('text-red')
-    likeIcon.innerText = 'heart_fill'
-    likeCount++
-    postElement.setAttribute('data-is-liked', 'true')
-  }
-
-  // Update like count
-  likeCountElem.innerText = `${likeCount} likes`
-  likeCountElem.setAttribute('data-like-count', likeCount)
-
-  // Optionally, make an API call to update the like status on the server
-  // fetch(`/api/posts/${postId}/like`, { method: 'POST' });
-  maybeLikePost(postId)
-}
-
 export function togglePostLike(postId, single = false) {
   // Find all post elements with the specified postId
   let container = single ? `.media-post.single[data-post-id="${postId}"]` : `.media-post[data-post-id="${postId}"]`
@@ -369,7 +338,23 @@ export function togglePostLike(postId, single = false) {
     // Update like count
     likeCountElem.innerText = `${likeCount} likes`
     likeCountElem.setAttribute('data-like-count', likeCount)
+
+    if (single) {
+      var pathStore = store.getters.getPathData
+
+      if (pathStore && pathStore.value[`/post/${postId}`]) {
+        var post = pathStore.value[`/post/${postId}`]
+        post.is_liked = !isLiked
+        post.likes_count = likeCount
+
+        store.dispatch('setPathData', {
+          path: `/post/${postId}`,
+          data: post,
+        })
+      }
+    }
   })
+
 
   // Optionally, make an API call to update the like status on the server
   maybeLikePost(postId)
@@ -614,9 +599,7 @@ $(document).on('click', '#edit-post', function () {
   app.popup.close('.edit-post-popup')
 })
 
-$(document).on('touchstart', '.media-post-content .swiper-wrapper', detectDoubleTapClosure((e) => {
-  return // Disable double tap for now
-
+$(document).on('touchstart', '.media-post-content .post-media', detectDoubleTapClosure((e) => {
   const parent = e.closest('.media-post')
   const postId = parent.getAttribute('data-post-id')
   const isLiked = parent.getAttribute('data-is-liked') === 'true'

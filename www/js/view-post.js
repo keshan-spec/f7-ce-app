@@ -6,88 +6,121 @@ import {
   formatPostDate
 } from "./utils.js"
 import store from "./store.js"
-var $ = Dom7
+import { detectDoubleTapClosure, togglePostLike } from "./homepage.js"
 
-export function renderPost(post) {
+var $ = Dom7
+var containerWidth = window.innerWidth
+
+export function displayPost(post) {
+  const postsContainer = document.getElementById('post-view-container')
+  postsContainer.innerHTML = '' // Clear any existing posts
+
   const user = store.getters.user.value
 
   let post_actions = `
-     <div class="media-post-actions">
-        <div class="media-post-like" data-post-id="${post.id}">
-          <i class="icon f7-icons ${post.is_liked ? 'text-red' : ''}" data-post-id="${post.id}">${post.is_liked ? 'heart_fill' : 'heart'}</i>
-        </div>
-        <div class="media-post-comment popup-open" data-popup=".comments-popup" data-post-id="${post.id}">
-          <i class="icon f7-icons">chat_bubble</i>
-        </div>
-        <div class="media-post-share popup-open" data-popup=".share-popup">
-          <i class="icon f7-icons">paperplane</i>
-        </div>
-    `
+  <div class="media-post-actions">
+    <div class="media-post-like" data-post-id="${post.id}">
+      <i class="icon f7-icons ${post.is_liked ? 'text-red' : ''}" data-post-id="${post.id}">${post.is_liked ? 'heart_fill' : 'heart'}</i>
+    </div>
+    <div class="media-post-comment popup-open" data-popup=".comments-popup" data-post-id="${post.id}">
+      <i class="icon f7-icons">chat_bubble</i>
+    </div>
+    <div class="media-post-share popup-open" data-popup=".share-popup">
+      <i class="icon f7-icons">paperplane</i>
+    </div>
+`;
 
   if (post.user_id == user.id) {
     post_actions += `
-        <div class="media-post-edit popup-open" data-popup=".edit-post-popup" data-post-id="${post.id}">
-          <i class="icon f7-icons">gear_alt</i>
-        </div>
-      `
+    <div class="media-post-edit popup-open" data-popup=".edit-post-popup" data-post-id="${post.id}">
+      <i class="icon f7-icons">gear_alt</i>
+    </div>
+  `;
   }
 
-  post_actions += `</div>`
+  post_actions += `</div>`;
 
-  const date = formatPostDate(post.post_date)
-  const maxDescriptionLength = 10; // Set your character limit here
+  const date = formatPostDate(post.post_date);
+  const maxDescriptionLength = 200; // Set your character limit here
   const isLongDescription = post.caption.length > maxDescriptionLength;
   const shortDescription = isLongDescription ? post.caption.slice(0, maxDescriptionLength) : post.caption;
+
   let imageHeight = 400;
 
   if (post.media.length > 0) {
-    imageHeight = post.media[0].media_height;
+    const intrinsicWidth = post.media[0].media_width;
+    const intrinsicHeight = post.media[0].media_height;
 
-    if (imageHeight > 800) {
-      imageHeight = 'auto';
+    // Calculate intrinsic aspect ratio
+    const intrinsicRatio = intrinsicWidth / intrinsicHeight;
+
+    // Calculate the rendered height based on the container width
+    const renderedHeight = containerWidth / intrinsicRatio;
+
+    // Use either the rendered height or the fallback height
+    if (renderedHeight > 0) {
+
+      if (renderedHeight > 500) {
+        imageHeight = 500
+      } else {
+        imageHeight = renderedHeight
+      }
     }
+
   }
+
 
   let profile_link;
 
   if (post.user_id == user.id) {
     profile_link = `
-      <a href="#" class="view-profile">
-        <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
-        <div class="media-post-user">${post.username}</div>
-      </a>`
+  <a href="#" class="view-profile media-post-header">
+    <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
+    <div class="media-post-user">${post.username}</div>
+    <div class="media-post-date">${date}</div>
+  </a>`
   } else {
     profile_link = `
-      <a href="/profile-view/${post.user_id}">
-        <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
-        <div class="media-post-user">${post.username}</div>
-      </a>`
+  <a href="/profile-view/${post.user_id}" class="media-post-header">
+    <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
+    <div class="media-post-user">${post.username}</div>
+    <div class="media-post-date">${date}</div>
+  </a>`
   }
 
   const postItem = `
   <div class="media-post single" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
     <div class="media-single-post-content">
-    <div class="media-post-header">
-        ${profile_link}
-        <div class="media-post-date">${date}</div>
-      </div>
+      ${profile_link}
       <div class="media-single-post-content">
-        <div class="swiper-container">
-          <div class="swiper-wrapper">
-            ${post.media.map(mediaItem => `
-                <div class="swiper-slide post-media" style="height: ${imageHeight};">
-                ${mediaItem.media_type === 'video' ? `
-                  <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
-                    <source src="${mediaItem.media_url}" type="${mediaItem.media_mime_type}" />
-                  </video>
-                ` : `
-                  <img src="${mediaItem.media_url}" alt="${mediaItem.media_alt}" />
-                `}
-              </div>
-            `).join('')}
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
+      <swiper-container pagination class="demo-swiper-multiple" space-between="50">
+            ${post.media.map((mediaItem, index) => {
+    // create a url encoded string for the media url
+    const videoThumbnail = mediaItem.media_type === 'video' ?
+      encodeURIComponent(`${mediaItem.media_url}/thumbnails/thumbnail.jpg`) : '';
+
+    return `<swiper-slide class="swiper-slide post-media ${mediaItem.media_type === 'video' ? 'video' : ''}" style="height: ${imageHeight}px; ">
+                ${mediaItem.media_type === 'video' ?
+        `
+<iframe
+src="${mediaItem.media_url}/iframe?autoplay=true&poster=${videoThumbnail}&height=${imageHeight}&width=${containerWidth}&muted=true"
+loading="lazy"
+style="border: none;  height: 100%; width: 100%;min-height: ${imageHeight}px;"
+allow="accelerometer; gyroscope; encrypted-media;"
+allowfullscreen="false"
+frameBorder="0">
+</iframe>
+     `
+        : `
+                <img 
+                    src="${mediaItem.media_url}" 
+                    alt="${mediaItem.caption || post.username + 's post'}"
+                    style="text-align: center;"
+                    onerror = "this.style.display='none';"
+                  />`}
+              </swiper-slide>
+            `}).join('')}
+      </swiper-container>
       </div>
       ${post_actions}
       <div class="media-post-likecount" data-like-count="${post.likes_count}">${post.likes_count} likes</div>
@@ -98,122 +131,38 @@ export function renderPost(post) {
       </div>
       ${post.comments_count > 0 ? `<div class="media-post-commentcount popup-open" data-popup=".comments-popup" data-post-id="${post.id}">View ${post.comments_count} comments</div>` : ''}
     </div>
-  </div>`
-
-  return postItem
-}
-
-export function displayPost(post) {
-  const postsContainer = document.getElementById('post-view-container')
-  postsContainer.innerHTML = '' // Clear any existing posts
-
-  const user = store.getters.user.value
-
-  let post_actions = `
-     <div class="media-post-actions">
-        <div class="media-post-like" data-post-id="${post.id}">
-          <i class="icon f7-icons ${post.is_liked ? 'text-red' : ''}" data-post-id="${post.id}">${post.is_liked ? 'heart_fill' : 'heart'}</i>
-        </div>
-        <div class="media-post-comment popup-open" data-popup=".comments-popup" data-post-id="${post.id}">
-          <i class="icon f7-icons">chat_bubble</i>
-        </div>
-        <div class="media-post-share popup-open" data-popup=".share-popup">
-          <i class="icon f7-icons">paperplane</i>
-        </div>
-    `
-
-  if (post.user_id == user.id) {
-    post_actions += `
-        <div class="media-post-edit popup-open" data-popup=".edit-post-popup" data-post-id="${post.id}">
-          <i class="icon f7-icons">gear_alt</i>
-        </div>
-      `
-  }
-
-  post_actions += `</div>`
-
-  const date = formatPostDate(post.post_date)
-  const maxDescriptionLength = 10; // Set your character limit here
-  const isLongDescription = post.caption.length > maxDescriptionLength;
-  const shortDescription = isLongDescription ? post.caption.slice(0, maxDescriptionLength) : post.caption;
-  let imageHeight = 400;
-
-  if (post.media.length > 0) {
-    imageHeight = post.media[0].media_height;
-
-    if (imageHeight > 800) {
-      imageHeight = 'auto';
-    }
-  }
-
-  let profile_link;
-
-  if (post.user_id == user.id) {
-    profile_link = `
-      <a href="#" class="view-profile">
-        <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
-        <div class="media-post-user">${post.username}</div>
-      </a>`
-  } else {
-    profile_link = `
-      <a href="/profile-view/${post.user_id}">
-        <div class="media-post-avatar" style="background-image: url('${post.user_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
-        <div class="media-post-user">${post.username}</div>
-      </a>`
-  }
-
-  const postItem = `
-  <div class="media-post single" data-post-id="${post.id}" data-is-liked="${post.is_liked}">
-            <div class="media-single-post-content">
-            <div class="media-post-header">
-                ${profile_link}
-                <div class="media-post-date">${date}</div>
-              </div>
-              <div class="media-single-post-content">
-                <div class="swiper-container">
-                  <div class="swiper-wrapper">
-                    ${post.media.map(mediaItem => `
-                       <div class="swiper-slide post-media" style="height: ${imageHeight};">
-                        ${mediaItem.media_type === 'video' ? `
-                          <video autoplay loop muted playsinline class="video-background media-post-video" id="${mediaItem.id}">
-                            <source src="${mediaItem.media_url}" type="${mediaItem.media_mime_type}" />
-                          </video>
-                        ` : `
-                          <img src="${mediaItem.media_url}" alt="${mediaItem.media_alt}" />
-                        `}
-                      </div>
-                    `).join('')}
-                  </div>
-                  <div class="swiper-pagination"></div>
-                </div>
-              </div>
-              ${post_actions}
-              <div class="media-post-likecount" data-like-count="${post.likes_count}">${post.likes_count} likes</div>
-              <div class="media-post-description">
-                <strong>${post.username}</strong> <br/> <span class="post-caption">${shortDescription}</span>
-                <span class="full-description hidden">${post.caption}</span>
-                ${isLongDescription ? `<span class="media-post-readmore">... more</span>` : ''}
-              </div>
-              ${post.comments_count > 0 ? `<div class="media-post-commentcount popup-open" data-popup=".comments-popup" data-post-id="${post.id}">View ${post.comments_count} comments</div>` : ''}
-            </div>
-          </div>`
+  </div>
+`;
 
   postsContainer.insertAdjacentHTML('beforeend', postItem)
 }
 
-// $(document).on('touchstart', '.media-single-post-content .swiper-wrapper', detectDoubleTapClosure((e) => {
-//   const parent = e.closest('.media-post')
-//   const postId = parent.getAttribute('data-post-id')
-//   const isLiked = parent.getAttribute('data-is-liked') === 'true'
+$(document).on('touchstart', '.media-single-post-content .post-media', detectDoubleTapClosure((e) => {
+  const parent = e.closest('.media-post')
+  const postId = parent.getAttribute('data-post-id')
+  const isLiked = parent.getAttribute('data-is-liked') === 'true'
 
-//   if (isLiked) {
-//     return
-//   }
+  if (isLiked) {
+    return
+  }
 
-//   togglePostLike(postId, true)
-// }), {
-//   passive: false
-// })
+  togglePostLike(postId, true)
+
+  var pathStore = store.getters.getPathData
+
+  if (pathStore && pathStore.value[`/post/${postId}`]) {
+    var post = pathStore.value[`/post/${postId}`]
+    post.is_liked = true
+    post.likes_count += 1
+
+    store.dispatch('setPathData', {
+      path: `/post/${postId}`,
+      data: post,
+    })
+  }
+}), {
+  passive: false
+})
 
 $(document).on('page:beforein', '.page[data-name="post-view"]', async function (e) {
   var pathStore = store.getters.getPathData
