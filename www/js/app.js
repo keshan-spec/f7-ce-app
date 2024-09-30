@@ -291,7 +291,7 @@ $(document).on('click', '.start-link', function (e) {
   toolbarEl.style.display = 'block'
 })
 
-$(document).on('mousedown', '.toolbar-bottom a', function (e) {
+$(document).on('mousedown', '.toolbar-bottom a', async function (e) {
   var targetHref = $(this).attr('href');
   var validTabs = ['#view-social', '#view-discover', '#view-store', '#view-profile'];
 
@@ -302,6 +302,13 @@ $(document).on('mousedown', '.toolbar-bottom a', function (e) {
         force: true
       });
     }
+  }
+
+  if (targetHref == '#view-social' && view.history.length <= 1) {
+    $('.page-current .page-content').scrollTop(0, 200);
+
+    const ptrContent = app.ptr.get('.ptr-content.home-page')
+    ptrContent.refresh()
   }
 });
 
