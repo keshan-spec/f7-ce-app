@@ -36,11 +36,42 @@ var refreshed = false
 //screen width
 var containerWidth = window.innerWidth
 
-function loadVideos() {
+
+// Function to pause all videos
+function pauseAllVideos() {
+  var videos = document.querySelectorAll('video.video-js');
+  videos.forEach(function (video) {
+    video.pause();
+  });
+}
+
+export function loadVideos() {
   var videos = document.querySelectorAll('video.video-js');
 
-  // simulate a click in the document to start user interaction
-  document.dispatchEvent(new MouseEvent('click'));
+  // Function to resume videos if needed (optional)
+  function playVisibleVideos() {
+    videos.forEach(function (video) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            video.play();
+          }
+        });
+      }, { threshold: 0.5 });
+      observer.observe(video);
+    });
+  }
+
+  // Listen for visibility change
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      // Pause all videos when the user changes tabs or minimizes
+      pauseAllVideos();
+    } else {
+      // Optionally resume videos if visible
+      playVisibleVideos();
+    }
+  });
 
   // Loop through each video element
   videos.forEach(function (video) {
@@ -171,6 +202,11 @@ $(document).on('page:beforein', '.page[data-name="social"]', function (e) {
   app.toolbar.show('.toolbar.toolbar-bottom', true)
 })
 
+// before page out
+$(document).on('page:beforeout', '.page[data-name="social"]', function () {
+  pauseAllVideos()
+})
+
 /* Based on this http://jsfiddle.net/brettwp/J4djY/*/
 export function detectDoubleTapClosure(callback) {
   let lastTap = 0
@@ -285,7 +321,6 @@ async function displayPosts(posts, following = false) {
       }
     }
 
-
     let profile_link;
 
     if (post.user_id == user.id) {
@@ -316,14 +351,24 @@ async function displayPosts(posts, following = false) {
         preloadImage(mediaItem.media_url)
       }
 
-      // create a url encoded string for the media url
-      const videoThumbnail = mediaItem.media_type === 'video' ?
-        encodeURIComponent(`${mediaItem.media_url}/thumbnails/thumbnail.jpg`) : '';
+      // // create a url encoded string for the media url
+      // const videoThumbnail = mediaItem.media_type === 'video' ?
+      //   encodeURIComponent(`${mediaItem.media_url}/thumbnails/thumbnail.jpg`) : '';
 
       return `
           <swiper-slide class="swiper-slide post-media ${mediaItem.media_type === 'video' ? 'video' : ''}" style="height: ${imageHeight}px; ">
                     ${mediaItem.media_type === 'video' ?
-          `<video class="video-js" data-src="${mediaItem.media_url}/manifest/video.m3u8" preload="auto" playsinline loop controls autoplay></video>`
+          `<video 
+              style="height: ${imageHeight}px;" 
+              class="video-js" 
+              data-src="${mediaItem.media_url}/manifest/video.m3u8" 
+              preload="auto" 
+              playsinline 
+              loop 
+              controls 
+              autoplay 
+              poster="${mediaItem.media_url}/thumbnails/thumbnail.jpg"  <!-- Add the thumbnail as the poster image -->
+            ></video>`
           : `<img src="${mediaItem.media_url}" 
                   alt="${mediaItem.caption || post.username + 's post'}"
                   style="text-align: center;"

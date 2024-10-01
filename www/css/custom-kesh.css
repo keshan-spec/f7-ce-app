@@ -47,6 +47,9 @@
 .profile-grid .grid-item {
     background: #f0f0f0;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .profile-grid .grid-item .image-square,

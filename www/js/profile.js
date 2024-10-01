@@ -248,6 +248,7 @@ function generatePostGridItem(post) {
           sizes="(max-width: 320px) 280px, 320px"
           decoding="async"
           fetchPriority="high"
+          style="object-fit: cover; max-width: 130px;"
         />
       </a>`
   } else {
@@ -260,6 +261,7 @@ function generatePostGridItem(post) {
           sizes="(max-width: 320px) 280px, 320px"
           decoding="async"
           fetchPriority="high"
+          style="object-fit: cover; max-width: 130px;"
         />
       </a>`
   }

@@ -6,7 +6,7 @@ import {
   formatPostDate
 } from "./utils.js"
 import store from "./store.js"
-import { detectDoubleTapClosure, togglePostLike } from "./homepage.js"
+import { detectDoubleTapClosure, loadVideos, togglePostLike } from "./homepage.js"
 
 var $ = Dom7
 var containerWidth = window.innerWidth
@@ -50,6 +50,7 @@ export function displayPost(post) {
   if (post.media.length > 0) {
     const intrinsicWidth = post.media[0].media_width;
     const intrinsicHeight = post.media[0].media_height;
+    const media_type = post.media[0].media_type;
 
     // Calculate intrinsic aspect ratio
     const intrinsicRatio = intrinsicWidth / intrinsicHeight;
@@ -59,14 +60,17 @@ export function displayPost(post) {
 
     // Use either the rendered height or the fallback height
     if (renderedHeight > 0) {
-
       if (renderedHeight > 500) {
         imageHeight = 500
       } else {
         imageHeight = renderedHeight
       }
-    }
 
+
+      if (media_type === 'video') {
+        imageHeight = renderedHeight
+      }
+    }
   }
 
 
@@ -95,22 +99,25 @@ export function displayPost(post) {
       <div class="media-single-post-content">
       <swiper-container pagination class="demo-swiper-multiple" space-between="50">
             ${post.media.map((mediaItem, index) => {
+    console.log(mediaItem.media_url);
+
     // create a url encoded string for the media url
     const videoThumbnail = mediaItem.media_type === 'video' ?
       encodeURIComponent(`${mediaItem.media_url}/thumbnails/thumbnail.jpg`) : '';
 
     return `<swiper-slide class="swiper-slide post-media ${mediaItem.media_type === 'video' ? 'video' : ''}" style="height: ${imageHeight}px; ">
                 ${mediaItem.media_type === 'video' ?
-        `
-<iframe
-src="${mediaItem.media_url}/iframe?autoplay=true&poster=${videoThumbnail}&height=${imageHeight}&width=${containerWidth}&muted=true"
-loading="lazy"
-style="border: none;  height: 100%; width: 100%;min-height: ${imageHeight}px;"
-allow="accelerometer; gyroscope; encrypted-media;"
-allowfullscreen="false"
-frameBorder="0">
-</iframe>
-     `
+        `<video 
+              style="height: ${imageHeight}px;" 
+              class="video-js" 
+              data-src="${mediaItem.media_url}/manifest/video.m3u8" 
+              preload="auto" 
+              playsinline 
+              loop 
+              controls 
+              autoplay 
+              poster="${mediaItem.media_url}/thumbnails/thumbnail.jpg"  <!-- Add the thumbnail as the poster image -->
+            ></video>`
         : `
                 <img 
                     src="${mediaItem.media_url}" 
@@ -135,6 +142,7 @@ frameBorder="0">
 `;
 
   postsContainer.insertAdjacentHTML('beforeend', postItem)
+  loadVideos()
 }
 
 $(document).on('touchstart', '.media-single-post-content .post-media', detectDoubleTapClosure((e) => {
