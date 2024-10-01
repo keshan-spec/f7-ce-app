@@ -38,7 +38,9 @@ var containerWidth = window.innerWidth
 
 function loadVideos() {
   var videos = document.querySelectorAll('video.video-js');
-  console.log(videos);
+
+  // simulate a click in the document to start user interaction
+  document.dispatchEvent(new MouseEvent('click'));
 
   // Loop through each video element
   videos.forEach(function (video) {
@@ -260,6 +262,7 @@ async function displayPosts(posts, following = false) {
     if (post.media.length > 0) {
       const intrinsicWidth = post.media[0].media_width;
       const intrinsicHeight = post.media[0].media_height;
+      const media_type = post.media[0].media_type;
 
       // Calculate intrinsic aspect ratio
       const intrinsicRatio = intrinsicWidth / intrinsicHeight;
@@ -269,14 +272,17 @@ async function displayPosts(posts, following = false) {
 
       // Use either the rendered height or the fallback height
       if (renderedHeight > 0) {
-
         if (renderedHeight > 500) {
           imageHeight = 500
         } else {
           imageHeight = renderedHeight
         }
-      }
 
+
+        if (media_type === 'video') {
+          imageHeight = renderedHeight
+        }
+      }
     }
 
 
@@ -317,7 +323,7 @@ async function displayPosts(posts, following = false) {
       return `
           <swiper-slide class="swiper-slide post-media ${mediaItem.media_type === 'video' ? 'video' : ''}" style="height: ${imageHeight}px; ">
                     ${mediaItem.media_type === 'video' ?
-          `<video class="video-js" data-src="${mediaItem.media_url}/manifest/video.m3u8" preload="auto" playsinline loop></video>`
+          `<video class="video-js" data-src="${mediaItem.media_url}/manifest/video.m3u8" preload="auto" playsinline loop controls autoplay></video>`
           : `<img src="${mediaItem.media_url}" 
                   alt="${mediaItem.caption || post.username + 's post'}"
                   style="text-align: center;"

@@ -218,12 +218,14 @@
 
 .post-media {
     position: relative;
-    /* min-height: 300px; */
     max-height: 600px;
     display: flex;
     justify-content: center;
     align-items: center;
     background: #e7e7e7;
+}
+.post-media.video {
+    max-height: 750px;
 }
 
 .post-media img {
@@ -469,3 +471,4 @@
   .load-more-notifications.hidden {
     display: none;
   }
+
