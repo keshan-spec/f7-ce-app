@@ -36,7 +36,50 @@ var refreshed = false
 //screen width
 var containerWidth = window.innerWidth
 
-postsStore.onUpdated((data) => {
+function loadVideos() {
+  var videos = document.querySelectorAll('video.video-js');
+  console.log(videos);
+
+  // Loop through each video element
+  videos.forEach(function (video) {
+    var videoSrc = video.getAttribute('data-src');
+
+    if (Hls.isSupported()) {
+      var hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function () {
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoSrc;
+      video.addEventListener('loadedmetadata', function () {
+      });
+    }
+
+    // Set up IntersectionObserver to pause/play videos based on visibility
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      });
+    }, { threshold: 0.5 });
+
+    observer.observe(video);
+
+    video.addEventListener('play', function () {
+      video.removeAttribute('controls'); // Hide controls
+    });
+
+    video.addEventListener('click', function () {
+      video.setAttribute('controls', 'controls');
+    });
+  });
+}
+
+postsStore.onUpdated(async (data) => {
   totalPostPages = data.total_pages
 
   if ((data.page == data.total_pages) || (data.new_data.length == 0)) {
@@ -271,27 +314,16 @@ async function displayPosts(posts, following = false) {
       const videoThumbnail = mediaItem.media_type === 'video' ?
         encodeURIComponent(`${mediaItem.media_url}/thumbnails/thumbnail.jpg`) : '';
 
-      return `<swiper-slide class="swiper-slide post-media ${mediaItem.media_type === 'video' ? 'video' : ''}" style="height: ${imageHeight}px; ">
+      return `
+          <swiper-slide class="swiper-slide post-media ${mediaItem.media_type === 'video' ? 'video' : ''}" style="height: ${imageHeight}px; ">
                     ${mediaItem.media_type === 'video' ?
-          `
-  <iframe
-    src="${mediaItem.media_url}/iframe?autoplay=true&poster=${videoThumbnail}&height=${imageHeight}&width=${containerWidth}&muted=true"
-    loading="lazy"
-    style="border: none;  height: 100%; width: 100%;min-height: ${imageHeight}px;"
-    allow="accelerometer; gyroscope; encrypted-media;"
-    allowfullscreen="false"
-    frameBorder="0">
-    </iframe>
-         `
-          : `
-                    <img 
-                        src="${mediaItem.media_url}" 
-                        alt="${mediaItem.caption || post.username + 's post'}"
-                        style="text-align: center;"
-                        onerror = "this.style.display='none';"
-                      />`}
-                  </swiper-slide>
-                `}).join('')}
+          `<video class="video-js" data-src="${mediaItem.media_url}/manifest/video.m3u8" preload="auto" playsinline loop></video>`
+          : `<img src="${mediaItem.media_url}" 
+                  alt="${mediaItem.caption || post.username + 's post'}"
+                  style="text-align: center;"
+                  onerror = "this.style.display='none';"
+              />`}
+            </swiper-slide>`}).join('')}
           </swiper-container>
           </div>
           ${post_actions}
@@ -308,6 +340,8 @@ async function displayPosts(posts, following = false) {
 
     postsContainer.append(postItem);
   });
+
+  loadVideos()
 }
 
 export function togglePostLike(postId, single = false) {
@@ -359,7 +393,6 @@ export function togglePostLike(postId, single = false) {
   // Optionally, make an API call to update the like status on the server
   maybeLikePost(postId)
 }
-
 
 function displayComments(comments, postId) {
   const user = store.getters.user.value
