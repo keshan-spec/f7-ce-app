@@ -125,7 +125,7 @@ export function displayProfile(user, container = 'profile') {
   }
 
   if (profileLinks.youtube) {
-    setLinkHref('#youtube', `https://www.youtube.com/${profileLinks.youtube}`);
+    setLinkHref('#youtube', `https://www.youtube.com/@${profileLinks.youtube}`);
   } else {
     // set opacity to 0.5
     const youtubeElem = containerElem.querySelector('#youtube');
