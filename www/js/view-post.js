@@ -99,11 +99,6 @@ export function displayPost(post) {
       <div class="media-single-post-content">
       <swiper-container pagination class="demo-swiper-multiple" space-between="50">
             ${post.media.map((mediaItem, index) => {
-    console.log(mediaItem.media_url);
-
-    // create a url encoded string for the media url
-    const videoThumbnail = mediaItem.media_type === 'video' ?
-      encodeURIComponent(`${mediaItem.media_url}/thumbnails/thumbnail.jpg`) : '';
 
     return `<swiper-slide class="swiper-slide post-media ${mediaItem.media_type === 'video' ? 'video' : ''}" style="height: ${imageHeight}px; ">
                 ${mediaItem.media_type === 'video' ?

@@ -33,7 +33,11 @@ $(document).on('page:init', '.page[data-name="discover-view-venue"]', async func
     mainContainer.find('.event-detail-title').text(venueData.title);
 
     // Populating the Event Location
-    mainContainer.find('.event-time-address span').text(venueData.location);
+    // create a map link with the address
+    const mapLink = `https://www.google.com/maps/search/?api=1&query=${venueData.location}`
+    // create an anchor tag with the map link
+    const mapLinkTag = `<a href="${mapLink}" target="_blank" class="event-location-map">${venueData.location}</a>`
+    mainContainer.find('.event-time-address span').html(mapLinkTag);
 
     // Populating the Cover Image
     mainContainer.find('.event-detail-img-box .swiper-slide .swiper-image')
@@ -117,6 +121,13 @@ $(document).on('page:init', '.page[data-name="discover-view-venue"]', async func
         const response = await maybeFollowVenue(venueId)
     });
 })
+
+// event-location-map
+$(document).on('click', '.event-time-address span a', function (e) {
+    e.preventDefault();
+    const mapLink = $(this).attr('href');
+    window.open(mapLink, '_blank');
+});
 
 $(document).on('click', '#copy-venue-link', function () {
     const venueId = $(this).attr('data-venue-id');
