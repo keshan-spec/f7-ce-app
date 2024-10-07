@@ -138,8 +138,14 @@ const store = createStore({
     searchResults: DEFAULT_SEARCH_RESULTS,
     notificationCount: 0,
     poorNetworkError: false,
+    trendingVehicles: DEFAULT_PAGINATED_DATA,
   },
   getters: {
+    getTrendingVehicles({
+      state
+    }) {
+      return state.trendingVehicles
+    },
     checkPoorNetworkError({
       state
     }) {
@@ -341,6 +347,64 @@ const store = createStore({
       } catch (error) {
         console.error('Failed to filter events', error)
         state.filteredEvents = {
+          new_data: [],
+          data: [],
+          total_pages: 0,
+          page: 1,
+          limit: 10,
+        }
+      }
+    },
+    async filterTrendingUsers({
+      state
+    }, page = 1) {
+      try {
+        const response = await fetchTrendingUsers(page)
+
+        const data = {
+          new_data: response.data,
+          data: [
+            ...state.trendingUsers.data,
+            ...response.data,
+          ],
+          total_pages: response.total_pages,
+          page: page,
+          limit: response.limit,
+        }
+
+        state.trendingUsers = data
+      } catch (error) {
+        console.log('Failed to fetch trending users', error);
+        state.trendingUsers = {
+          new_data: [],
+          data: [],
+          total_pages: 0,
+          page: 1,
+          limit: 10,
+        }
+      }
+    },
+    async filterTrendingVehicles({
+      state
+    }, page = 1) {
+      try {
+        const response = await fetchTrendingUsers(page, true)
+
+        const data = {
+          new_data: response.data,
+          data: [
+            ...state.trendingVehicles.data,
+            ...response.data,
+          ],
+          total_pages: response.total_pages,
+          page: page,
+          limit: response.limit,
+        }
+
+        state.trendingVehicles = data
+      } catch (error) {
+        console.log('Failed to fetch trending vehicles', error);
+        state.trendingVehicles = {
           new_data: [],
           data: [],
           total_pages: 0,

@@ -143,6 +143,7 @@ var app = new Framework7({
             store.dispatch('getTrendingEvents')
             store.dispatch('getTrendingVenues')
             store.dispatch('filterTrendingUsers')
+            store.dispatch('filterTrendingVehicles')
             store.dispatch('fetchEventCategories')
           }
         })
@@ -301,6 +302,9 @@ $(document).on('mousedown', '.toolbar-bottom a', async function (e) {
         force: true
       });
     }
+  }
+  if (!view || !view.history) {
+    return
   }
 
   if (targetHref == '#view-social' && view.history.length <= 1) {

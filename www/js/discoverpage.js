@@ -8,6 +8,7 @@ var eventCategories = store.getters.getEventCategories;
 var filteredEventsStore = store.getters.getFilteredEvents;
 var filteredVenuesStore = store.getters.getFilteredVenues;
 var trendingUsersStore = store.getters.getTrendingUsers;
+var trendingVehiclesStore = store.getters.getTrendingVehicles;
 
 var isFetchingPosts = false
 var currentEventsPage = 1
@@ -18,6 +19,7 @@ var refreshed = false
 var totalEventPages = 1
 var totalVenuesPages = 1
 var totalUsersPages = 1
+var totalVehiclePages = 1
 
 var autocomplete;
 var filters = {};
@@ -147,7 +149,7 @@ function populateVenueCard(data = [], isSwiper = true) {
 }
 
 function populateUsersCard(data = []) {
-    const tabContainer = document.querySelector('#users-vehicles-tab');
+    const tabContainer = document.querySelector('#users-tab');
 
     data.forEach(user => {
         let linkTo = user.type === 'user' ? `/profile-view/${user.id}` : `/profile-garage-vehicle-view/${user.id}`;
@@ -164,6 +166,36 @@ function populateUsersCard(data = []) {
             title = `${vehicleName} <br/> Owner ${userName}`;
         }
 
+
+        const card = `
+        <li>
+            <a class="item-link search-result item-content" href="${linkTo}">
+                <div class="item-media">
+                    <div class="image-square image-rounded"
+                        style="background-image:url('${user.thumbnail || 'assets/img/profile-placeholder.jpg'}')">
+                    </div>
+                </div>
+                <div class="item-inner">
+                    <div class="item-title">${title}</div>
+                </div>
+            </a>
+        </li>
+        `;
+        tabContainer.innerHTML += card;
+    });
+}
+
+function populateVehiclesCard(data = []) {
+    const tabContainer = document.querySelector('#vehicles-tab');
+
+    data.forEach(user => {
+        let linkTo = `/profile-garage-vehicle-view/${user.id}`;
+        let title;
+
+        const userName = user.owner.username;
+        const vehicleName = user.title;
+
+        title = `${vehicleName} <br/> Owner @${userName}`;
 
         const card = `
         <li>
@@ -315,7 +347,7 @@ trendingEventsStore.onUpdated((data) => {
 });
 
 trendingUsersStore.onUpdated((data) => {
-    const tabContainer = document.querySelector('#users-vehicles-tab');
+    const tabContainer = document.querySelector('#users-tab');
     if (!data || data.data.length === 0) {
         tabContainer.innerHTML = `
             <div class="no-events">
@@ -334,6 +366,28 @@ trendingUsersStore.onUpdated((data) => {
     }
 
     populateUsersCard(data.new_data);
+});
+
+trendingVehiclesStore.onUpdated((data) => {
+    const tabContainer = document.querySelector('#vehicles-tab');
+    if (!data || data.data.length === 0) {
+        tabContainer.innerHTML = `
+            <div class="no-events">
+                <h3>No trending vehicles found for you</h3>
+            </div>
+        `;
+        return
+    }
+
+    totalVehiclePages = data.total_pages
+
+    if ((totalVehiclePages == data.page) || (totalVehiclePages == 0) || (data.new_data.length < 10)) {
+        $('.infinite-scroll-preloader.vehicles-tab').hide()
+    } else {
+        $('.infinite-scroll-preloader.vehicles-tab').show()
+    }
+
+    populateVehiclesCard(data.new_data);
 });
 
 // Filtered views
