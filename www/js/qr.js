@@ -154,6 +154,14 @@ store.getters.scannedData.onUpdated((data) => {
     }
 
     if (data) {
-        document.getElementById('custom-modal-content').innerHTML = renderResult(data)
+        const html = renderResult(data);
+
+        if (!html) {
+            // close the modal
+            app.dialog.close()
+            return
+        }
+
+        document.getElementById('custom-modal-content').innerHTML = html
     }
 })
