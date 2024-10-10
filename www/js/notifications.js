@@ -15,6 +15,13 @@ var refreshed = false
 var userStore = store.getters.user
 let notificationInterval = null
 
+$(document).on('page:beforein', '.page[data-name="notifications"]', async function (e) {
+    refreshed = true
+    store.dispatch('fetchNotifications', {
+        load_more: false
+    })
+})
+
 $(document).on('page:afterin', '.page[data-name="notifications"]', async function (e) {
     const data = notificationsStore.value
 
@@ -70,7 +77,7 @@ userStore.onUpdated((data) => {
 
 notificationsStore.onUpdated(async (data) => {
     if (!data || !data.success) {
-        $('.notification-wrap').html('<p class="text-center">No notifications</p>')
+        $('.notification-wrap').html(`<p class="text-center">${data.message || 'Failed to fetch notifications'}</p>`)
         return
     }
 
@@ -81,12 +88,19 @@ notificationsStore.onUpdated(async (data) => {
     const last30DaysContainer = document.getElementById('last-30-days');
 
     if (refreshed) {
-        recentContainer.innerHTML = '';
-        thisWeekContainer.innerHTML = '';
-        last30DaysContainer.innerHTML = '';
+        if (recentContainer) {
+            recentContainer.innerHTML = '';
+        }
+
+        if (thisWeekContainer) {
+            thisWeekContainer.innerHTML = '';
+        }
+
+        if (last30DaysContainer) {
+            last30DaysContainer.innerHTML = '';
+        }
         refreshed = false
     }
-
 
     var user = await getSessionUser()
 
@@ -337,28 +351,19 @@ $(document).on('click', '.approve-tag', async function (e) {
     e.preventDefault()
 
     const tagId = e.target.dataset.tagId
+    app.preloader.show()
+    const response = await approvePostTag(tagId)
 
-    app.dialog.confirm('Are you sure you want to approve this tag?', 'Approve Tag', async function () {
-        try {
-            app.preloader.show()
+    app.preloader.hide()
 
-            const response = await approvePostTag(tagId)
+    if (response.success) {
+        // remove the buttons
+        e.target.parentElement.innerHTML = ''
 
-            app.preloader.hide()
-
-            if (response.success) {
-                // remove the buttons
-                e.target.parentElement.innerHTML = ''
-
-                showToast('Tag has been approved')
-            } else {
-                showToast(response.message || 'Failed to approve tag')
-            }
-        } catch (error) {
-            app.preloader.hide()
-            showToast('Failed to approve tag')
-        }
-    })
+        showToast('Tag has been approved')
+    } else {
+        showToast(response.message || 'Failed to approve tag')
+    }
 })
 
 $(document).on('click', '.decline-tag', async function (e) {

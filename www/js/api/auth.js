@@ -317,7 +317,7 @@ export const getUserById = async (id) => {
 export const getUserNotifications = async (load_old_notifications = false) => {
     try {
         const user = await getSessionUser()
-        if (!user) {
+        if (!user || !user.id) {
             throw new Error('Session user not found')
         }
 
