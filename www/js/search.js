@@ -12,8 +12,18 @@ let controller; // To store the current AbortController
 var searchResultsStore = store.getters.getSearchResults;
 
 $(document).on('page:afterin', '.page[data-name="search"]', async function (e) {
-    $('#discover-search').focus();
     $('.loading-fullscreen.search-view').hide()
+
+    // Delay the focus slightly to ensure it's triggered on mobile
+    setTimeout(function () {
+        $('#discover-search').focus();
+
+        // Scroll to the input to make sure it's in view (this sometimes triggers the keyboard)
+        $('#discover-search')[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Re-trigger focus after scrolling
+        $('#discover-search').focus();
+    }, 300); // Adjust the delay if needed
 })
 
 // event listener for tab change
@@ -32,7 +42,8 @@ function debounce(func, delay) {
 
 function addLoaderToTabs() {
     const eventsContainer = document.querySelector('#events-results .list ul');
-    const usersContainer = document.querySelector('#users_vehicles-results .list ul');
+    const usersContainer = document.querySelector('#users-results .list ul');
+    const vehiclesContainer = document.querySelector('#vehicles-results .list ul');
     const venuesContainer = document.querySelector('#venues-results .list ul');
     const topContainer = document.querySelector('#top-results .list');
 
@@ -52,6 +63,7 @@ function addLoaderToTabs() {
     usersContainer.innerHTML = loader;
     venuesContainer.innerHTML = loader;
     topContainer.innerHTML = loader;
+    vehiclesContainer.innerHTML = loader;
     $('.loading-fullscreen.search-view').show()
 }
 
@@ -139,7 +151,7 @@ $(document).on('click', '#search-history li', function () {
 });
 
 // Optionally, display history on input focus
-$(document).on('click', '#discover-search', displaySearchHistory);
+// $(document).on('click', '#discover-search', displaySearchHistory);
 
 const debouncedSearch = debounce(async function () {
     const search = $(this).val().trim();
@@ -204,7 +216,8 @@ function renderList(container, items, renderItem) {
 // Function to render the search results
 function renderSearchResults(searchResults) {
     const eventsContainer = document.querySelector('#events-results .list ul');
-    const usersContainer = document.querySelector('#users_vehicles-results .list ul');
+    const usersContainer = document.querySelector('#users-results .list ul');
+    const vehiclesContainer = document.querySelector('#vehicles-results .list ul');
     const venuesContainer = document.querySelector('#venues-results .list ul');
     const topContainer = document.querySelector('#top-results .list');
 
@@ -236,6 +249,31 @@ function renderSearchResults(searchResults) {
 
             if (user.type == 'user') {
                 contentText = `${user.name} (@${user.username})`;
+            }
+
+            if (user.type == 'vehicle') {
+                contentText = `${user.name}'s <b>${user.meta.make} ${user.meta.model}</b>`;
+            }
+
+            return `
+                <a class="item-link search-result item-content" href="${userLink}">
+                    <div class="item-media">
+                        <div class="image-square image-rounded" style="background-image:url('${user.thumbnail || 'assets/img/profile-placeholder.jpg'}')"></div>
+                    </div>
+                    <div class="item-inner">
+                        <div class="item-title">${contentText}</div>
+                    </div>
+                </a>`
+        });
+    }
+
+    if (searchResults.vehicles) {
+        renderList(vehiclesContainer, searchResults.vehicles.data, (user) => {
+            const userLink = user.type == 'post' ? '/post-view/' + user.id : '/profile-garage-vehicle-view/' + user.id;
+            let contentText;
+
+            if (user.type == 'post') {
+                contentText = `${user.username} tagged ${user.name}`;
             }
 
             if (user.type == 'vehicle') {

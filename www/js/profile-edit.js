@@ -559,12 +559,12 @@ $(document).on('click', '#save-profile-socials', async function () {
 
     const user = await getSessionUser()
 
-    const instagram = $('input[name="social_instagram"]').val();
-    const facebook = $('input[name="social_facebook"]').val();
-    const tiktok = $('input[name="social_tiktok"]').val();
-    const youtube = $('input[name="social_youtube"]').val();
-    const mivia = $('input[name="social_mivia"]').val();
-    const custodian = $('input[name="social_custodian"]').val();
+    let instagram = $('input[name="social_instagram"]').val();
+    let facebook = $('input[name="social_facebook"]').val();
+    let tiktok = $('input[name="social_tiktok"]').val();
+    let youtube = $('input[name="social_youtube"]').val();
+    let mivia = $('input[name="social_mivia"]').val();
+    let custodian = $('input[name="social_custodian"]').val();
 
     const links = {
         instagram,
@@ -575,42 +575,77 @@ $(document).on('click', '#save-profile-socials', async function () {
         custodian
     };
 
-    // ig, tiktok, yt. mivia, custodian must be string, no special characters except for _ and - and . and
+    // Define the allowed username pattern (alphanumeric, _, -, .)
     const usernamePattern = /^[a-zA-Z0-9._-]+$/;
 
-    if (instagram && !usernamePattern.test(instagram)) {
-        showToast('Please enter a valid Instagram username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+    // Define a function to strip '@' from the start of a username
+    function cleanUsername(username) {
+        return username.startsWith('@') ? username.substring(1) : username;
+    }
+
+    // Clean and validate Instagram username
+    if (instagram) {
+        instagram = cleanUsername(instagram);
+        links.instagram = instagram;
+
+        if (!usernamePattern.test(instagram)) {
+            showToast('Please enter a valid Instagram username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+            return;
+        }
+    }
+
+    // Clean and validate TikTok username
+    if (tiktok) {
+        tiktok = cleanUsername(tiktok);
+        links.tiktok = tiktok;
+
+        if (!usernamePattern.test(tiktok)) {
+            showToast('Please enter a valid TikTok username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+            return;
+        }
+    }
+
+    // Clean and validate YouTube username
+    if (youtube) {
+        youtube = cleanUsername(youtube);
+        links.youtube = youtube;
+
+        if (!usernamePattern.test(youtube)) {
+            showToast('Please enter a valid YouTube username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+            return;
+        }
+    }
+
+    // Clean and validate Mivia username
+    if (mivia) {
+        mivia = cleanUsername(mivia);
+        links.mivia = mivia;
+
+        if (!usernamePattern.test(mivia)) {
+            showToast('Please enter a valid Mivia username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+            return;
+        }
+    }
+
+    // Allow URL with "https://" for Custodian and validate it
+    const urlPattern = /^https:\/\/[\da-z\.-]+\.[a-z]{2,6}\/?$/;
+    // Allow any URL that starts with "https://"
+    if (custodian && !custodian.startsWith('https://')) {
+        showToast('Please enter a valid Custodian URL that starts with https://', 'Error');
         return;
     }
 
-    if (tiktok && !usernamePattern.test(tiktok)) {
-        showToast('Please enter a valid TikTok username (letters, numbers, underscores, periods, hyphens only)', 'Error');
-        return;
+    // Clean and validate Facebook username
+    if (facebook) {
+        facebook = cleanUsername(facebook);
+        links.facebook = facebook;
+
+        if (!usernamePattern.test(facebook)) {
+            showToast('Please enter a valid Facebook username (letters, numbers, underscores, periods, hyphens only)', 'Error');
+            return;
+        }
     }
 
-    if (youtube && !usernamePattern.test(youtube)) {
-        showToast('Please enter a valid YouTube username (letters, numbers, underscores, periods, hyphens only)', 'Error');
-        return;
-    }
-
-    if (mivia && !usernamePattern.test(mivia)) {
-        showToast('Please enter a valid Mivia username (letters, numbers, underscores, periods, hyphens only)', 'Error');
-        return;
-    }
-
-    if (custodian && !usernamePattern.test(custodian)) {
-        showToast('Please enter a valid Custodian username (letters, numbers, underscores, periods, hyphens only)', 'Error');
-        return;
-    }
-
-
-
-    // facebook must be a valid facebook url
-    const urlPattern = /^(https?:\/\/|www\.)[\da-z\.-]+\.[a-z]{2,6}\/?$/;
-    if (facebook && !usernamePattern.test(facebook)) {
-        showToast('Please enter a valid Facebook username (letters, numbers, underscores, periods, hyphens only)', 'Error');
-        return;
-    }
 
     // check if the request data is the same as userdata
     let dirtied = false;

@@ -40,16 +40,23 @@ const renderResult = (result) => {
     }
 
     if (!result.available) {
+        var view = app.views.current
+
+        if (result.data && result.data.linked_to != user?.id) {
+            view.router.navigate(`/profile-view/${result.data.linked_to}`)
+            return;
+        }
+
         return (
             `
         <h2 class="text-center">Sorry, this QR code is already linked</h2>
         ${result.data && result.data.linked_to == user?.id ? (
-        `<button id="unlink-profile"
+                `<button id="unlink-profile"
           onClick={handleUnlink}
         >
           Unlink Profile
         </button>`
-      ) : '  '}
+            ) : '  '}
       `
         )
     }
@@ -129,8 +136,8 @@ export function openQRModal() {
     html5QrCode = new Html5Qrcode("reader")
 
     html5QrCode?.start({
-            facingMode: "environment"
-        },
+        facingMode: "environment"
+    },
         defaultConfig,
         onScanSuccess,
         onScanFailure

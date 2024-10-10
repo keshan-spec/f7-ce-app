@@ -368,7 +368,6 @@ async function maybeRedirectToProfile(qrCode) {
 
 // Function to parse query parameters from the URL
 function getQueryParameter(name, url) {
-
   const urlParams = new URLSearchParams(url || window.location.search)
   return urlParams.get(name)
 }
@@ -427,7 +426,6 @@ export function onBackKeyDown() {
     return false
   }
 }
-
 
 function onPostUpload() {
   store.dispatch('getMyPosts', {
@@ -496,11 +494,11 @@ var actionSheet = app.actions.create({
       }
     },
     {
-      text: '<div class="actions-grid-item">Add Vehicle</div>',
+      text: '<div class="actions-grid-item">My Vehicles</div>',
       icon: '<img src="assets/img/icon-vehicle-add.svg" width="48" style="max-width: 100%;"/>',
       onClick: function () {
         var view = app.views.current
-        view.router.navigate('/profile-garage-vehicle-add/');
+        view.router.navigate('/profile-garage-edit/');
       }
     }
     ],
@@ -515,24 +513,15 @@ new Swiper('.swiper-container', {
   },
 })
 
-//Comments Popup
-// app.popup.create({
-//   el: '.comments-popup',
-//   swipeToClose: 'to-bottom'
-// })
-
-//Share Popup
 app.popup.create({
   el: '.share-popup',
   swipeToClose: 'to-bottom'
 })
 
-//Share Popup
 app.popup.create({
   el: '.edit-post-popup',
   swipeToClose: 'to-bottom'
 })
-
 
 $(document).on('click', '#open-action-sheet', function () {
   actionSheet.open()
@@ -935,7 +924,6 @@ $(document).on('click', '#forgot-password', function (e) {
   // open the url in a new tab
   window.open($(this).attr('href'), '_blank')
 })
-
 
 // SSO with CarEvents
 $(document).on('click', '#sso-ce-button', function (e) {

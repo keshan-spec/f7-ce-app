@@ -255,7 +255,7 @@ function createNotificationItem(notification, user) {
     if (notification.type === 'follow') {
         const isFollowing = user.following.includes(notification.entity.user_id);
         if (!isFollowing) {
-            let followBtn = `<div class="btn btn-primary btn-sm ${!isFollowing ? 'toggle-follow' : ''}" data-is-following="${isFollowing}" data-user-id="${notification.entity.user_id}">
+            let followBtn = `<div class="btn btn-primary btn-sm toggle-follow" data-is-following="${isFollowing}" data-user-id="${notification.entity.user_id}">
                 Follow
             </div>`;
             container.innerHTML += followBtn;
@@ -304,6 +304,11 @@ function createNotificationItem(notification, user) {
 $(document).on('click', '.toggle-follow', async function (e) {
     const userId = e.target.dataset.userId;
     const isFollowing = e.target.dataset.isFollowing === 'true';
+
+    if (!isFollowing) {
+        // hide the button
+        e.target.style.display = 'none';
+    }
 
     // update the button text
     e.target.textContent = isFollowing ? 'Follow' : 'Unfollow';
