@@ -22,6 +22,7 @@ import {
   fetchPosts,
   getPostsForUser
 } from './api/posts.js'
+import { getFollowersForUser } from './api/profile.js'
 
 var createStore = Framework7.createStore
 
@@ -139,8 +140,14 @@ const store = createStore({
     notificationCount: 0,
     poorNetworkError: false,
     trendingVehicles: DEFAULT_PAGINATED_DATA,
+    myFollowers: [],
   },
   getters: {
+    myFollowers({
+      state
+    }) {
+      return state.myFollowers
+    },
     getTrendingVehicles({
       state
     }) {
@@ -273,6 +280,17 @@ const store = createStore({
     },
   },
   actions: {
+    async fetchMyFollowers({
+      state
+    }) {
+      try {
+        const followers = await getFollowersForUser(state.user.id)
+        state.myFollowers = followers
+      } catch (error) {
+        console.error('Failed to fetch followers', error)
+        state.myFollowers = []
+      }
+    },
     updatePost({
       state
     }, {
@@ -684,8 +702,6 @@ const store = createStore({
       reset = false
     }) {
       try {
-        console.log('Fetching posts', page, reset);
-
         const posts = await fetchPosts(page)
 
         if (reset) {

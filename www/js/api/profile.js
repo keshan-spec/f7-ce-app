@@ -245,3 +245,44 @@ export const approvePostTag = async (tagId) => {
     const data = await response.json();
     return data;
 }
+
+export const getFollowersForUser = async (profileId) => {
+    const user = await getSessionUser();
+    if (!user || !user.id) {
+        return null;
+    }
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/get-followers`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            user_id: profileId
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+}
+
+export const removeFollower = async (followerId) => {
+    const user = await getSessionUser();
+    if (!user || !user.id) {
+        return null;
+    }
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/remove-follower`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            follower_id: followerId,
+            user_id: user.id
+        }),
+    });
+
+    const data = await response.json();
+    return data;
+}

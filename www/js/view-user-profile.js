@@ -6,11 +6,13 @@ import {
     getUserGarage
 } from "./api/garage.js"
 import {
+    getFollowersForUser,
     maybeFollowUser
 } from "./api/profile.js"
 import app from "./app.js"
 import {
     createGarageContent,
+    displayFollowers,
     displayProfile,
     fillGridWithPosts
 } from "./profile.js"
@@ -106,7 +108,6 @@ async function renderProfileData(cachedData, userId) {
 
     if (!cachedData) {
         const data = await getUserById(userId)
-        console.log('User data:', data);
 
         if (!data || data.error) {
             $('.loading-fullscreen').hide()
@@ -124,16 +125,24 @@ async function renderProfileData(cachedData, userId) {
             createGarageContent(garage, '.pview-current-vehicles-list', '.pview-past-vehicles-list')
         }
 
-        // Assuming `path` is a dynamic path like '/garage/2'
+        const followersData = await getFollowersForUser(userId)
+
+        let followers = null
+        if (followersData && followersData.success) {
+            followers = followersData.followers
+        }
+
         store.dispatch('setPathData', {
             path: `/user/${userId}`,
             data: {
                 user: data.user,
                 garage: garage,
+                followers: followers
             },
         })
 
         displayProfile(data.user, 'profile-view')
+        displayFollowers(followers, data.following || [], 'profile-view')
     } else {
         displayProfile(cachedData.user, 'profile-view')
 

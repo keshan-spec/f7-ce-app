@@ -122,6 +122,7 @@ var app = new Framework7({
           if (data && data.id && !data.external_refresh) {
             displayProfile(data, 'profile')
             store.dispatch('getMyGarage')
+            store.dispatch('fetchMyFollowers')
           }
 
           if (data && data.id && !data.refreshed) {
@@ -522,6 +523,20 @@ app.popup.create({
   el: '.edit-post-popup',
   swipeToClose: 'to-bottom'
 })
+
+// Comments Popup
+var CommentsPopup = app.popup.create({
+  el: '.comments-popup',
+  swipeToClose: 'to-bottom',
+  swipeHandler: '.comments-popup .navbar'
+});
+
+// Followers Popup
+var FollowersPopup = app.popup.create({
+  el: '.followers-popup',
+  swipeToClose: 'to-bottom',
+  swipeHandler: '.followers-popup .navbar'
+});
 
 $(document).on('click', '#open-action-sheet', function () {
   actionSheet.open()

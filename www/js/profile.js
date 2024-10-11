@@ -14,10 +14,12 @@ import {
 import {
   sendRNMessage
 } from "./api/consts.js"
+import { removeFollower } from "./api/profile.js"
 var $ = Dom7
 
 var garageStore = store.getters.myGarage
 var myPostsStore = store.getters.myPosts
+var myFollowersStore = store.getters.myFollowers
 var myTagsStore = store.getters.myTags
 var pathStore = store.getters.getPathData
 var userStore = store.getters.user
@@ -52,10 +54,18 @@ export function displayProfile(user, container = 'profile') {
   }
 
   // Profile Head
-  const usernameElem = containerElem.querySelector('.profile-head .profile-username');
-  const nameElem = containerElem.querySelector('.profile-head .profile-name');
+  const usernameElem = containerElem.querySelector('.profile-usernames .profile-username');
+  const nameElem = containerElem.querySelector('.profile-usernames .profile-name');
   if (usernameElem) usernameElem.textContent = `@${user.username}`;
   if (nameElem) nameElem.textContent = `${user.first_name} ${user.last_name}`;
+
+
+  // followers
+  const followerCountElem = containerElem.querySelector('.profile-followers h3');
+  if (followerCountElem) followerCountElem.textContent = user.followers.length || 0;
+
+  const postCountElem = containerElem.querySelector('.profile-posts h3');
+  if (postCountElem) postCountElem.textContent = user.posts_count || 0;
 
   // Profile Image
   const profileImageElem = containerElem.querySelector('.profile-head .profile-image');
@@ -281,6 +291,88 @@ export function fillGridWithPosts(posts, profileGridID, reset = false) {
   })
 }
 
+export function displayFollowers(followersList, userFollowingList, container = 'profile') {
+  const containerElem = document.querySelector(`.page[data-name="${container}"]`);
+  if (!containerElem) {
+    console.error(`Container element with data-name="${container}" not found.`);
+    return;
+  }
+
+  const followersContainer = containerElem.querySelector('.profile-followers-list');
+
+  console.log(followersList);
+
+  if (followersList.length === 0) {
+    followersContainer.innerHTML = `
+      <div class="notification-item">
+        <div class="notification-left">
+          <div class="notification-text">No followers</div>
+        </div>
+      </div>
+    `
+    return
+  }
+
+  followersContainer.innerHTML = '' // Clear the list before adding new followers
+
+  followersList.forEach(follower => {
+    const followerItem = document.createElement('div')
+    followerItem.classList.add('notification-item')
+    followerItem.innerHTML = `
+      <div class="notification-left follower-item">
+        <div class="image-square image-rounded"
+          style="background-image:url('${follower.profile_image || 'assets/img/profile-placeholder.jpg'}')"></div>
+        <div class="notification-info">
+          <div class="notification-text follower-name"><strong>${follower.user_login}</strong></div>
+        </div>
+      </div>
+    `
+
+    if (container === 'profile') {
+      // const isFollowing = userFollowingList.includes(follower.ID)
+
+      // if (isFollowing) {
+      followerItem.innerHTML += `
+        <div class="btn btn-primary btn-sm remove-follower" data-follower-id="${follower.ID}">Remove</div>
+      `
+      // }
+      // else {
+      //   followerItem.innerHTML += `
+      //   <div class="btn btn-primary btn-sm follow-user" data-follower-id="${follower.ID}">Follow</div>
+      // `
+      // }
+    }
+
+    followersContainer.appendChild(followerItem)
+  })
+}
+
+$(document).on('click', '.remove-follower', async function (e) {
+  const followerId = e.target.getAttribute('data-follower-id')
+
+  if (!followerId) return
+
+  try {
+    app.preloader.show()
+
+    const response = await removeFollower(followerId)
+
+    if (!response || !response.success) {
+      throw new Error(response.message || 'Failed to remove follower')
+    }
+
+    app.preloader.hide()
+    showToast('Follower removed successfully')
+
+    // remove the element from the list
+    e.target.parentElement.remove()
+    store.dispatch('updateUserDetails')
+  } catch (error) {
+    app.preloader.hide()
+    showToast(error.message || 'Failed to remove follower')
+  }
+})
+
 userStore.onUpdated((user) => {
   displayProfile(user)
 })
@@ -289,6 +381,11 @@ garageStore.onUpdated((garage) => {
   // clear path data
   store.dispatch('clearPathData')
   createGarageContent(garage, '.current-vehicles-list', '.past-vehicles-list')
+})
+
+myFollowersStore.onUpdated((data) => {
+  const followers = data.followers || []
+  displayFollowers(followers, userStore?.value?.following || [])
 })
 
 myPostsStore.onUpdated((data) => {
@@ -605,10 +702,9 @@ async function updateProfilePage(data) {
       profileLinks.prepend(editLink)
     }
 
-    // $('.garage-add-post').attr('data-garage-id', data.id)
+    $('.garage-add-post').attr('data-garage-id', data.id)
 
     $(document).on('click', '.garage-add-post', async function (e) {
-      return;
       const garageId = $(this).attr('data-garage-id')
 
       if (!garageId) {
@@ -1050,7 +1146,7 @@ $(document).on('click', '#submit-add-vehicle-form', async function (e) {
     app.preloader.hide()
 
     store.dispatch('getMyGarage')
-    app.dialog.alert('Vehicle added successfully')
+    showToast('Vehicle added successfully')
 
     // redirect to garage
     view.router.back(`/profile-garage-vehicle-view/${response.id}`, {
@@ -1059,10 +1155,11 @@ $(document).on('click', '#submit-add-vehicle-form', async function (e) {
   } catch (error) {
     app.preloader.hide()
 
-    app.notification.create({
-      titleRightText: 'now',
-      subtitle: 'Oops, something went wrong',
-      text: error.message || 'Failed to add vehicle',
-    }).open()
+    showToast(error.message || 'Failed to add vehicle')
+    // app.notification.create({
+    //   titleRightText: 'now',
+    //   subtitle: 'Oops, something went wrong',
+    //   text: error.message || 'Failed to add vehicle',
+    // }).open()
   }
 })

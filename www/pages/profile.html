@@ -31,10 +31,27 @@
         <div class="ptr-arrow"></div>
       </div>
       <div class="profile-background" style="background-color: gray;"></div>
+
       <div class="profile-head">
         <div class="profile-image" style="background-color: gray;"></div>
-        <h3 class="name profile-username">@</h3>
-        <h5 class="subtext profile-name"></h5>
+        <div class="profile-user-info">
+          <div class="profile-usernames">
+            <h3 class="name profile-username">@</h3>
+            <h5 class="subtext profile-name"></h5>
+          </div>
+
+
+          <div class="profile-followers popup-open" data-popup=".followers-popup">
+            <h3></h3>
+            <h5 class="subtext">Followers</h5>
+          </div>
+
+          <div class="profile-posts">
+            <h3></h3>
+            <h5 class="subtext">Posts</h5>
+          </div>
+          <div class="clearfix"></div>
+        </div>
       </div>
 
       <div class="profile-links">
@@ -167,5 +184,37 @@
       </div>
     </div>
     <!-- * Edit Profile Slider -->
+
+    <!-- Followers Slider -->
+    <div class="popup followers-popup three-quarter-popup">
+      <div class="page">
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="title">Followers</div>
+            <div class="right">
+              <!-- Link to close popup -->
+              <a class="link popup-close"><i class="icon f7-icons">xmark</i></a>
+            </div>
+          </div>
+        </div>
+        <div class="page-content">
+          <div class="notification-list profile-followers-list">
+            <!-- Follower -->
+            <div class="notification-item">
+              <div class="notification-left follower-item">
+                <div class="image-square image-rounded"
+                  style="background-image:url('assets/img/profile-placeholder.jpg')"></div>
+                <div class="notification-info">
+                  <div class="notification-text follower-name"><strong></strong></div>
+                </div>
+              </div>
+              <div class="btn btn-primary btn-sm remove-follower">Remove</div>
+            </div>
+            <!-- * Follower -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- * Followers Slider -->
   </div>
 </template>
