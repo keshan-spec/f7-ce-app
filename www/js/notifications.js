@@ -76,8 +76,6 @@ userStore.onUpdated((data) => {
 })
 
 notificationsStore.onUpdated(async (data) => {
-    console.log(data);
-
     if (data.success) {
         const notifications = data.data
 

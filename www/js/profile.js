@@ -300,8 +300,6 @@ export function displayFollowers(followersList, userFollowingList, container = '
 
   const followersContainer = containerElem.querySelector('.profile-followers-list');
 
-  console.log(followersList);
-
   if (followersList.length === 0) {
     followersContainer.innerHTML = `
       <div class="notification-item">
