@@ -36,9 +36,6 @@ var refreshed = false
 //screen width
 var containerWidth = window.innerWidth
 
-// Store initialized player instances to avoid multiple initializations
-var initializedPlayers = new Set();
-
 // Function to pause all videos
 function pauseAllVideos() {
   var videos = document.querySelectorAll('video.video-js');
@@ -49,6 +46,22 @@ function pauseAllVideos() {
 
 export function loadVideos() {
   var videos = document.querySelectorAll('video.video-js');
+
+  // Function to clean up video elements
+  function cleanUpVideo(video) {
+    var hlsInstance = video.hls; // Store HLS instance
+    if (hlsInstance) {
+      hlsInstance.destroy(); // Destroy the HLS instance
+    }
+    video.pause(); // Pause the video
+    video.src = ''; // Clear the source
+    video.load(); // Load the video element
+  }
+
+  // Clean up existing videos
+  videos.forEach(function (video) {
+    cleanUpVideo(video);
+  });
 
   // Function to resume videos if needed (optional)
   function playVisibleVideos() {
@@ -67,10 +80,8 @@ export function loadVideos() {
   // Listen for visibility change
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
-      // Pause all videos when the user changes tabs or minimizes
       pauseAllVideos();
     } else {
-      // Optionally resume videos if visible
       playVisibleVideos();
     }
   });
@@ -83,11 +94,14 @@ export function loadVideos() {
       var hls = new Hls();
       hls.loadSource(videoSrc);
       hls.attachMedia(video);
+      video.hls = hls; // Store HLS instance on the video element
       hls.on(Hls.Events.MANIFEST_PARSED, function () {
+        // Ready to play
       });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = videoSrc;
       video.addEventListener('loadedmetadata', function () {
+        // Ready to play
       });
     }
 
@@ -113,6 +127,73 @@ export function loadVideos() {
     });
   });
 }
+
+// export function loadVideos() {
+//   var videos = document.querySelectorAll('video.video-js');
+
+//   // Function to resume videos if needed (optional)
+//   function playVisibleVideos() {
+//     videos.forEach(function (video) {
+//       var observer = new IntersectionObserver(function (entries) {
+//         entries.forEach(function (entry) {
+//           if (entry.isIntersecting) {
+//             video.play();
+//           }
+//         });
+//       }, { threshold: 0.5 });
+//       observer.observe(video);
+//     });
+//   }
+
+//   // Listen for visibility change
+//   document.addEventListener('visibilitychange', function () {
+//     if (document.hidden) {
+//       // Pause all videos when the user changes tabs or minimizes
+//       pauseAllVideos();
+//     } else {
+//       // Optionally resume videos if visible
+//       playVisibleVideos();
+//     }
+//   });
+
+//   // Loop through each video element
+//   videos.forEach(function (video) {
+//     var videoSrc = video.getAttribute('data-src');
+
+//     if (Hls.isSupported()) {
+//       var hls = new Hls();
+//       hls.loadSource(videoSrc);
+//       hls.attachMedia(video);
+//       hls.on(Hls.Events.MANIFEST_PARSED, function () {
+//       });
+//     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+//       video.src = videoSrc;
+//       video.addEventListener('loadedmetadata', function () {
+//       });
+//     }
+
+//     // Set up IntersectionObserver to pause/play videos based on visibility
+//     var observer = new IntersectionObserver(function (entries) {
+//       entries.forEach(function (entry) {
+//         if (entry.isIntersecting) {
+//           video.play();
+//         } else {
+//           video.pause();
+//         }
+//       });
+//     }, { threshold: 0.5 });
+
+//     observer.observe(video);
+
+//     video.addEventListener('play', function () {
+//       video.removeAttribute('controls'); // Hide controls
+//     });
+
+//     video.addEventListener('click', function () {
+//       video.setAttribute('controls', 'controls');
+//     });
+//   });
+// }
 
 postsStore.onUpdated(async (data) => {
   totalPostPages = data.total_pages
@@ -356,21 +437,17 @@ async function displayPosts(posts, following = false) {
       return `
           <swiper-slide class="swiper-slide post-media ${mediaItem.media_type === 'video' ? 'video' : ''}" style="height: ${imageHeight}px; ">
                     ${mediaItem.media_type === 'video' ?
-          // `<video 
-          //     style="height: ${imageHeight}px;" 
-          //     class="video-js" 
-          //     data-src="${mediaItem.media_url}/manifest/video.m3u8" 
-          //     preload="auto" 
-          //     playsinline 
-          //     loop 
-          //     controls 
-          //     autoplay 
-          //     poster="${mediaItem.media_url}/thumbnails/thumbnail.jpg"
-          //   ></video>`
-          `<div id="player-${post.id}-${index}" class="playerjs-player" style="height: ${imageHeight}px;"
-          data-src="${mediaItem.media_url}/manifest/video.mpd"
-          data-poster="${mediaItem.media_url}/thumbnails/thumbnail.jpg"
-          ></div>`
+          `<video 
+              style="height: ${imageHeight}px;" 
+              class="video-js" 
+              data-src="${mediaItem.media_url}/manifest/video.m3u8" 
+              preload="auto" 
+              playsinline 
+              loop 
+              controls 
+              autoplay 
+              poster="${mediaItem.media_url}/thumbnails/thumbnail.jpg"
+            ></video>`
           : `<img src="${mediaItem.media_url}" 
                   alt="${mediaItem.caption || post.username + 's post'}"
                   style="text-align: center;"
@@ -394,67 +471,7 @@ async function displayPosts(posts, following = false) {
     postsContainer.append(postItem);
   });
 
-
-  // Loop through all the video elements and initialize PlayerJS instances
-  document.querySelectorAll('.playerjs-player').forEach(function (element) {
-    // Check if this element has already been initialized
-    if (!initializedPlayers.has(element.id)) {
-      // Ensure each element has a valid ID and data attributes
-      if (element && element.dataset.src && element.dataset.poster) {
-        // Initialize the PlayerJS instance for each element
-        var player = new Playerjs({
-          id: element.id,   // Unique element ID
-          file: element.dataset.src,  // Video source URL
-          poster: element.dataset.poster,  // Poster image
-          hls: 1,  // Enable HLS
-          autoplay: 1,  // Autoplay when in view
-          loop: 1,  // Loop the video
-          muted: 0,  // Not muted
-          width: "100%",
-          aspectratio: "16:9",
-          controls: 0,  // Show controls if needed
-          display: {
-            settings: false,
-            timeline: false,
-            fullscreen: false,
-            volume: true,
-            playback: true,
-            captions: true,
-            speed: true
-          }
-        });
-
-        // Add this element to the set of initialized players
-        initializedPlayers.add(element.id);
-
-        // Optional: Debugging to see the player instance
-        console.log('Player initialized for:', element.id, player);
-
-        // Set up IntersectionObserver to play/pause videos based on visibility
-        var observer = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              // Play the video when it's in view
-              player.api('play');
-            } else {
-              // Pause the video when it's out of view
-              player.api('pause');
-            }
-          });
-        }, { threshold: 0.5 });  // Video plays when 50% visible
-
-        // Observe the current element (video)
-        observer.observe(element);
-      } else {
-        console.error('Missing ID, data-src, or data-poster for element:', element);
-      }
-    } else {
-      console.warn(`Player already initialized for element: ${element.id}`);
-    }
-  });
-
-
-  // loadVideos()
+  loadVideos()
 }
 
 export function togglePostLike(postId, single = false) {
