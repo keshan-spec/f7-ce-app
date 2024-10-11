@@ -459,7 +459,10 @@ background-position: center;
 	font-weight: 600;
 }
 
-
+.button-grey {
+	background-color: #333333;
+	color: #fff;
+}
 
 /* Comments & Comments Popup */
 

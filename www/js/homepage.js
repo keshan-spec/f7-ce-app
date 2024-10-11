@@ -36,6 +36,8 @@ var refreshed = false
 //screen width
 var containerWidth = window.innerWidth
 
+// Store initialized player instances to avoid multiple initializations
+var initializedPlayers = new Set();
 
 // Function to pause all videos
 function pauseAllVideos() {
@@ -351,24 +353,24 @@ async function displayPosts(posts, following = false) {
         preloadImage(mediaItem.media_url)
       }
 
-      // // create a url encoded string for the media url
-      // const videoThumbnail = mediaItem.media_type === 'video' ?
-      //   encodeURIComponent(`${mediaItem.media_url}/thumbnails/thumbnail.jpg`) : '';
-
       return `
           <swiper-slide class="swiper-slide post-media ${mediaItem.media_type === 'video' ? 'video' : ''}" style="height: ${imageHeight}px; ">
                     ${mediaItem.media_type === 'video' ?
-          `<video 
-              style="height: ${imageHeight}px;" 
-              class="video-js" 
-              data-src="${mediaItem.media_url}/manifest/video.m3u8" 
-              preload="auto" 
-              playsinline 
-              loop 
-              controls 
-              autoplay 
-              poster="${mediaItem.media_url}/thumbnails/thumbnail.jpg"  <!-- Add the thumbnail as the poster image -->
-            ></video>`
+          // `<video 
+          //     style="height: ${imageHeight}px;" 
+          //     class="video-js" 
+          //     data-src="${mediaItem.media_url}/manifest/video.m3u8" 
+          //     preload="auto" 
+          //     playsinline 
+          //     loop 
+          //     controls 
+          //     autoplay 
+          //     poster="${mediaItem.media_url}/thumbnails/thumbnail.jpg"
+          //   ></video>`
+          `<div id="player-${post.id}-${index}" class="playerjs-player" style="height: ${imageHeight}px;"
+          data-src="${mediaItem.media_url}/manifest/video.mpd"
+          data-poster="${mediaItem.media_url}/thumbnails/thumbnail.jpg"
+          ></div>`
           : `<img src="${mediaItem.media_url}" 
                   alt="${mediaItem.caption || post.username + 's post'}"
                   style="text-align: center;"
@@ -392,7 +394,67 @@ async function displayPosts(posts, following = false) {
     postsContainer.append(postItem);
   });
 
-  loadVideos()
+
+  // Loop through all the video elements and initialize PlayerJS instances
+  document.querySelectorAll('.playerjs-player').forEach(function (element) {
+    // Check if this element has already been initialized
+    if (!initializedPlayers.has(element.id)) {
+      // Ensure each element has a valid ID and data attributes
+      if (element && element.dataset.src && element.dataset.poster) {
+        // Initialize the PlayerJS instance for each element
+        var player = new Playerjs({
+          id: element.id,   // Unique element ID
+          file: element.dataset.src,  // Video source URL
+          poster: element.dataset.poster,  // Poster image
+          hls: 1,  // Enable HLS
+          autoplay: 1,  // Autoplay when in view
+          loop: 1,  // Loop the video
+          muted: 0,  // Not muted
+          width: "100%",
+          aspectratio: "16:9",
+          controls: 0,  // Show controls if needed
+          display: {
+            settings: false,
+            timeline: false,
+            fullscreen: false,
+            volume: true,
+            playback: true,
+            captions: true,
+            speed: true
+          }
+        });
+
+        // Add this element to the set of initialized players
+        initializedPlayers.add(element.id);
+
+        // Optional: Debugging to see the player instance
+        console.log('Player initialized for:', element.id, player);
+
+        // Set up IntersectionObserver to play/pause videos based on visibility
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              // Play the video when it's in view
+              player.api('play');
+            } else {
+              // Pause the video when it's out of view
+              player.api('pause');
+            }
+          });
+        }, { threshold: 0.5 });  // Video plays when 50% visible
+
+        // Observe the current element (video)
+        observer.observe(element);
+      } else {
+        console.error('Missing ID, data-src, or data-poster for element:', element);
+      }
+    } else {
+      console.warn(`Player already initialized for element: ${element.id}`);
+    }
+  });
+
+
+  // loadVideos()
 }
 
 export function togglePostLike(postId, single = false) {

@@ -229,6 +229,7 @@
 }
 .post-media.video {
     max-height: 750px;
+    display: block;
 }
 
 .post-media img {
