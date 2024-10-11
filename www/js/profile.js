@@ -153,6 +153,24 @@ export function displayProfile(user, container = 'profile') {
     linksList.innerHTML = ''; // Clear any existing links
 
     if (externalLinks.length > 0) {
+
+      if (profileLinks.custodian) {
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = profileLinks.custodian;
+        link.target = '_blank';
+
+        link.onclick = (e) => {
+          e.preventDefault();
+          const url = new URL(profileLinks.custodian);
+          window.open(url, '_blank');
+        }
+
+        link.textContent = 'Custodian Garage / Car Link';
+        listItem.appendChild(link);
+        linksList.appendChild(listItem);
+      }
+
       externalLinks.forEach(linkObj => {
         const listItem = document.createElement('li');
         const link = document.createElement('a');
@@ -160,6 +178,13 @@ export function displayProfile(user, container = 'profile') {
 
         link.target = '_blank';
         link.textContent = linkObj.link.label;
+
+        link.onclick = (e) => {
+          e.preventDefault();
+          const url = new URL(linkObj.link.url);
+          window.open(url, '_blank');
+        }
+
         listItem.appendChild(link);
         linksList.appendChild(listItem);
       });
@@ -316,8 +341,9 @@ export function displayFollowers(followersList, userFollowingList, container = '
   followersList.forEach(follower => {
     const followerItem = document.createElement('div')
     followerItem.classList.add('notification-item')
+
     followerItem.innerHTML = `
-      <div class="notification-left follower-item">
+      <div class="notification-left ${container == 'profile' ? 'follower-item' : ''}" data-url="/profile-view/${follower.ID}">
         <div class="image-square image-rounded"
           style="background-image:url('${follower.profile_image || 'assets/img/profile-placeholder.jpg'}')"></div>
         <div class="notification-info">
@@ -344,6 +370,25 @@ export function displayFollowers(followersList, userFollowingList, container = '
     followersContainer.appendChild(followerItem)
   })
 }
+
+
+$(document).on('click', '.follower-item', async function (e) {
+  const view = app.views.current
+
+  const url = this.getAttribute('data-url')
+  console.log(url);
+
+  if (!url) return
+
+  // hide the comments popup
+  app.popup.close()
+  e.preventDefault()
+
+  view.router.navigate(url, {
+    force: true
+  })
+
+})
 
 $(document).on('click', '.remove-follower', async function (e) {
   const followerId = e.target.getAttribute('data-follower-id')
@@ -699,6 +744,16 @@ async function updateProfilePage(data) {
     if (data.owner_id == user.id) {
       profileLinks.prepend(editLink)
     }
+
+
+    if (data.owner_id != user.id) {
+      if (data.allow_tagging != "1") {
+        $('.garage-add-post').hide()
+      }
+
+      $('.garage-add-post').text('Tag this vehicle')
+    }
+
 
     $('.garage-add-post').attr('data-garage-id', data.id)
 
