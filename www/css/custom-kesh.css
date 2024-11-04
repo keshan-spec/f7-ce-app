@@ -26,7 +26,7 @@
     z-index: 9999;
 }
 
-.init-loader.light{
+.init-loader.light {
     background-color: rgba(255, 255, 255, 0.5);
 }
 
@@ -173,12 +173,12 @@
     object-fit: cover;
 }
 
-#category-filters ul{
+#category-filters ul {
     overflow-y: scroll;
     max-height: 66vh;
 }
 
-.custom-file-upload span{
+.custom-file-upload span {
     display: block;
     font-size: 15px;
     z-index: -2;
@@ -198,20 +198,20 @@
     border-radius: 0;
 }
 
-.custom-file-upload label{
+.custom-file-upload label {
     z-index: 2;
 }
 
 .hidden {
-  display: none;
+    display: none;
 }
 
 .media-post-readmore {
-  color: blue;
-  cursor: pointer;
+    color: blue;
+    cursor: pointer;
 }
 
-.media-post-readmore{
+.media-post-readmore {
     display: inline !important;
 }
 
@@ -227,6 +227,7 @@
     align-items: center;
     background: #e7e7e7;
 }
+
 .post-media.video {
     max-height: 750px;
     display: block;
@@ -249,12 +250,12 @@
     /* z-index: ; */
 }
 
-.post-media.video::before{
+.post-media.video::before {
     display: none;
 }
 
 .replying-to {
-     position: absolute;
+    position: absolute;
     top: -28px;
     left: 11px;
     background-color: #e4e4e4;
@@ -264,21 +265,21 @@
     font-size: 13px;
 }
 
-#comment-form{
+#comment-form {
     min-height: 50px;
     position: relative;
 }
 
-.skeleton-block{
+.skeleton-block {
     border-radius: 12px;
 }
 
- .btn.bg-dark {
-        background-color: #2e2e2e;
-        color: white;
- }
+.btn.bg-dark {
+    background-color: #2e2e2e;
+    color: white;
+}
 
- .w-70 {
+.w-70 {
     width: 70%;
 }
 
@@ -299,17 +300,17 @@
     color: white;
 }
 
-.privacy-statement{
+.privacy-statement {
     font-size: 12px;
     padding: 1rem;
 }
 
 .privacy-popup.popup .page-content,
-.terms-popup.popup .page-content{
+.terms-popup.popup .page-content {
     padding-top: 10px !important;
 }
 
-.unread-notif{
+.unread-notif {
     background-color: #f0f0f0;
 }
 
@@ -319,15 +320,26 @@
 }
 
 @-webkit-keyframes target-fade {
-    0% { background-color: rgba(255,255,153,.8); }
-    100% { background-color: rgba(255,255,153,0); }
-}
-@-moz-keyframes target-fade {
-    0% { background-color: rgba(255,255,153,.8); }
-    100% { background-color: rgba(255,255,153,0); }
+    0% {
+        background-color: rgba(255, 255, 153, .8);
+    }
+
+    100% {
+        background-color: rgba(255, 255, 153, 0);
+    }
 }
 
-.w-full{
+@-moz-keyframes target-fade {
+    0% {
+        background-color: rgba(255, 255, 153, .8);
+    }
+
+    100% {
+        background-color: rgba(255, 255, 153, 0);
+    }
+}
+
+.w-full {
     width: 100%;
 }
 
@@ -339,7 +351,8 @@
     border: 1px solid #ddd;
     max-height: 150px;
     overflow-y: auto;
-    display: none; /* Initially hidden */
+    display: none;
+    /* Initially hidden */
     position: absolute;
     z-index: 999;
     width: 100%;
@@ -359,11 +372,11 @@
     background-color: #f0f0f0;
 }
 
-.searchbar{
+.searchbar {
     position: relative;
 }
 
-.search-history-item{
+.search-history-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -376,111 +389,117 @@
 }
 
 .search-history-item span {
-    flex-grow: 1; /* Makes the search text take up available space */
+    flex-grow: 1;
+    /* Makes the search text take up available space */
     width: 100%;
 }
 
 .search-history-item .delete-history {
     cursor: pointer;
-    color: red; /* You can change this color as needed */
+    color: red;
+    /* You can change this color as needed */
 }
 
 .verification-content {
     text-align: center;
     padding: 20px;
-  }
-  
-  .verification-header h1 {
+}
+
+.verification-header h1 {
     font-size: 24px;
     color: #333;
-  }
-  
-  .verification-loader .preloader {
+}
+
+.verification-loader .preloader {
     /* Your preloader CSS styles */
-  }
-  
-  .verification-message p {
+}
+
+.verification-message p {
     font-size: 16px;
     color: #555;
     margin-top: 20px;
-  }
-  
-  .verification-success {
+}
+
+.verification-success {
     color: #2ecc71;
-  }
-  
-  .verification-error {
+}
+
+.verification-error {
     color: #e74c3c;
-  }
-  
-  .verification-content img{
+}
+
+.verification-content img {
     width: 100%;
     height: 45px;
     object-fit: contain;
     margin: 30px auto;
-  }
+}
 
-  .error-message{
+.error-message {
     color: red;
     font-size: 12px;
     margin: 0px 7px;
-  }
+}
 
-  .email-verification-message {
+.email-verification-message {
     width: 100%;
     background: rgb(255, 255, 255);
     position: absolute;
     top: 50px;
     text-align: center;
-  }
+}
 
-  .email-verification-message p {
+.email-verification-message p {
     font-size: 12px;
     color: #333;
-  }
+}
 
-  .profile-landing-page .profile-head.email-not-verified {
+.profile-landing-page .profile-head.email-not-verified {
     padding: 68px 0 0 0 !important;
-  }
+}
 
-  .button-icon{
+.button-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    max-width:  35px;
+    max-width: 35px;
     margin-right: 10px;
-  }
+}
 
-  #sso-ce-button{
+#sso-ce-button {
     text-transform: none;
     background-color: #101010;
-  }
+}
 
-  .swiper-pagination-bullet {
+.swiper-pagination-bullet {
     background: #e0e0e0;
-  }
+}
 
 
-.swiper-pagination-bullet.swiper-pagination-bullet-active{
+.swiper-pagination-bullet.swiper-pagination-bullet-active {
     background: #ae9159 !important;
-  }
+}
 
-  .load-more-notifications{
+.load-more-notifications {
     margin: 1rem auto;
     width: 90%;
     display: flex;
     justify-content: center;
-  }
+}
 
-  .load-more-notifications.hidden {
+.load-more-notifications.hidden {
     display: none;
-  }
+}
 
 
-  .mt-12 {
+.mt-12 {
     margin-top: 20px;
-  }
+}
 
-  .w-100 {
+.w-100 {
     width: 88%;
-  }
+}
+
+.hidden {
+    display: none !important;
+}

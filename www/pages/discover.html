@@ -48,8 +48,8 @@
 
                 <div class="tabbar-nav pt-1">
                     <ul>
-                        <li><a href="#featured" class="tab-link tab-link-active" data-id="featured">Featured</a></li>
-                        <li><a href="#events" class="tab-link" data-id="events">Events</a></li>
+                        <!-- <li><a href="#featured" class="tab-link" data-id="featured">Featured</a></li> -->
+                        <li><a href="#events" class="tab-link  tab-link-active" data-id="events">Events</a></li>
                         <li><a href="#venues" class="tab-link" data-id="venues">Venues</a></li>
                         <li><a href="#users" class="tab-link" data-id="users">Users</a></li>
                         <li><a href="#vehicles" class="tab-link" data-id="vehicles">Vehicles</a></li>
@@ -58,7 +58,7 @@
 
                 <div class="container mt-15 mb-15">
                     <div class="tabs">
-                        <div class="tab tab-active" id="featured">
+                        <div class="tab hidden" id="featured">
                             <div class="featured-section">
                                 <swiper-container slides-per-view="1" loop="true">
                                     <swiper-slide>
@@ -98,7 +98,7 @@
                             </div>
                         </div>
 
-                        <div class="tab" id="events">
+                        <div class="tab tab-active" id="events">
                             <div class="filter-bar mb-2">
                                 <div class="filter-item popup-open" data-popup=".filter-bydate-popup">
                                     <span>Date</span>

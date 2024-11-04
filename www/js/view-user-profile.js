@@ -38,15 +38,6 @@ $(document).on('page:init', '.page[data-name="profile-view"]', async function (e
     isFetchingPosts = false
     refreshed = false
 
-    store.dispatch('getUserPosts', {
-        user_id: userId,
-        clear: true
-    })
-
-    store.dispatch('getUserTags', {
-        user_id: userId,
-        clear: true
-    })
 })
 
 $(document).on('page:beforein', '.page[data-name="profile-view"]', async function (e) {
@@ -83,6 +74,17 @@ $(document).on('page:beforein', '.page[data-name="profile-view"]', async functio
     }
 
     await renderProfileData(cachedData, userId)
+
+    
+    store.dispatch('getUserPosts', {
+        user_id: userId,
+        clear: true
+    })
+
+    store.dispatch('getUserTags', {
+        user_id: userId,
+        clear: true
+    })
 })
 
 $(document).on('click', '.user-follow-btn', async function () {
@@ -119,6 +121,10 @@ async function renderProfileData(cachedData, userId) {
             return
         }
 
+        displayProfile(data.user, 'profile-view')
+        
+        $('.loading-fullscreen').hide()
+
         const garage = await getUserGarage(userId)
 
         if (garage) {
@@ -141,7 +147,6 @@ async function renderProfileData(cachedData, userId) {
             },
         })
 
-        displayProfile(data.user, 'profile-view')
         displayFollowers(followers, data.following || [], 'profile-view')
     } else {
         displayProfile(cachedData.user, 'profile-view')
