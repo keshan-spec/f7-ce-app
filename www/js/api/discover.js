@@ -16,6 +16,12 @@ import {
 export const getDiscoverData = async (search, type, page = 1, signal) => {
     const user = await getSessionUser();
 
+    if (!user || !user.id) {
+        return null;
+    }
+
+    const site = user?.last_location?.country || 'GB';
+
     const response = await fetch(`${API_URL}/wp-json/app/v1/discover-search`, {
         method: "POST",
         headers: {
@@ -26,7 +32,8 @@ export const getDiscoverData = async (search, type, page = 1, signal) => {
             user_id: user?.id,
             page,
             type,
-            per_page: 10
+            per_page: 10,
+            site
         }),
         signal
     });
@@ -43,6 +50,12 @@ export const fetchEvent = async (eventId) => {
         console.error("Error fetching user no session");
     }
 
+    if (!user || !user.id) {
+        return null;
+    }
+
+    const site = user?.last_location?.country || 'GB';
+
     const response = await fetch(`${API_URL}/wp-json/app/v1/get-event`, {
         cache: "no-cache",
         method: "POST",
@@ -51,7 +64,8 @@ export const fetchEvent = async (eventId) => {
         },
         body: JSON.stringify({
             event_id: eventId,
-            user_id: user?.id
+            user_id: user?.id,
+            site
         }),
     });
 
@@ -134,7 +148,15 @@ export const fetchTrendingVenues = async (page, paginate = false, filters = '{}'
 };
 
 export const fetchEventCats = async () => {
-    const response = await fetch(`${API_URL}/wp-json/app/v1/get-event-categories`, {
+    const user = await getSessionUser();
+
+    if (!user || !user.id) {
+        return null;
+    }
+
+    const site = user?.last_location?.country || 'GB';
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/get-event-categories?site=${site}`, {
         method: "GET",
         cache: "force-cache",
     });
@@ -172,6 +194,7 @@ export const maybeFollowVenue = async (venueId) => {
     if (!user || !user.id) {
         return null;
     }
+    const site = user?.last_location?.country || 'GB';
 
     const response = await fetch(`${API_URL}/wp-json/app/v1/follow-venue`, {
         cache: "no-cache",
@@ -181,7 +204,8 @@ export const maybeFollowVenue = async (venueId) => {
         },
         body: JSON.stringify({
             venue_id: venueId,
-            user_id: user.id
+            user_id: user.id,
+            site
         }),
     });
 
@@ -192,6 +216,12 @@ export const maybeFollowVenue = async (venueId) => {
 export const fetchVenue = async (venueId) => {
     const user = await getSessionUser();
 
+    if (!user || !user.id) {
+        return null;
+    }
+
+    const site = user?.last_location?.country || 'GB';
+
     const response = await fetch(`${API_URL}/wp-json/app/v1/get-venue`, {
         cache: "no-cache",
         method: "POST",
@@ -200,7 +230,8 @@ export const fetchVenue = async (venueId) => {
         },
         body: JSON.stringify({
             venue_id: venueId,
-            user_id: user?.id
+            user_id: user?.id,
+            site
         }),
     });
 

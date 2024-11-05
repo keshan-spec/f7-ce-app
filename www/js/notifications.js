@@ -153,12 +153,30 @@ $(document).on('click', '.load-more-notifications', async function (e) {
     })
 })
 
+// function timeAgo(dateString) {
+//     const now = new Date();
+//     const past = new Date(dateString);
+//     const diffInHours = Math.floor((now - past) / (1000 * 60 * 60));
+//     return diffInHours > 24 ? `${Math.floor(diffInHours / 24)}d ago` : `${diffInHours}h ago`;
+// }
+
 function timeAgo(dateString) {
     const now = new Date();
     const past = new Date(dateString);
-    const diffInHours = Math.floor((now - past) / (1000 * 60 * 60));
-    return diffInHours > 24 ? `${Math.floor(diffInHours / 24)}d ago` : `${diffInHours}h ago`;
+    const diffInMs = now - past;
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMinutes / 60);
+
+    if (diffInMinutes < 60) {
+        return `${diffInMinutes}m ago`;
+    } else if (diffInHours < 24) {
+        return `${diffInHours}h ago`;
+    } else {
+        const diffInDays = Math.floor(diffInHours / 24);
+        return `${diffInDays}d ago`;
+    }
 }
+
 
 function createNotificationItem(notification, user) {
     const isFollow = notification.type === 'follow' ? true : false;
