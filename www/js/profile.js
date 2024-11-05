@@ -1201,8 +1201,7 @@ $(document).on('click', '#submit-add-vehicle-form', async function (e) {
     store.dispatch('getMyGarage')
     showToast('Vehicle added successfully')
 
-    // redirect to garage
-    view.router.back(`/profile-garage-vehicle-view/${response.id}`, {
+    view.router.navigate(`/profile-garage-vehicle-view/${response.id}`, {
       force: true
     })
   } catch (error) {

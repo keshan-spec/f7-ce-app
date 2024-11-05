@@ -259,6 +259,7 @@ $(document).on('infinite', '.infinite-scroll-content.home-page', async function 
 
 $(document).on('page:beforein', '.page[data-name="social"]', function (e) {
   const ptrContent = app.ptr.get('.ptr-content.home-page')
+
   ptrContent.on('refresh', async function () {
     refreshed = true
     const storeName = activeTab === 'following' ? 'getFollowingPosts' : 'getPosts'

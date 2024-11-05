@@ -112,13 +112,19 @@ export const updateUserDetails = async (details, email_changed) => {
     }
 };
 
-export const updateProfileImage = async (image) => {
+export const updateProfileImage = async (image, user_id = null) => {
     const controller = new AbortController()
     const signal = controller.signal
 
     try {
         const user = await getSessionUser();
-        if (!user) return;
+        let userID = user_id;
+
+        if (user && user.id) {
+            userID = user.id;
+        }
+
+        if (!userID) return;
 
         setTimeout(() => {
             controller.abort()
@@ -131,7 +137,7 @@ export const updateProfileImage = async (image) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                user_id: user.id,
+                user_id: userID,
                 image
             }),
             signal
@@ -151,13 +157,19 @@ export const updateProfileImage = async (image) => {
     }
 };
 
-export const updateCoverImage = async (image) => {
+export const updateCoverImage = async (image, user_id = null) => {
     const controller = new AbortController()
     const signal = controller.signal
 
     try {
         const user = await getSessionUser();
-        if (!user) return;
+        let userID = user_id;
+
+        if (user && user.id) {
+            userID = user.id;
+        }
+
+        if (!userID) return;
 
         setTimeout(() => {
             controller.abort()
@@ -169,7 +181,7 @@ export const updateCoverImage = async (image) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                user_id: user.id,
+                user_id: userID,
                 image
             }),
             signal

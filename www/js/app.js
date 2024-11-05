@@ -290,6 +290,14 @@ $(document).on('click', '#goto-app', function (e) {
 
 $(document).on('click', '.start-link', function (e) {
   toolbarEl.style.display = 'block'
+
+  var view = app.views.current
+  var addVehicle = window.localStorage.getItem('addVehicle')
+
+  if (addVehicle) {
+    window.localStorage.removeItem('addVehicle')
+    view.router.navigate('/profile-garage-vehicle-add/');
+  }
 })
 
 $(document).on('mousedown', '.toolbar-bottom a', async function (e) {
@@ -312,7 +320,9 @@ $(document).on('mousedown', '.toolbar-bottom a', async function (e) {
     $('.page-current .page-content').scrollTop(0, 200);
 
     const ptrContent = app.ptr.get('.ptr-content.home-page')
-    ptrContent.refresh()
+    if (ptrContent) {
+      ptrContent.refresh()
+    }
   }
 });
 
@@ -854,7 +864,7 @@ $(document).on('submit', '#interest-selection-form', async function (e) {
 
     app.preloader.hide()
 
-    app.views.main.router.navigate('/signup-complete/')
+    app.views.main.router.navigate('/signup-step5/')
   } catch (error) {
     console.log(error)
     app.dialog.alert('An error occurred, please try again')
@@ -862,8 +872,7 @@ $(document).on('submit', '#interest-selection-form', async function (e) {
   }
 })
 
-// Signup complete
-$(document).on('click', '#signup-complete', async function (e) {
+const handleSignUpComplete = async (onLogin) => {
   const registerData = store.getters.getRegisterData.value
 
   if (!registerData || !registerData.user_id || !registerData.email || !registerData.password) {
@@ -892,15 +901,31 @@ $(document).on('click', '#signup-complete', async function (e) {
       await store.dispatch('login', {
         token: response.token
       })
-      app.views.main.router.navigate('/')
-      $('.start-link').click();
-
-      toolbarEl.style.display = 'block'
+      onLogin()
       return
     }
   } catch (error) {
     app.dialog.alert('Login failed, please try again')
   }
+}
+
+// Signup complete
+$(document).on('click', '#signup-complete', async function (e) {
+  await handleSignUpComplete(() => {
+    app.views.main.router.navigate('/')
+    $('.start-link').click();
+
+    toolbarEl.style.display = 'block'
+  })
+})
+
+$(document).on('click', '#signup-complete-car', async function (e) {
+  await handleSignUpComplete(() => {
+    window.localStorage.setItem('addVehicle', 'true')
+    app.views.main.router.navigate('/')
+
+    $('.start-link').click();
+  })
 })
 
 $(document).on('page:afterin', '.page[data-name="auth"]', function (e) {

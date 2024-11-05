@@ -76,7 +76,7 @@ userStore.onUpdated((data) => {
 })
 
 notificationsStore.onUpdated(async (data) => {
-    if (data.success) {
+    if (data && data?.success) {
         const notifications = data.data
 
         const recentContainer = document.getElementById('recent');

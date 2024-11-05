@@ -330,7 +330,6 @@ $(document).on('click', '#save-profile-images', async function () {
     const cover_image = $('input[name="cover_image"]').prop('files')[0]
     const profile_image = $('input[name="profile_image"]').prop('files')[0]
 
-
     let coverBase64 = null
     let profileBase64 = null
 
@@ -374,6 +373,8 @@ $(document).on('click', '#save-profile-images', async function () {
         }
 
         const responses = await Promise.all(promises)
+        console.log('responses', responses);
+
         app.preloader.hide()
 
         if (responses.every(response => response && response.success)) {
@@ -398,13 +399,90 @@ $(document).on('click', '#save-profile-images', async function () {
     }
 })
 
+$(document).on('click', '#update-profile-images-signup', async function () {
+    const registerData = store.getters.getRegisterData.value
+
+    if (!registerData || !registerData.user_id || !registerData.email || !registerData.password) {
+        app.dialog.alert('An error occurred, please try again')
+        return
+    }
+
+    var view = app.views.current
+
+    const cover_image = $('input[name="cover_image"]').prop('files')[0]
+    const profile_image = $('input[name="profile_image"]').prop('files')[0]
+
+    let coverBase64 = null
+    let profileBase64 = null
+
+    if (cover_image) {
+        // Wrap the FileReader in a Promise to wait for it to complete
+        coverBase64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(cover_image)
+
+            reader.onload = () => resolve(reader.result)
+            reader.onerror = () => reject(new Error('Failed to read image as base64'))
+        })
+    }
+
+    if (profile_image) {
+        // Wrap the FileReader in a Promise to wait for it to complete
+        profileBase64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(profile_image)
+
+            reader.onload = () => resolve(reader.result)
+            reader.onerror = () => reject(new Error('Failed to read image as base64'))
+        })
+    }
+
+    if (!coverBase64 && !profileBase64) {
+        return
+    }
+
+    try {
+        app.preloader.show()
+
+        let promises = []
+
+        if (profileBase64) {
+            promises.push(updateProfileImage(profileBase64, registerData.user_id))
+        }
+
+        if (coverBase64) {
+            promises.push(updateCoverImage(coverBase64, registerData.user_id))
+        }
+
+        const responses = await Promise.all(promises)
+
+        app.preloader.hide()
+
+        if (responses.every(response => response && response.success)) {
+            showToast('Images updated successfully', 'Success')
+            view.router.navigate('/signup-complete/')
+            return
+        }
+
+        if (responses.some(response => response && !response.success)) {
+            throw new Error('Failed to update images')
+        }
+    } catch (error) {
+        app.preloader.hide()
+
+        app.notification.create({
+            titleRightText: 'now',
+            subtitle: 'Oops, something went wrong',
+            text: error.message || 'Failed to update images',
+        }).open()
+    }
+})
+
 $(document).on('change', 'input[name="cover_image"]', function (e) {
     const file = e.target.files[0];
     const reader = new FileReader();
 
     reader.onload = function (event) {
-        console.log($('.custom-file-upload.cover'));
-
         $('.custom-file-upload.cover')
             .find('label')
             .css('background-image', `url('${event.target.result}')`)
@@ -421,8 +499,6 @@ $(document).on('change', 'input[name="profile_image"]', function (e) {
     const reader = new FileReader();
 
     reader.onload = function (event) {
-        console.log($('.custom-file-upload.profile'));
-
         $('.custom-file-upload.profile')
             .find('label')
             .css('background-image', `url('${event.target.result}')`)
