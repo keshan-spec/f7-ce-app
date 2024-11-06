@@ -401,3 +401,28 @@ export const deleteUserAccount = async (password) => {
         }
     }
 }
+
+export async function maybeSetUserLocation(coords) {
+    const user = await getSessionUser()
+    if (!user || !user.id) return
+
+    let data = {
+        coords: {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+        },
+        user_id: user.id,
+    };
+
+    const response = await fetch(`${API_URL}/wp-json/app/v1/update-last-location`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    })
+
+    let json = await response.json();
+    console.log('Response from server: ', json);
+    return json;
+}

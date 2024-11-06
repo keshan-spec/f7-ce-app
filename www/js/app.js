@@ -2,6 +2,7 @@
 import {
   getSessionUser,
   handleSignUp,
+  maybeSetUserLocation,
   updateAboutUserIds,
   updateContentIds,
   updateUsername,
@@ -161,6 +162,20 @@ var app = new Framework7({
   store: store,
   routes: routes,
 })
+
+// get user location, latitude and longitude using browser geolocation
+function getUserLocation() {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      resolve({
+        lat: position.coords.latitude,
+        lon: position.coords.longitude
+      })
+    }, (error) => {
+      reject(error)
+    })
+  })
+}
 
 async function handleSSOSignIn() {
   $('.init-loader').show()
@@ -453,7 +468,7 @@ function onPostUpload() {
 window.onPostUpload = onPostUpload
 window.onAppBackKey = onBackKeyDown
 
-userStore.onUpdated((data) => {
+userStore.onUpdated(async (data) => {
   if (data && data.id && !data.external_refresh && !data.refreshed) {
     store.dispatch('getPosts', {
       page: 1,
@@ -463,6 +478,15 @@ userStore.onUpdated((data) => {
       page: 1,
       reset: true
     })
+
+    const response = await getUserLocation()
+
+    if (response && response.lat && response.lon) {
+      maybeSetUserLocation({
+        latitude: response.lat,
+        longitude: response.lon
+      })
+    }
   }
 })
 
