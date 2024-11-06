@@ -967,6 +967,24 @@ $(document).on('page:afterin', '.page[data-name="signup-step1"]', function (e) {
   })
 });
 
+$(document).on('page:init', '.page[data-name="signup-step4"]', function (e) {
+  const checkBoxes = document.querySelector('#user-interests ul');
+
+  // Event listener for checkbox selection
+  checkBoxes.addEventListener('change', function (e) {
+    const targetCheckbox = e.target;
+
+    // Uncheck all checkboxes except the one that was clicked
+    if (targetCheckbox.type === "checkbox") {
+      [...checkBoxes.querySelectorAll('input[type="checkbox"]')].forEach(checkbox => {
+        if (checkbox !== targetCheckbox) {
+          checkbox.checked = false;
+        }
+      });
+    }
+  });
+});
+
 // logout-button
 $(document).on('click', '.logout-button', async function (e) {
   app.dialog.close()
