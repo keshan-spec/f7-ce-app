@@ -503,3 +503,25 @@
 .hidden {
     display: none !important;
 }
+
+.owner-liked-comment{
+    position: absolute;
+    top: 0;
+    right: -35px;
+    display: flex;
+    align-items: center;
+}
+
+.owner-liked-comment .comment-profile-img{
+    width: 17px;
+    height: 17px;
+    margin: 0px;
+}
+
+.comment-userlogin-link{
+    position: relative;
+}
+
+.owner-liked-comment .f7-icons{
+    font-size: 12px !important;
+}

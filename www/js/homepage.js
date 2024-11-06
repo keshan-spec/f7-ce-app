@@ -562,6 +562,8 @@ function displayComments(comments, postId) {
                   <a href="#" data-url="${reply.user_id == user.id ? '#' : `/profile-view/${reply.user_id}`}" class="${reply.user_id == user.id ? 'view-profile' : ''} comment-profile-img" style="background-image:url('${reply.profile_image || 'assets/img/profile-placeholder.jpg'}');">
                   </a>
 
+
+
                   <div class="comment-content-container">
                     <div class="comment-username">
                       <a href="#" data-url="${reply.user_id == user.id ? '#' : `/profile-view/${reply.user_id}`}" class="${reply.user_id == user.id ? 'view-profile' : 'a'}">
@@ -611,11 +613,18 @@ function displayComments(comments, postId) {
          <a href="#" data-url="${comment.user_id == user.id ? '#' : `/profile-view/${comment.user_id}`}" class="${comment.user_id == user.id ? 'view-profile' : ''} comment-profile-img" 
          style="background-image:url('${comment.profile_image || 'assets/img/profile-placeholder.jpg'}');">
          </a>
+         
         <div class="comment-content-container">
           <div class="comment-username">
-            <a href="#" data-url="${comment.user_id == user.id ? '#' : `/profile-view/${comment.user_id}`}" class="${comment.user_id == user.id ? 'view-profile' : 'a'}">
+            <a href="#" data-url="${comment.user_id == user.id ? '#' : `/profile-view/${comment.user_id}`}" class="${comment.user_id == user.id ? 'view-profile' : 'a'} comment-userlogin-link">
                 ${comment.user_login}
-            </a>
+                ${comment.liked_by_owner ? `
+                  <div class="owner-liked-comment">
+                    <div class="comment-profile-img" style="background-image:url('${comment.owner_profile_image || 'assets/img/profile-placeholder.jpg'}');"></div>
+                    <i class="icon f7-icons text-red">heart_fill</i> 
+                  </div>
+                  `: ''}
+                </a>
             <span class="date">${formatPostDate(comment.comment_date)}</span>
           </div>
           <div class="comment-content">${comment.comment}</div>
