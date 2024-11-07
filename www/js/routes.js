@@ -98,6 +98,10 @@ var routes = [{
   componentUrl: './pages/profile-edit.html?' + v,
 },
 {
+  path: '/app-permissions/',
+  componentUrl: './pages/app-permissions.html?' + v,
+},
+{
   path: '/search/',
   componentUrl: './pages/search.html?' + v,
 },

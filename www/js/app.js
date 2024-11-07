@@ -478,15 +478,6 @@ userStore.onUpdated(async (data) => {
       page: 1,
       reset: true
     })
-
-    // const response = await getUserLocation()
-
-    // if (response && response.lat && response.lon) {
-    //   maybeSetUserLocation({
-    //     latitude: response.lat,
-    //     longitude: response.lon
-    //   })
-    // }
   }
 })
 

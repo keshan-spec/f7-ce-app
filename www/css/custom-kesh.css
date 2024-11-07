@@ -525,3 +525,14 @@
 .owner-liked-comment .f7-icons{
     font-size: 12px !important;
 }
+
+.permission-title{
+    font-size: 1rem !important;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.permission-title .f7-icons{
+    font-size:20px !important;
+}

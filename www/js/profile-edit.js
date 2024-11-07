@@ -5,6 +5,7 @@ import {
     updateUserDetails,
     updateUsername
 } from "./api/auth.js"
+import { sendRNMessage } from "./api/consts.js"
 import {
     addUserProfileLinks,
     removeProfileLink,
@@ -852,3 +853,12 @@ app.dialog.passwordConfirm = function (text, title, callback) {
         ]
     }).open();
 };
+// --------------- End Delete Profile Page ---------------
+
+// --------------- Edit App Permissions Page ---------------
+$(document).on('click', '.update-permissions', async function () {
+    sendRNMessage({
+        type: "openSettings",
+        page: "settings",
+    })
+});
