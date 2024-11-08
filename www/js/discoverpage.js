@@ -151,6 +151,11 @@ function populateVenueCard(data = [], isSwiper = true) {
 function populateUsersCard(data = []) {
     const tabContainer = document.querySelector('#users-tab');
 
+    if (refreshed) {
+        // clear the tab container
+        tabContainer.innerHTML = '';
+    }
+
     data.forEach(user => {
         let linkTo = user.type === 'user' ? `/profile-view/${user.id}` : `/profile-garage-vehicle-view/${user.id}`;
         let title;
@@ -335,15 +340,62 @@ eventCategories.onUpdated((data) => {
 })
 
 trendingVenuesStore.onUpdated((data) => {
-    totalVenuesPages = data.total_pages
+    const tabContainer = document.querySelector('#filtered-venues-tab');
 
-    populateVenueCard(data.data);
+    if (!data || data.data.length === 0) {
+        tabContainer.innerHTML = `
+            <div class="no-venues">
+                <h3>No venues found</h3>
+            </div>
+        `;
+
+        $('.infinite-scroll-preloader.venues-tab').hide()
+        totalVenuesPages = 0
+        return
+    }
+
+    totalVenuesPages = data.total_pages || 0
+
+    if ((totalVenuesPages == data.page) || (totalVenuesPages == 0)) {
+        $('.infinite-scroll-preloader.venues-tab').hide()
+        totalVenuesPages = 0
+    } else {
+        $('.infinite-scroll-preloader.venues-tab').show()
+        totalVenuesPages = data.total_pages
+        populateVenueCard(data.data, false);
+    }
+
+    // totalVenuesPages = data.total_pages
+
+    // populateVenueCard(data.data);
 });
 
 trendingEventsStore.onUpdated((data) => {
-    totalEventPages = data.total_pages
+    const eventsTabContainer = document.querySelector('#filtered-events-tab');
+    if (!data || data.data.length === 0) {
+        eventsTabContainer.innerHTML = `
+            <div class="no-events">
+                <h3>No events found</h3>
+            </div>
+        `;
+        $('.infinite-scroll-preloader.events-tab').hide()
+        return
+    }
 
-    populateEventCard(data.data);
+    totalEventPages = data?.data?.length || 0
+
+    if ((totalEventPages == data.page) || (totalEventPages == 0)) {
+        $('.infinite-scroll-preloader.events-tab').hide()
+        totalEventPages = 0
+    } else {
+        $('.infinite-scroll-preloader.events-tab').show()
+        totalEventPages = data?.data?.length || 0
+        populateEventCard(data.data, false);
+    }
+
+    // totalEventPages = data.total_pages
+
+    // populateEventCard(data.data);
 });
 
 trendingUsersStore.onUpdated((data) => {
@@ -402,7 +454,7 @@ filteredEventsStore.onUpdated((data) => {
         return
     }
 
-    totalEventPages = data.total_pages
+    totalEventPages = data?.data?.length || 0
 
     if ((totalEventPages == data.page) || (totalEventPages == 0) || (data.new_data.length < 10)) {
         $('.infinite-scroll-preloader.events-tab').hide()
