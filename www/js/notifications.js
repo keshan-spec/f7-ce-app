@@ -54,19 +54,19 @@ userStore.onUpdated((data) => {
             notificationInterval = setInterval(() => {
                 refreshed = true
                 store.dispatch('notificationCount')
-                store.dispatch('fetchNotifications', {
-                    load_more: false
-                })
-            }, 60000)
+                // store.dispatch('fetchNotifications', {
+                //     load_more: false
+                // })
+            }, 60000 * 2)
         } else {
             clearInterval(notificationInterval)
             notificationInterval = setInterval(() => {
                 refreshed = true
                 store.dispatch('notificationCount')
-                store.dispatch('fetchNotifications', {
-                    load_more: false
-                })
-            }, 60000)
+                // store.dispatch('fetchNotifications', {
+                //     load_more: false
+                // })
+            }, 60000 * 2) // 2 mins
         }
     }
 
@@ -152,13 +152,6 @@ $(document).on('click', '.load-more-notifications', async function (e) {
         load_more: true
     })
 })
-
-// function timeAgo(dateString) {
-//     const now = new Date();
-//     const past = new Date(dateString);
-//     const diffInHours = Math.floor((now - past) / (1000 * 60 * 60));
-//     return diffInHours > 24 ? `${Math.floor(diffInHours / 24)}d ago` : `${diffInHours}h ago`;
-// }
 
 function timeAgo(dateString) {
     const now = new Date();

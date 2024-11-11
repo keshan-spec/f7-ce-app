@@ -37,10 +37,14 @@ $(document).on('page:init', '.page[data-name="profile-view"]', async function (e
     currentFPostPage = 1
     isFetchingPosts = false
     refreshed = false
-
 })
 
 $(document).on('page:beforein', '.page[data-name="profile-view"]', async function (e) {
+    currentPostPage = 1
+    currentFPostPage = 1
+    isFetchingPosts = false
+    refreshed = false
+
     $('.loading-fullscreen').show()
 
     var pathStore = store.getters.getPathData
