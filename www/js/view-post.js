@@ -140,33 +140,6 @@ export function displayPost(post) {
   loadVideos()
 }
 
-$(document).on('touchstart', '.media-single-post-content .post-media', detectDoubleTapClosure((e) => {
-  const parent = e.closest('.media-post')
-  const postId = parent.getAttribute('data-post-id')
-  const isLiked = parent.getAttribute('data-is-liked') === 'true'
-
-  if (isLiked) {
-    return
-  }
-
-  togglePostLike(postId, true)
-
-  var pathStore = store.getters.getPathData
-
-  if (pathStore && pathStore.value[`/post/${postId}`]) {
-    var post = pathStore.value[`/post/${postId}`]
-    post.is_liked = true
-    post.likes_count += 1
-
-    store.dispatch('setPathData', {
-      path: `/post/${postId}`,
-      data: post,
-    })
-  }
-}), {
-  passive: false
-})
-
 $(document).on('page:beforein', '.page[data-name="post-view"]', async function (e) {
   var pathStore = store.getters.getPathData
 

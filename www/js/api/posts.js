@@ -5,6 +5,8 @@ import {
 import {
     getSessionUser
 } from './auth.js'
+import store from '../store.js'
+import { getPostFromDB, savePostToDB } from './indexdb.js'
 
 export async function fetchPosts(page, following = false) {
     const controller = new AbortController()
@@ -183,7 +185,6 @@ export const maybeLikeComment = async (commentId, ownerId) => {
 }
 
 export const getPostsForUser = async (profileId, page = 1, tagged = false, limit = 10) => {
-
     const queryParams = new URLSearchParams({
         user_id: profileId,
         tagged: tagged ? 1 : 0,
@@ -215,6 +216,16 @@ export const getPostsForUser = async (profileId, page = 1, tagged = false, limit
         }
     }
 
+
+    try {
+        // Trigger background fetches for each post's detailed data
+        data.data.forEach(post => {
+            getPostById(post.id);
+        });
+    } catch (error) {
+        console.log("Error fetching post details", error);
+    }
+
     return data
 }
 
@@ -222,19 +233,56 @@ export const getPostById = async (post_id) => {
     const user = await getSessionUser()
     if (!user || !user.id) return null
 
+
+    try {
+        const existingPosts = store.getters.posts.value
+        const pathStore = store.getters.getPathData
+
+        if (existingPosts?.data && existingPosts?.data.length > 0) {
+            const post = existingPosts.data.find(p => p.id == post_id)
+            if (post) {
+                return post
+            }
+        }
+
+        // // Check if the post exists in IndexedDB
+        // const cachedPost = await getPostFromDB(post_id);
+        // if (cachedPost) {
+        //     return cachedPost;
+        // }
+
+        let cachedData = null
+        if (pathStore && pathStore.value[`/post/${post_id}`]) {
+            cachedData = pathStore.value[`/post/${post_id}`]
+        }
+
+        if (cachedData) {
+            return cachedData
+        }
+    } catch (error) {
+        console.log("Error getting post from store", error)
+    }
+
     try {
         const response = await fetch(`${API_URL}/wp-json/app/v2/get-post?post_id=${post_id}&user_id=${user.id}`, {
             method: "GET",
             cache: "force-cache",
             headers: {
                 "Content-Type": "application/json",
-            },
-            // body: JSON.stringify({
-            //     user_id: user.id,
-            //     post_id
-            // }),
+            }
         })
         const data = await response.json()
+
+        if (data && data.id) {
+            // Save the fetched post to IndexedDB
+            // await savePostToDB(data);
+
+            store.dispatch('setPathData', {
+                path: `/post/${post_id}`,
+                data: data,
+            })
+        }
+
         return data
     } catch (error) {
         return null
