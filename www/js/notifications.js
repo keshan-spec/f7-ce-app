@@ -251,10 +251,12 @@ function createNotificationItem(notification, user) {
                 <span class="${isReadClass}"></span>
             </div>
             ${(notification.entity.entity_type === 'car' && !notification.entity.entity_data.tag_approved) ? `<div class="notification-text tag-actions">
-                <div class="btn btn-primary btn-sm approve-tag" data-tag-id="${notification.entity.entity_data.tag_id}">Approve</div>
-                <div class="btn btn-secondary btn-sm decline-tag" data-tag-id="${notification.entity.entity_data.tag_id}">Decline</div>
+                <div class="btn btn-primary btn-sm approve-tag" data-tag-id="${notification.entity.entity_data.tag_id}" data-tag-type="${notification.entity.entity_type}">Approve</div>
+                <div class="btn btn-secondary btn-sm decline-tag" data-tag-id="${notification.entity.entity_data.tag_id}" data-tag-type="${notification.entity.entity_type}">Decline</div>
                 </div>` : ''}
         `;
+
+        container.href = `#`;
     } else if (notification.type === 'tag') {
         content = `
             <div class="notification-text">
@@ -262,8 +264,8 @@ function createNotificationItem(notification, user) {
                 <span class="${isReadClass}"></span>
             </div>
             ${(!notification.entity.entity_data.tag_approved && notification.entity.entity_data.tag_id) ? `<div class="notification-text tag-actions">
-                <div class="btn btn-primary btn-sm approve-tag" data-tag-id="${notification.entity.entity_data.tag_id}">Approve</div>
-                <div class="btn btn-secondary btn-sm decline-tag" data-tag-id="${notification.entity.entity_data.tag_id}">Decline</div>
+                <div class="btn btn-primary btn-sm approve-tag" data-tag-id="${notification.entity.entity_data.tag_id}" data-tag-type="${notification.entity.entity_type}">Approve</div>
+                <div class="btn btn-secondary btn-sm decline-tag" data-tag-id="${notification.entity.entity_data.tag_id}" data-tag-type="${notification.entity.entity_type}">Decline</div>
                 </div>` : ''}
         `;
 
@@ -369,8 +371,10 @@ $(document).on('click', '.approve-tag', async function (e) {
     e.preventDefault()
 
     const tagId = e.target.dataset.tagId
+    const tagTyype = e.target.dataset.tagType
+
     app.preloader.show()
-    const response = await approvePostTag(tagId)
+    const response = await approvePostTag(tagId, tagTyype)
 
     app.preloader.hide()
 

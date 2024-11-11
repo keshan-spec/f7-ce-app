@@ -239,9 +239,11 @@ export const removeTagFromPost = async (tagId) => {
     return data;
 }
 
-export const approvePostTag = async (tagId) => {
+export const approvePostTag = async (tagId, tagType) => {
     const user = await getSessionUser();
-    if (!user) return;
+    if (!user || !user.id) {
+        return null;
+    }
 
     const response = await fetch(`${API_URL}/wp-json/app/v1/approve-post-tag`, {
         method: "POST",
@@ -250,7 +252,8 @@ export const approvePostTag = async (tagId) => {
         },
         body: JSON.stringify({
             tag_id: tagId,
-            user_id: user.id
+            user_id: user.id,
+            tag_type: tagType
         }),
     });
 
