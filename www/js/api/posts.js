@@ -12,23 +12,22 @@ export async function fetchPosts(page, following = false) {
 
     try {
         const user = await getSessionUser()
-        if (!user) return
+        if (!user || !user.id) return
 
-        // setTimeout(() => {
-        //     controller.abort()
-        // }, 5)
+        const queryParams = new URLSearchParams({
+            user_id: user.id,
+            following_only: following ? 1 : 0,
+            page: page,
+            limit: 10
+        }).toString();
 
-        const response = await fetch(`${API_URL}/wp-json/app/v1/get-posts?page=${page}&limit=10`, {
-            method: "POST",
+        const response = await fetch(`${API_URL}/wp-json/app/v2/get-posts?${queryParams}`, {
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                user_id: user.id,
-                following_only: following,
-            }),
             signal // Abort signal
-        })
+        });
 
         const data = await response.json()
         return data
@@ -184,17 +183,26 @@ export const maybeLikeComment = async (commentId, ownerId) => {
 }
 
 export const getPostsForUser = async (profileId, page = 1, tagged = false, limit = 10) => {
-    const response = await fetch(`${API_URL}/wp-json/app/v1/get-user-posts`, {
-        method: "POST",
+
+    const queryParams = new URLSearchParams({
+        user_id: profileId,
+        tagged: tagged ? 1 : 0,
+        page: page,
+        limit: 10
+    }).toString();
+
+    const response = await fetch(`${API_URL}/wp-json/app/v2/get-user-posts?${queryParams}`, {
+        method: "GET",
+        cache: "force-cache",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            user_id: profileId,
-            page,
-            limit,
-            tagged
-        }),
+        // body: JSON.stringify({
+        //     user_id: profileId,
+        //     page,
+        //     limit,
+        //     tagged
+        // }),
     })
 
     const data = await response.json()
@@ -212,18 +220,19 @@ export const getPostsForUser = async (profileId, page = 1, tagged = false, limit
 
 export const getPostById = async (post_id) => {
     const user = await getSessionUser()
-    if (!user) return
+    if (!user || !user.id) return null
 
     try {
-        const response = await fetch(`${API_URL}/wp-json/app/v1/get-post`, {
-            method: "POST",
+        const response = await fetch(`${API_URL}/wp-json/app/v2/get-post?post_id=${post_id}&user_id=${user.id}`, {
+            method: "GET",
+            cache: "force-cache",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                user_id: user.id,
-                post_id
-            }),
+            // body: JSON.stringify({
+            //     user_id: user.id,
+            //     post_id
+            // }),
         })
         const data = await response.json()
         return data

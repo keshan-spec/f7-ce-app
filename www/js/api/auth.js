@@ -21,9 +21,9 @@ export const getSessionUser = async () => {
 
 export const getUserDetails = async (token) => {
     try {
-        let url = `${API_URL}/wp-json/app/v1/get-user-profile/`
+        let url = `${API_URL}/wp-json/app/v2/get-user-profile/`
         let response = await fetch(url, {
-            method: "POST",
+            method: "GET",
             mode: 'cors',
             headers: {
                 "Content-Type": "application/json",
@@ -293,15 +293,15 @@ export const updateUserDetails = async (details, email_changed) => {
 
 export const getUserById = async (id) => {
     try {
-        let url = `${API_URL}/wp-json/app/v1/get-user-profile-next`
+        let url = `${API_URL}/wp-json/app/v2/get-user-profile-next?user_id=${id}`
         let response = await fetch(url, {
-            method: "POST",
+            method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                user_id: id
-            }),
+            // body: JSON.stringify({
+            //     user_id: id
+            // }),
         })
 
         const data = await response.json()

@@ -4,20 +4,20 @@ import {
 import {
     API_URL,
     TIMEOUT_MS_HIGH,
-    TIMEOUT_MS_HIGHER,
 } from './consts.js'
 
 export const getUserGarage = async (profileId) => {
     try {
-        const response = await fetch(`${API_URL}/wp-json/app/v1/get-user-garage`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                user_id: profileId
-            }),
-        })
+        const response = await fetch(`${API_URL}/wp-json/app/v2/get-user-garage?user_id=${profileId}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                // body: JSON.stringify({
+                //     user_id: profileId
+                // }),
+            })
 
         const data = await response.json()
         if (response.status !== 200) {
