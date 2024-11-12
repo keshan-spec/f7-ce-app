@@ -672,7 +672,7 @@ store.getters.getGarageViewPosts.onUpdated((data) => {
 
     if (data.data.length === 0) {
       const profileGrid = document.getElementById('garage-posts-tab')
-      profileGrid.innerHTML = '<p>No posts yet</p>'
+      profileGrid.innerHTML = '<p></p><p>No posts yet</p>'
       return;
     }
 
@@ -695,7 +695,7 @@ store.getters.getGarageViewTags.onUpdated((data) => {
 
     if (data.data.length === 0) {
       const profileGrid = document.getElementById('garage-tags-tab')
-      profileGrid.innerHTML = '<p>No tagged posts yet</p>'
+      profileGrid.innerHTML = '<p></p><p>No tagged posts yet</p>'
       return;
     }
 

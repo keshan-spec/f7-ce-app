@@ -7,7 +7,7 @@ import app from "./app.js";
 var $ = Dom7;
 
 //DISCOVER - VIEW EVENT
-$(document).on('page:afterin', '.page[data-name="discover-view-event"]', async function (e) {
+$(document).on('page:init', '.page[data-name="discover-view-event"]', async function (e) {
 
     var eventId = e.detail.route.params.id
 

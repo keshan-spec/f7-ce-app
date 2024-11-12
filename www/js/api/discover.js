@@ -56,17 +56,23 @@ export const fetchEvent = async (eventId) => {
 
     const site = user?.last_location?.country || 'GB';
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/get-event`, {
-        cache: "no-cache",
-        method: "POST",
+    const query = new URLSearchParams({
+        event_id: eventId,
+        user_id: user?.id,
+        site
+    }).toString();
+
+    const response = await fetch(`${API_URL}/wp-json/app/v2/get-event?${query}`, {
+        cache: "force-cache",
+        method: "GET",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            event_id: eventId,
-            user_id: user?.id,
-            site
-        }),
+        // body: JSON.stringify({
+        //     event_id: eventId,
+        //     user_id: user?.id,
+        //     site
+        // }),
     });
 
     const data = await response.json();
@@ -88,18 +94,28 @@ export const fetchTrendingEvents = async (page, paginate = false, filters = null
             throw new Error('Session user not found');
         }
 
-        const response = await fetch(`${API_URL}/wp-json/app/v1/get-events-trending`, {
-            method: "POST",
+        const query = new URLSearchParams({
+            user_id: user.id,
+            page,
+            per_page: 10,
+            paginate,
+            filters: JSON.stringify(filters || {}),
+            version: 2
+        }).toString();
+
+        const response = await fetch(`${API_URL}/wp-json/app/v2/get-events-trending?${query}`, {
+            method: "GET",
+            cache: "force-cache",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                user_id: user.id,
-                page,
-                per_page: 10,
-                paginate,
-                filters
-            }),
+            // body: JSON.stringify({
+            //     user_id: user.id,
+            //     page,
+            //     per_page: 10,
+            //     paginate,
+            //     filters
+            // }),
             signal
         });
 
@@ -124,19 +140,27 @@ export const fetchTrendingVenues = async (page, paginate = false, filters = '{}'
             throw new Error('Session user not found');
         }
 
-        const response = await fetch(`${API_URL}/wp-json/app/v1/get-venues-trending`, {
-            method: "POST",
+        const query = new URLSearchParams({
+            user_id: user.id,
+            page,
+            per_page: 10,
+            paginate,
+            filters: JSON.stringify(filters || {}),
+        }).toString();
+
+        const response = await fetch(`${API_URL}/wp-json/app/v2/get-venues-trending?${query}`, {
+            method: "GET",
             cache: "force-cache",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                user_id: user.id,
-                page,
-                per_page: 10,
-                paginate,
-                filters
-            }),
+            // body: JSON.stringify({
+            //     user_id: user.id,
+            //     page,
+            //     per_page: 10,
+            //     paginate,
+            //     filters
+            // }),
         });
 
         const data = await response.json();
@@ -222,17 +246,12 @@ export const fetchVenue = async (venueId) => {
 
     const site = user?.last_location?.country || 'GB';
 
-    const response = await fetch(`${API_URL}/wp-json/app/v1/get-venue`, {
-        cache: "no-cache",
-        method: "POST",
+    const response = await fetch(`${API_URL}/wp-json/app/v2/get-venue?venue_id=${venueId}&user_id=${user?.id}&site=${site}`, {
+        cache: "force-cache",
+        method: "GET",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            venue_id: venueId,
-            user_id: user?.id,
-            site
-        }),
     });
 
     const data = await response.json();

@@ -110,7 +110,6 @@ export const sendEmailVerification = async () => {
     }
 }
 
-
 export const handleSignUp = async (user) => {
     try {
         const response = await fetch(`${API_URL}/wp-json/app/v1/register-user`, {
@@ -296,12 +295,10 @@ export const getUserById = async (id) => {
         let url = `${API_URL}/wp-json/app/v2/get-user-profile-next?user_id=${id}`
         let response = await fetch(url, {
             method: "GET",
+            cache: 'force-cache',
             headers: {
                 "Content-Type": "application/json",
             },
-            // body: JSON.stringify({
-            //     user_id: id
-            // }),
         })
 
         const data = await response.json()

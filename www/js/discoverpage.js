@@ -289,6 +289,13 @@ $(document).on('click', '.apply-filters', function (e) {
     }
 
     if (activeTab === 'venues') {
+        // remove unwanted filters
+        delete filters.event_date;
+        delete filters.event_category;
+        delete filters.event_location;
+
+        filters['location'] = selectedLocation;
+
         store.dispatch('filterVenues', {
             page: 1,
             filters
@@ -489,40 +496,42 @@ filteredVenuesStore.onUpdated((data) => {
     }
 });
 
+$(document).on('page:beforein', '.page[data-name="discover"]', function (e) {
+        //Date Filters
+        app.calendar.create({
+            inputEl: '#date-from',
+            openIn: 'customModal',
+            header: true,
+            footer: true,
+        });
+    
+        app.calendar.create({
+            inputEl: '#date-to',
+            openIn: 'customModal',
+            header: true,
+            footer: true,
+        });
+    
+        //Filter Date Popup
+        app.popup.create({
+            el: '.filter-bydate-popup',
+            swipeToClose: 'to-bottom'
+        });
+    
+        //Filter Category Popup
+        app.popup.create({
+            el: '.filter-bycategory-popup',
+            swipeToClose: 'to-bottom'
+        });
+    
+        //Filter Location Popup
+        app.popup.create({
+            el: '.filter-bylocation-popup',
+            swipeToClose: 'to-bottom'
+        });
+})
+
 $(document).on('page:init', '.page[data-name="discover"]', function (e) {
-    //Date Filters
-    app.calendar.create({
-        inputEl: '#date-from',
-        openIn: 'customModal',
-        header: true,
-        footer: true,
-    });
-
-    app.calendar.create({
-        inputEl: '#date-to',
-        openIn: 'customModal',
-        header: true,
-        footer: true,
-    });
-
-    //Filter Date Popup
-    app.popup.create({
-        el: '.filter-bydate-popup',
-        swipeToClose: 'to-bottom'
-    });
-
-    //Filter Category Popup
-    app.popup.create({
-        el: '.filter-bycategory-popup',
-        swipeToClose: 'to-bottom'
-    });
-
-    //Filter Location Popup
-    app.popup.create({
-        el: '.filter-bylocation-popup',
-        swipeToClose: 'to-bottom'
-    });
-
     //SEARCH BAR
     $('.discover-search').on('mousedown', function (event) {
         event.preventDefault();

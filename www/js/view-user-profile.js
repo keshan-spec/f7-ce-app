@@ -40,11 +40,6 @@ $(document).on('page:init', '.page[data-name="profile-view"]', async function (e
 })
 
 $(document).on('page:beforein', '.page[data-name="profile-view"]', async function (e) {
-    currentPostPage = 1
-    currentFPostPage = 1
-    isFetchingPosts = false
-    refreshed = false
-
     $('.loading-fullscreen').show()
 
     var pathStore = store.getters.getPathData
@@ -99,7 +94,6 @@ $(document).on('click', '.user-follow-btn', async function () {
 async function renderProfileData(cachedData, userId) {
     // if (!refreshed && !cachedData) {
     // }
-
     refreshed = false
 
     if (!cachedData) {
@@ -116,16 +110,6 @@ async function renderProfileData(cachedData, userId) {
         }
 
         displayProfile(data.user, 'profile-view')
-
-        store.dispatch('getUserPosts', {
-            user_id: userId,
-            clear: true
-        })
-
-        store.dispatch('getUserTags', {
-            user_id: userId,
-            clear: true
-        })
 
         $('.loading-fullscreen').hide()
 
@@ -155,20 +139,20 @@ async function renderProfileData(cachedData, userId) {
     } else {
         displayProfile(cachedData.user, 'profile-view')
 
-        store.dispatch('getUserPosts', {
-            user_id: userId,
-            clear: true
-        })
-
-        store.dispatch('getUserTags', {
-            user_id: userId,
-            clear: true
-        })
-
         if (cachedData.garage) {
             createGarageContent(cachedData.garage, '.pview-current-vehicles-list', '.pview-past-vehicles-list')
         }
     }
+
+    store.dispatch('getUserPosts', {
+        user_id: userId,
+        clear: true
+    })
+
+    store.dispatch('getUserTags', {
+        user_id: userId,
+        clear: true
+    })
 
     $('.loading-fullscreen').hide()
 }

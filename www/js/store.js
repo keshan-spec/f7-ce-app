@@ -528,7 +528,30 @@ const store = createStore({
       page = 1,
       clear = false
     }) {
-      const posts = await getPostsForUser(user_id, page)
+      const userPathData = state.userPaths;
+
+      let posts = null;
+
+      if (userPathData && userPathData[`user-${user_id}-posts`]) {
+        if (userPathData[`user-${user_id}-posts`].page >= page) {
+          posts = userPathData[`user-${user_id}-posts`]
+
+          if (posts && posts.total_pages == posts.page) {
+            posts['cleared'] = true
+            posts['new_data'] = posts.data
+
+            state.userPaths[`user-${user_id}-posts`] = posts
+            state.userPathsUpdated = true
+            return;
+          }
+
+
+        } else {
+          posts = await getPostsForUser(user_id, page)
+        }
+      } else {
+        posts = await getPostsForUser(user_id, page)
+      }
 
       let prevUserPosts = {
         data: []
@@ -547,7 +570,7 @@ const store = createStore({
           ...posts.data,
         ],
         total_pages: posts.total_pages,
-        page: page,
+        page: posts.page,
         limit: posts.limit,
         cleared: clear,
       }
@@ -562,11 +585,35 @@ const store = createStore({
       page = 1,
       clear = false
     }) {
-      const posts = await getPostsForUser(user_id, page, true)
+      const userPathData = state.userPaths;
+
+      let posts = null;
+
+      if (userPathData && userPathData[`user-${user_id}-tags`]) {
+        if (userPathData[`user-${user_id}-tags`].page >= page) {
+          posts = userPathData[`user-${user_id}-tags`]
+
+          if (posts && posts.total_pages == posts.page) {
+            posts['cleared'] = true
+            posts['new_data'] = posts.data
+
+            state.userPaths[`user-${user_id}-tags`] = posts
+            state.userPathsUpdated = true
+            return;
+          }
+
+
+        } else {
+          posts = await getPostsForUser(user_id, page, true)
+        }
+      } else {
+        posts = await getPostsForUser(user_id, page, true)
+      }
 
       let prevUserPosts = {
         data: []
       }
+
       if (!clear) {
         if (state.userPaths[`user-${user_id}-tags`]) {
           prevUserPosts = state.userPaths[`user-${user_id}-tags`]
