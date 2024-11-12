@@ -113,6 +113,16 @@ async function renderProfileData(cachedData, userId) {
 
         $('.loading-fullscreen').hide()
 
+        store.dispatch('getUserPosts', {
+            user_id: userId,
+            clear: true
+        })
+
+        store.dispatch('getUserTags', {
+            user_id: userId,
+            clear: true
+        })
+
         const garage = await getUserGarage(userId)
 
         if (garage) {
@@ -139,20 +149,20 @@ async function renderProfileData(cachedData, userId) {
     } else {
         displayProfile(cachedData.user, 'profile-view')
 
+        store.dispatch('getUserPosts', {
+            user_id: userId,
+            clear: true
+        })
+
+        store.dispatch('getUserTags', {
+            user_id: userId,
+            clear: true
+        })
+
         if (cachedData.garage) {
             createGarageContent(cachedData.garage, '.pview-current-vehicles-list', '.pview-past-vehicles-list')
         }
     }
-
-    store.dispatch('getUserPosts', {
-        user_id: userId,
-        clear: true
-    })
-
-    store.dispatch('getUserTags', {
-        user_id: userId,
-        clear: true
-    })
 
     $('.loading-fullscreen').hide()
 }
