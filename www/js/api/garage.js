@@ -14,9 +14,6 @@ export const getUserGarage = async (profileId) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                // body: JSON.stringify({
-                //     user_id: profileId
-                // }),
             })
 
         const data = await response.json()
@@ -32,15 +29,12 @@ export const getUserGarage = async (profileId) => {
 
 export const getGargeById = async (garageId) => {
     try {
-        const response = await fetch(`${API_URL}/wp-json/app/v1/get-garage`, {
-            method: "POST",
+        const response = await fetch(`${API_URL}/wp-json/app/v2/get-garage?garage_id=${garageId}`, {
+            method: "GET",
             cache: "force-cache",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                garage_id: garageId
-            }),
         })
 
         const data = await response.json()
@@ -58,17 +52,25 @@ export const getGargeById = async (garageId) => {
 
 export const getPostsForGarage = async (garageId, page = 1, tagged = false) => {
     try {
-        const response = await fetch(`${API_URL}/wp-json/app/v1/get-garage-posts`, {
-            method: "POST",
+        const query = new URLSearchParams({
+            garage_id: garageId,
+            page,
+            limit: 9,
+            tagged: tagged ? 1 : 0
+        })
+
+        const response = await fetch(`${API_URL}/wp-json/app/v2/get-garage-posts?${query}`, {
+            method: "GET",
+            cache: "force-cache",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                garage_id: garageId,
-                page,
-                limit: 10,
-                tagged
-            }),
+            // body: JSON.stringify({
+            //     garage_id: garageId,
+            //     page,
+            //     limit: 10,
+            //     tagged
+            // }),
         })
 
         const data = await response.json()

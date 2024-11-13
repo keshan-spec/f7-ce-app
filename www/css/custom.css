@@ -549,7 +549,7 @@ img.image-square {
 .comments-list {
     display: block;
     width: 95%;
-    height: 96%;
+    height: 98%;
     overflow: auto;
     padding: 0;
     margin: 20px auto 0 auto !important;
@@ -558,7 +558,7 @@ img.image-square {
 .profile-followers-list {
     display: block;
     width: 92%;
-    height: 90%;
+    height: 98%;
     overflow: auto;
     padding: 0;
     margin: 0px auto 0 auto !important;

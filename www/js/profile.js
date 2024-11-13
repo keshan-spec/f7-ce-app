@@ -324,6 +324,12 @@ export function displayFollowers(followersList, userFollowingList, container = '
   }
 
   const followersContainer = containerElem.querySelector('.profile-followers-list');
+  console.log(containerElem, followersContainer);
+
+  if (!followersContainer) {
+    console.error('Followers list container not found');
+    return;
+  }
 
   if (followersList.length === 0) {
     followersContainer.innerHTML = `
@@ -615,6 +621,8 @@ $(document).on('page:init', '.page[data-name="profile-garage-vehicle-view"]', as
   if (garageId == -1) {
     return;
   }
+
+
 
   let cachedData = null
   try {

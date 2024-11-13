@@ -184,12 +184,12 @@ export const maybeLikeComment = async (commentId, ownerId) => {
     }
 }
 
-export const getPostsForUser = async (profileId, page = 1, tagged = false, limit = 10) => {
+export const getPostsForUser = async (profileId, page = 1, tagged = false, limit = 9) => {
     const queryParams = new URLSearchParams({
         user_id: profileId,
         tagged: tagged ? 1 : 0,
         page: page,
-        limit: 10
+        limit
     }).toString();
 
     const response = await fetch(`${API_URL}/wp-json/app/v2/get-user-posts?${queryParams}`, {
@@ -198,12 +198,6 @@ export const getPostsForUser = async (profileId, page = 1, tagged = false, limit
         headers: {
             "Content-Type": "application/json",
         },
-        // body: JSON.stringify({
-        //     user_id: profileId,
-        //     page,
-        //     limit,
-        //     tagged
-        // }),
     })
 
     const data = await response.json()

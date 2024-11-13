@@ -131,6 +131,9 @@ async function renderProfileData(cachedData, userId) {
 
         const followersData = await getFollowersForUser(userId)
 
+        $('.pview.profile-followers').attr('data-popup', ".profile-followers-popup")
+        $('.pview.profile-followers').addClass('popup-open')
+
         let followers = null
         if (followersData && followersData.success) {
             followers = followersData.followers
@@ -162,6 +165,14 @@ async function renderProfileData(cachedData, userId) {
         if (cachedData.garage) {
             createGarageContent(cachedData.garage, '.pview-current-vehicles-list', '.pview-past-vehicles-list')
         }
+
+        if (cachedData.followers) {
+            displayFollowers(cachedData.followers, cachedData.user.following || [], 'profile-view')
+        }
+
+
+        $('.pview.profile-followers').attr('data-popup', ".profile-followers-popup")
+        $('.pview.profile-followers').addClass('popup-open')
     }
 
     $('.loading-fullscreen').hide()
