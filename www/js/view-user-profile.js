@@ -39,11 +39,9 @@ $(document).on('page:init', '.page[data-name="profile-view"]', async function (e
     refreshed = false
 })
 
-$(document).on('page:beforein', '.page[data-name="profile-view"]', async function (e) {
-    $('.loading-fullscreen').show()
-
-    var pathStore = store.getters.getPathData
+$(document).on('page:init', '.page[data-name="profile-view"]', async function (e) {
     userId = e.detail.route.params.id
+    var pathStore = store.getters.getPathData
 
     const sessionUser = await getSessionUser()
 
@@ -97,6 +95,7 @@ async function renderProfileData(cachedData, userId) {
     refreshed = false
 
     if (!cachedData) {
+        $('.loading-fullscreen').show()
         const data = await getUserById(userId)
 
         if (!data || data.error) {

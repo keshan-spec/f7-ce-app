@@ -283,7 +283,7 @@ function generatePostGridItem(post) {
           sizes="(max-width: 320px) 280px, 320px"
           decoding="async"
           fetchPriority="high"
-          style="object-fit: cover; max-width: 130px;"
+          style="object-fit: cover; "
         />
       </a>`
   } else {
@@ -296,7 +296,7 @@ function generatePostGridItem(post) {
           sizes="(max-width: 320px) 280px, 320px"
           decoding="async"
           fetchPriority="high"
-          style="object-fit: cover; max-width: 130px;"
+          style="object-fit: cover; "
         />
       </a>`
   }
@@ -324,8 +324,6 @@ export function displayFollowers(followersList, userFollowingList, container = '
   }
 
   const followersContainer = containerElem.querySelector('.profile-followers-list');
-  console.log(containerElem, followersContainer);
-
   if (!followersContainer) {
     console.error('Followers list container not found');
     return;
