@@ -585,7 +585,7 @@ $(document).on('click', '#add-link-btn', async function () {
     // }
 
 
-    const urlPattern = /^(https?:\/\/|www\.)[\da-z\.-]+\.[a-z]{2,6}\/?$/;
+    const urlPattern = /^(http(s):\/\/.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/g;
     if (!urlPattern.test(linkUrl)) {
         showToast('Please enter a valid URL.', 'Error');
         return;
